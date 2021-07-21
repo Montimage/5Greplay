@@ -5,7 +5,7 @@ This repository contains the following folders:
 - `src` : C code of mmt-5greplay
 - `rules`: set of official XML rules. An encoded version (*.so) of these rules will be distributed with mmt-sec when using `make deb`. All rules (official and for testing purposes) are stored in rules/properties_all 
 - `check`: sample pcap files and expected results to validate mmt-5greplay
-- `docs`: [documentation](docs/_index.md)
+- `docs`: [documentation](docs/)
 - `test`: diversity of testing code
 
 # Build
