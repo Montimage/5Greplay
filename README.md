@@ -13,10 +13,10 @@ This repository contains the following folders:
 
 Suppose on your machine, you have:
 
-- *libxml2-dev, libpcap-dev, libconfuse-dev libsctp-dev* :  `sudo apt-get install libxml2-dev libpcap-dev libconfuse-dev libsctp-dev`
-- *gcc, make, git*: `sudo apt install gcc make git`
-- *Clone the source code on your machine*: `git clone https://github.com/Montimage/5GReplay.git`
-- *mmt-sdk*: `cd 5GReplay; sudo dpkg -i lib/mmt-dpi*.deb`
+- **libxml2-dev, libpcap-dev, libconfuse-dev libsctp-dev** :  `sudo apt-get install libxml2-dev libpcap-dev libconfuse-dev libsctp-dev`
+- **gcc, make, git**: `sudo apt install gcc make git`
+- **Clone the source code on your machine**: `git clone https://github.com/Montimage/5GReplay.git`
+- **mmt-sdk**: `cd 5GReplay; sudo dpkg -i lib/mmt-dpi*.deb`
 
 ## Clean
 
