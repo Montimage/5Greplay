@@ -1,0 +1,110 @@
+<beginning>
+<embedded_functions><![CDATA[
+
+static void em_forward(
+      const rule_info_t *rule, int verdict, uint64_t timestamp, 
+      uint64_t counter, const mmt_array_t * const trace ){
+   const char* trace_str = mmt_convert_execution_trace_to_json_string( trace, rule );
+   forward_packet();
+   //old ran_ue_id
+   uint64_t ran_ue_id = get_numeric_value( PROTO_NGAP, NGAP_ATT_RAN_UE_ID, 1, trace );
+   for( int i=0; i<1; i++ ){
+      set_numeric_value( PROTO_NGAP, NGAP_ATT_RAN_UE_ID, ran_ue_id + i + 100 );
+      forward_packet();
+   }
+}
+
+void on_load(){
+	printf("Loaded successfully rule 1");
+}
+
+void on_unload(){
+	printf("Unloaded successfully rule 1");
+}
+
+bool em_check(){
+	sleep(1);
+	printf("sleep 1 second");
+	return true;
+}
+
+
+]]></embedded_functions>
+
+<!-- 
+<property value="THEN"  delay_units="s" delay_min="0+" delay_max="1" property_id="100" type_property="FORWARD" 
+    description="Forwarding NAS security mode COMPLETE that answers to NAS security mode COMMAND "
+    _if_satisfied="#update(ngap.procedure_code, (ngap.procedure_code.1 + 40)"
+    if_satisfied="em_forward"
+    >
+    <event value="COMPUTE" event_id="1" 
+           description="NAS Security mode COMMAND"
+           boolean_expression="(nas_5g.message_type == 93)"/>
+    <event value="COMPUTE" event_id="2" 
+           description="NAS Security mode COMPLETE"
+           boolean_expression="(nas_5g.security_type != 3)"/>
+</property>
+ -->
+
+
+  
+<property property_id="103" type_property="FORWARD" 
+    description="Inject only packet from UE -> Core but not inversed direction">
+    <event description="From UE and NAS-5G packets"
+           boolean_expression="( ( #is_same_ipv4(ip.src, '127.0.0.1') ) &amp;&amp; ((sctp.dest_port == 38412 ) &amp;&amp;(sctp.ch_type == 0)) )"/>
+</property>
+
+<!-- 
+<property property_id="104" type_property="FORWARD" 
+    description="SCTP INIT">
+    <event description="From UE and NAS-5G packets"
+           boolean_expression="( #is_same_ipv4(ip.src, '10.1.0.3') &amp;&amp; #em_check())"/>
+</property>
+ -->
+
+<!-- 
+<property value="COMPUTE" property_id="101" type_property="FORWARD" 
+    description="5G testing" if_satisfied="#update(ngap.procedure_code, (ngap.procedure_code.1 + 40)">
+    <event value="COMPUTE" event_id="1" 
+        description="Authentication response, Uplink NAS Transport"
+           boolean_expression="((ngap.procedure_code == 46) &amp;&amp;  (nas_5g.message_type == 87))"/>
+</property>
+ -->
+ 
+<!-- 
+<property value="THEN" property_id="102" type_property="FORWARD" 
+    description="5G testing" if_satisfied="em_forward">
+    <event value="COMPUTE" event_id="1" 
+        description="Authentication response, Uplink NAS Transport"
+           boolean_expression="((ngap.procedure_code == 46) &amp;&amp;  (nas_5g.message_type == 87))"/>
+    <event value="COMPUTE" event_id="2" 
+           description="Nothing"
+           boolean_expression="(ngap.ran_ue_id != 0)"/>
+</property>
+ -->
+
+<!-- 
+
+<property value="COMPUTE" property_id="103" type_property="FORWARD" 
+    description="Drop no-5G traffic" if_satisfied="#drop()">
+    <event description="registration request"
+           boolean_expression="(ethernet.proto == 16393"/>
+</property>
+
+<property value="THEN" delay_units="s" delay_min="0" delay_max="1" property_id="104" type_property="ATTACK" 
+    description="5G UE authentication hijack: UE IDs in Authentication Response is different with the one of Authetication Request">
+    <event value="COMPUTE" event_id="1" 
+        description="Authentication request, Downlink NAS Transport"
+           boolean_expression="((ngap.procedure_code == 4) &amp;&amp;  (nas_5g.message_type == 86))"/>
+    
+    <event value="COMPUTE" event_id="2" 
+        description="In Authentication Response of the same SCTP stream, same AMF-UE-ID but different RAN-UE-ID"
+           boolean_expression="((sctp_data.data_stream == sctp_data.data_stream.1) 
+           &amp;&amp; ((((ngap.procedure_code == 46) 
+           &amp;&amp;  (((nas_5g.message_type == 87) 
+           &amp;&amp;  ((ngap.amf_ue_id == ngap.amf_ue_id.1)
+           &amp;&amp;   (ngap.ran_ue_id != ngap.ran_ue_id.1) )))))))"/>
+</property>
+
+ -->
+</beginning>
