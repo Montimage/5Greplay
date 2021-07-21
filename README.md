@@ -1,10 +1,9 @@
-# MMT-5Greplay
+# MMT-5GReplay
 
 This repository contains the following folders:
 
 - `src` : C code of mmt-5greplay
-- `rules`: set of official XML rules. An encoded version (*.so) of these rules will be distributed with mmt-sec when using `make deb`. All rules (official and for testing purposes) are stored in rules/properties_all 
-- `check`: sample pcap files and expected results to validate mmt-5greplay
+- `rules`: set of example XML rules
 - `docs`: [documentation](docs/)
 - `test`: diversity of testing code
 
@@ -14,9 +13,10 @@ This repository contains the following folders:
 
 Suppose on your machine, you have:
 
-- *libxml2-dev, libpcap-dev, libconfuse-dev* :  `sudo apt-get install libxml2-dev libpcap-dev libconfuse-dev`
-
-- `mmt-sdk`: `sudo dpkg -i lib/mmt-dpi*.deb`
+- *libxml2-dev, libpcap-dev, libconfuse-dev libsctp-dev* :  `sudo apt-get install libxml2-dev libpcap-dev libconfuse-dev libsctp-dev`
+- *gcc, make, git*: `sudo apt install gcc make git`
+- *Clone the source code on your machine*: `git clone https://github.com/Montimage/5GReplay.git`
+- *mmt-sdk*: `cd 5GReplay; sudo dpkg -i lib/mmt-dpi*.deb`
 
 ## Clean
 
@@ -28,7 +28,7 @@ Suppose on your machine, you have:
 
 - compile on its local directory: `make`
 
-- compile sample rules existing in `rules` folder: `make sample-rule`
+- compile sample rules existing in `rules` folder: `make sample-rules`
 
 - enable debug using gdb: `make DEBUG=1`
 
@@ -48,10 +48,10 @@ This command parses rules in .xml file, then compile to a plugin .so file.
 
 ```bash
 #to generate .so file
-./mmt-5greplay compile rules/40.TCP_SYN_scan.so rules/40.TCP_SYN_scan.xml
+./mmt-5greplay compile rules/forward-localhost.so rules/forward-localhost.xml
  
 #to generate code c (for debug)
-./mmt-5greplay compile rules/40.TCP_SYN_scan.c rules/40.TCP_SYN_scan.xml -c
+./mmt-5greplay compile rules/forward-localhost.c rules/forward-localhost.xml -c
 
 ```
 
@@ -92,7 +92,7 @@ Option:
 ./mmt-5greplay replay -i eth0
 #to see all parameters, run ./mmt-5greplay replay -h
 #verify a pcap file
-./mmt-5greplay replay -t check/pcap/16.two_successive_SYN.pcap 
+./mmt-5greplay replay -t ~/pcap/5G-traffic.pcap 
 
 ```
 
