@@ -454,6 +454,7 @@ static int _packet_handle( const ipacket_t *ipacket, void *args ) {
 	uint32_t rm_rules_arr[50];
 	char string[500], *ch = string;
 	int i;
+	int ret = 0;
 
 	context_t *context = (context_t *) args;
 	MUST_NOT_OCCUR( context == NULL, "args parameter must not be NULL"); //this must not happen
@@ -469,8 +470,10 @@ static int _packet_handle( const ipacket_t *ipacket, void *args ) {
 
 	//if there is no interested information
 	//TODO: to check if we still need to send timestamp/counter to mmt-sec?
-	if( unlikely( msg == NULL ))
-		return 1;
+	if( unlikely( msg == NULL )){
+		goto __finish_security;
+		ret = 1;
+	}
 
 	mmt_sec_process( context->sec_handler, msg );
 
@@ -507,7 +510,14 @@ static int _packet_handle( const ipacket_t *ipacket, void *args ) {
 
 	total_received_reports ++;
 
-	return 0;
+	//when forwarding packet is enable
+	// we need to call this function to forward the current packet if it is not satisfied by any rule
+	__finish_security:
+	if( context->config->forward->is_enable )
+		forward_packet_on_receiving_packet_after_rule_processing( ipacket, context->forward_context );
+
+
+	return ret;
 }
 
 void live_capture_callback( u_char *user, const struct pcap_pkthdr *p_pkthdr, const u_char *data ){

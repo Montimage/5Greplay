@@ -27,3 +27,7 @@ rsync.sh
 *.wmv
 
 /build/
+/.cproject
+/.project
+/.settings
+/.externalToolBuilders
