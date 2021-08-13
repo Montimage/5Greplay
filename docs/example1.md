@@ -1,6 +1,6 @@
 # Example 1: Filtering and replaying NGAP Security Mode Complete messages
 
-This document aims to show the main functionalities of 5Greplay through an example. For more details please use the 5Greplay User [Manual](./5Greplay_Manual.pdf) as a reference.
+This document aims to show the main functionalities of 5Greplay through an example. For more details please use the 5Greplay [User Manual](./5Greplay_Manual.pdf) as a reference.
 
 In general, an use case of 5Greplay It will be composed of 3 main steps:
 1. Design a rule that filter the desired packets to be replayed
