@@ -11,9 +11,3 @@ This repository contains the following folders:
 - [Verdict decision of rule types](./verdict.md)
 - [Hash function to access quickly of a message element](./hash.md)
 
-This repository contains the following folders:
-
-- `src` : C code of mmt-5greplay
-- `rules`: set of example XML rules
-- `docs`: [documentation](docs/)
-- `test`: diversity of testing code
