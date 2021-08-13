@@ -1,3 +1,10 @@
-#Example 1: Filtering and replaying NGAP Security Mode Complete messages
+# Example 1: Filtering and replaying NGAP Security Mode Complete messages
 
 This document aims to show the main functionalities of 5Greplay through an example. For more details please go to the [documentation](../../docs) section.
+
+In general, an use case of 5Greplay It will be composed of 3 main steps:
+- Design a rule that filter the desired packets to be replayed
+- Configure 5Greplay the through its [configuration file] ../../mmt-5greplay.conf, to determine which rules will be appliyed and where the traffic will be sent
+- Observe the replayed traffic, and the 5Greplay logs
+
+## 1. Design a 5Greplay filtering rule 
