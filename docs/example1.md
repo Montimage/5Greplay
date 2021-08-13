@@ -194,5 +194,5 @@ mmt-5greplay: [_sctp_connect:49] Cannot connect to 192.168.49.3:38412 using SCTP
 mmt-5greplay: Interrupted by signal 6
 ```
 
-We recommend to use the open source projects [free5gc](https://github.com/free5gc/free5gc), [open5gs](https://github.com/open5gs/open5gs) to have you own 5G SA core network. Also, you can used [UERANSIM](https://github.com/aligungr/UERANSIM) to have the UE and RAN implementation, and design your rules to filter and forward packets between the core and the RAN, and much more!
+We recommend to use the open source projects [free5gc](https://github.com/free5gc/free5gc) or [open5gs](https://github.com/open5gs/open5gs) to have you own 5G SA core network. Also, you can used [UERANSIM](https://github.com/aligungr/UERANSIM) to have the UE and RAN implementation. You can design your rules to filter and forward packets between the core and the RAN netwroks,** and much more!**
 
