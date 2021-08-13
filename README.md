@@ -35,7 +35,7 @@ Suppose on your machine, you have:
 
 - if you want to use Valgrind DRD or Helgrind, you should do `make DEBUG=1 VALGRIND=1`. The option `VALGRIND=1` adds some instruction allowing Valgrind bypass atomic operations that usually causes false positive errors in Valgrind.
 
-# Execution
+# Usage
 
 mmt-5greplay command uses the following form: `command [option]`
 
