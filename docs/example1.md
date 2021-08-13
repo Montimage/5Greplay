@@ -176,4 +176,23 @@ sudo ./mmt-5greplay replay -c examples/example1_ngap_smc/mmt-5greplay-sctp.conf 
 
 We should be able to observe the interface `ens38` with a packet analyzer, such as _Wireshark_ or _tcpdump_ and to see only 2  packets forwarded, the _NAS Security mode Complete_ filtered and forwarded, and a copy, as we have defined as `DROP` the default action. Moreover, 5Greplay log will report the amount of forwarded and dropped packets.
 
+```bash
+mmt-5greplay: MMT-5Greplay 0.0.1 (40dab57 - Jul 22 2021 06:17:58) is verifying 1 rules having 2 proto.atts using the main thread
+mmt-5greplay: Analyzing pcap file examples/example1_ngap_smc/ue_authetication.pcapng
+Loaded successfully rule 1 - rule 90 generated 1 verdicts
+          13 packets received
+          13 messages received
+           1 alerts generated
+mmt-5greplay: Number of packets being successfully forwarded: 2, dropped: 12
+Number of packets being successfully forwarded: 2, dropped: 12
+```
+
+Notice that you only will be able to run this example if you have a SCTP server running at the defined IP address and port, otherwise you will have the following error:
+
+```bash
+mmt-5greplay: [_sctp_connect:49] Cannot connect to 192.168.49.3:38412 using SCTP
+mmt-5greplay: Interrupted by signal 6
+```
+
+We recommend to use the open source projects [free5gc](https://github.com/free5gc/free5gc), [open5gs](https://github.com/open5gs/open5gs) to have you own 5G SA core network. Also, you can used [UERANSIM](https://github.com/aligungr/UERANSIM) to have the UE and RAN implementation, and design your rules to filter and forward packets between the core and the RAN, and much more!
 
