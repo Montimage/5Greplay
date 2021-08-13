@@ -1,5 +1,6 @@
 - [What's new in this version?](./versions.md)
 - [Installation](./installation.md)
+- [Usage examples](5GReplay/examples/example1_ngap_smc/readme.md)
 - [Workflow to use MMT-5Greplay](./smp_workflow.md)
 - [How to write an embedded function](./rule.md)
 - [Verdict decision of rule types](./verdict.md)
