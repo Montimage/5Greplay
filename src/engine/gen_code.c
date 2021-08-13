@@ -1145,14 +1145,14 @@ static void _gen_static_functions_to_forward_packets( FILE *fd ){
  * Public API
  */
 int generate_fsm( const char* file_name, rule_t *const* rules, size_t count, const char*embedded_functions ){
-	char *str_ptr;
+	char *str_ptr = NULL;
 	size_t i;
 	//open file for writing
 	FILE *fd = fopen(file_name, "w");
 	ASSERT (fd != NULL, "Error 11a: Cannot open file %s for writing", file_name );
 
 	str_ptr = get_current_date_time_string( "%Y-%m-%d %H:%M:%S" );
-	_gen_comment( fd, "This file is generated automatically on %s", str_ptr);
+	_gen_comment( fd, "This file is generated automatically on %s", str_ptr == NULL ? "unknown" : str_ptr );
 	mmt_mem_free( str_ptr );
 
 	//include
