@@ -12,6 +12,10 @@ In general, an use case of 5Greplay It will be composed of 3 main steps:
 
 ## 1. Design a 5Greplay filtering rule 
 
+The first thing you need to define is **what packets you desire to forward, drop or modify**. For that you must make a 5Greplay XML rule, that normally will be located in ```5GReplay/rules/```.
+
+In  Section 4 of the [User Manual](./5Greplay_Manual.pdf) we explain in detail all the attributes of 5Greplay rules. To have reference of the name of the protocol attributes that 5Greplay uses, and that you can use to write you rules (e.g. ```nas_5g.message_type, nas_5g.security_type```),please refers to the [list of attributes](./5Greplay_attributes.txt).
+
 For this example we will be using the [property 90](../rules/nas-smc-replay-attack.xml) located in ```5GReplay/rules/nas-smc-replay-attack.xml```:
 
 ```xml
@@ -58,9 +62,21 @@ With the lines before we have determined that we want to filter the _NAS Securit
 <property value="THEN"  delay_units="ms" delay_min="0" delay_max="10" property_id="90" type_property="FORWARD"  description="Increase RAN IDs of packets with RAN ID < 10" if_satisfied="#update(ngap.ran_ue_id , .2+100))">
 ```
 
-In  Section 4 of the [User Manual](./5Greplay_Manual.pdf) we explain in detail all the attributes of 5Greplay rules. To have reference of the name of the protocol attributes that 5Greplay uses, and that you can use to write you rules (e.g. ```nas_5g.message_type, nas_5g.security_type```),plese refers to the [list of attributes](./5Greplay_attributes.txt).
+After have written your rule, you can compile it, by doing:
 
+```bash
+#to generate .so file
+./mmt-5greplay compile rules/forward-localhost.so rules/forward-localhost.xml
+ 
+#to generate code c (for debug)
+./mmt-5greplay compile rules/forward-localhost.c rules/forward-localhost.xml -c
+
+```
+
+Or you can compile all rules existing in the folder `rules`, use the following command: `make sample-rules`.
 
 ## 2. Configure 5Greplay
+
+After having written the rules and verifying that they were not syntax errors during compilation. You must indicate to 5Greplay **where to forward the traffic and what to do with the packets that did not fulfill the properties** that you defined in your rules.
 
 ## 3. Observe
