@@ -98,6 +98,8 @@ Option:
 
 ```
 
+For more details refer to the **Documentation**(docs/) section.
+
 
 # Documentation
 
