@@ -81,7 +81,7 @@ After having written the rules and verifying that they were not syntax errors du
 
 For this example we will use 2 alternative configuration files saved in ````5GReplay/examples/example1_ngap_smc/```. 
 
-### `mmt-5greplay-udp.conf`: a 5Greplay configuration file to replay the input traffic into a specific UDP port 
+### Configuration file 1: `mmt-5greplay-udp.conf`
 
 The change we have done to the default configuration file (and that in general you must do for each usecase) are as follow:
 
@@ -116,9 +116,9 @@ forward
 }
 ```
 
-### `mmt-5greplay-sctp.conf` : a 5Greplay configuration file to replay filter and replay NGAP SMC messages into a running AMF in a specific SCTP port in a specific IP address
+### Configuration file 2: `mmt-5greplay-sctp.conf` 
 
-In this case, we kept all the configuration as in the example before, but we changed (i) the default action to ```DROP```, so only the NAS-5G SMC packets filtered by the property 90 will be forwarded, (ii) we added a another destination for the packets using SCTP protocol, so they will be forwarded to the following address: ```192.168.49.3:38412```, where ideally you will have an AMF running so you could see its response to the forwarded packets.
+In this case, we kept all the configuration as in the example before, but we changed (i) the default action to ```DROP```, so only the _NAS Security mode Complete_ packets filtered by the property 90 will be forwarded, (ii) we added a another destination for the packets using SCTP protocol, so they will be forwarded to the following address: ```192.168.49.3:38412```, where ideally you will have an AMF running so you could see its response to the forwarded packets.
 
 ```bash
 forward
@@ -141,3 +141,39 @@ forward
 
 
 ## 3. Run and Observe
+
+After having you rules and configuration file, you can run 5Greplay and check if everything goes as desired. 5Greplay can process online and offline traffic. However, for testing purposes, we recommend starting by processing a pcap file.
+
+In this example the ```5GReplay/examples/example1_ngap_smc/ue_authetication.pcapng``` file contains the authetication process between an UE and an AMF, so our _NAS Security mode Complete_ packet will be present, to check if the rule actually filter it, and if it is forwarded to the desired addresses, depending on the configuration file used.
+
+### Configuration file 1
+Let's run 5Greplay using `mmt-5greplay-udp.conf` and with the ```ue_authetication.pcapng``` file as the input:
+
+```bash
+sudo ./mmt-5greplay replay -c examples/example1_ngap_smc/mmt-5greplay-udp.conf -t examples/example1_ngap_smc/ue_authetication.pcapng
+```
+
+We should be able to observe the interface `ens38` with a packet analyzer, such as _Wireshark_ or _tcpdump_ and to see all the packets in the file forwarded, as we have defined as `FORWARD` the default action. Moreover, 5Greplay log will report the amount of forwarded and dropped packets.
+
+```bash
+mmt-5greplay: MMT-5Greplay 0.0.1 (40dab57 - Jul 22 2021 06:17:58) is verifying 1 rules having 2 proto.atts using the main thread
+mmt-5greplay: Analyzing pcap file examples/example1_ngap_smc/ue_authetication.pcapng
+Loaded successfully rule 1 - rule 90 generated 1 verdicts
+          13 packets received
+          13 messages received
+           1 alerts generated
+mmt-5greplay: Number of packets being successfully forwarded: 26, dropped: 0
+Number of packets being successfully forwarded: 26, dropped: 0
+```
+
+### Configuration file 2
+
+Let's run 5Greplay using `mmt-5greplay-sctp.conf` and with the ```ue_authetication.pcapng``` file as the input:
+
+```bash
+sudo ./mmt-5greplay replay -c examples/example1_ngap_smc/mmt-5greplay-sctp.conf -t examples/example1_ngap_smc/ue_authetication.pcapng 
+```
+
+We should be able to observe the interface `ens38` with a packet analyzer, such as _Wireshark_ or _tcpdump_ and to see only 2  packets forwarded, the _NAS Security mode Complete_ filtered and forwarded, and a copy, as we have defined as `DROP` the default action. Moreover, 5Greplay log will report the amount of forwarded and dropped packets.
+
+
