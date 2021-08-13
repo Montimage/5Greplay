@@ -98,7 +98,7 @@ Option:
 
 ```
 
-For more details refer to the **Documentation**(docs/) section.
+For more details refer to the [docs](docs/) section.
 
 
 # Documentation
