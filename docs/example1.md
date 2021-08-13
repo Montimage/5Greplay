@@ -34,6 +34,7 @@ For this example we will be using the [property 90](../rules/nas-smc-replay-atta
 <property value="THEN"  delay_units="ms" delay_min="0" delay_max="10" property_id="90" type_property="FORWARD" 
 ```
 - The **event 1** identifies a _NAS Security mode Command_ message, by its NAS message type, that must be equal to 93:
+
 ```xml
     <event value="COMPUTE" event_id="1" 
            description="NAS Security mode COMMAND"
@@ -52,7 +53,7 @@ With the lines before we have determined that we want to filter the _NAS Securit
 <property value="THEN"  delay_units="ms" delay_min="0" delay_max="10" property_id="90" type_property="FORWARD"  description="Increase RAN IDs of packets with RAN ID < 10" if_satisfied="#update(ngap.ran_ue_id , .2+100))">
 ```
 
-In  Section 4 of the [User Manual](./5Greplay_Manual.pdf) we explain in detail all the attributes of 5Greplay rules. To have reference of the name of the protocol attributes that 5Greplay uses, and that you can use to write you rules (e.g. ```nas_5g.message_type, nas_5g.security_type```),plese refers to the [list of attributes](/docs/5Greplay_attributes.txt).
+In  Section 4 of the [User Manual](./5Greplay_Manual.pdf) we explain in detail all the attributes of 5Greplay rules. To have reference of the name of the protocol attributes that 5Greplay uses, and that you can use to write you rules (e.g. ```nas_5g.message_type, nas_5g.security_type```),plese refers to the [list of attributes](./5Greplay_attributes.txt).
 
 
 ## 2. Configure 5Greplay
