@@ -45,6 +45,7 @@ For this example we will be using the [property 90](../rules/nas-smc-replay-atta
 
 
 - The **event 2** identifies a _NAS Security mode Complete_ message that is expected to be recieve after the message described in the event 1. This message is identified by having a NAS security type equal to 4:
+
 ```xml
     <event value="COMPUTE" event_id="2" 
            description="NAS Security mode COMPLETE"
