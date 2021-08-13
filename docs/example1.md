@@ -30,9 +30,11 @@ For this example we will be using the [property 90](../rules/nas-smc-replay-atta
 ```
 
 - The property is compose for **2 events**, that must occur with a minimun delay of 0 ms and a maximun delay of 10 ms, as stablished in: 
+
 ```xml
 <property value="THEN"  delay_units="ms" delay_min="0" delay_max="10" property_id="90" type_property="FORWARD" 
 ```
+
 - The **event 1** identifies a _NAS Security mode Command_ message, by its NAS message type, that must be equal to 93:
 
 ```xml
