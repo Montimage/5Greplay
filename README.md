@@ -4,7 +4,7 @@
 
 This repository contains the following folders:
 
-- `src` : C code of mmt-5greplay
+- `src`: C code of mmt-5greplay
 - `rules`: set of example XML rules
 - `docs`: [documentation](docs/)
 - `test`: diversity of testing code
