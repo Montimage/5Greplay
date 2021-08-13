@@ -5,7 +5,7 @@ This document aims to show the main functionalities of 5Greplay through an examp
 In general, an use case of 5Greplay It will be composed of 3 main steps:
 1. Design a rule that filter the desired packets to be replayed
 2. Configure 5Greplay the through its configuration [file](../../mmt-5greplay.conf), to determine which rules will be appliyed and where the traffic will be sent
-3. Observe the replayed traffic, and the 5Greplay logs
+3. Run and observe the replayed traffic, and the 5Greplay logs
 
 <img width="499" alt="image" src="https://user-images.githubusercontent.com/45805561/129385771-d266f04c-0011-4685-9bb6-3ddb933550aa.png">
 
@@ -77,6 +77,67 @@ Or you can compile all rules existing in the folder `rules`, use the following c
 
 ## 2. Configure 5Greplay
 
-After having written the rules and verifying that they were not syntax errors during compilation. You must indicate to 5Greplay **where to forward the traffic and what to do with the packets that did not fulfill the properties** that you defined in your rules.
+After having written the rules and verifying that they were not syntax errors during compilation. You must indicate to 5Greplay **where to forward the traffic and what to do with the packets that did not fulfill the properties** that you defined in your rules. This will be defined by default in the ````5GReplay/mmt-5Greplay.conf``` file. Section 3 of the [User Manual](./5Greplay_Manual.pdf) explains in detail all the fields of the configuration file.
 
-## 3. Observe
+For this example we will use 2 alternative configuration files saved in ````5GReplay/examples/example1_ngap_smc/```. 
+
+### `mmt-5greplay-udp.conf`: a 5Greplay configuration file to replay the input traffic into a specific UDP port 
+
+The change we have done to the default configuration file (and that in general you must do for each usecase) are as follow:
+
+- In ```the exclude-rules``` field of the ```engine``` section, we have excluded all the properties from 0 to 89 and from 91 to 200, in order to only take into account the property 90, that we have define in the Section 1 of this example. 
+
+```bash
+	exclude-rules = "0-89,91-200"  # Range of rules to be excluded from the verification
+```
+- In the ```forward``` Section we have defined that (i) the network interface where we will send the traffic is ```ens38```, in the ```output-nic``` field,  (ii) the number of copies we desire to make of the forwarded packets are 2, in the ```nb-copies``` field, (iii) the destination IP address, port and transport layer protocol, will be ```192.168.49.7:2152```and the UDP protocol will be used, and (iv) the default action that will be taken for the packets that do not fufill the property 90 will be ```FORWARD```, defined in the ```default``` field.
+
+```bash
+forward
+{
+    ...
+    
+	output-nic = "ens38"
+	nb-copies  = 2 #number of copies of a packet to be sent
+    
+	...
+    
+    default    = FORWARD #default action when packets are not selected/satisfied by any rule
+		# either FORWARD to forward the packets or DROP to drop the packets
+   
+    ...
+    
+	#forward packets to a target using SCTP protocol: MMT will be a SCTP client, 
+	# - it connects to the given "sctp-host" at "sctp-port"
+	# - the SCTP packets' payload will be sent to the target using this SCTP connection
+	target-protocols = { UDP}
+	target-hosts     = { "192.168.49.7" }
+	target-ports     = { 2152 }
+}
+```
+
+### `mmt-5greplay-sctp.conf` : a 5Greplay configuration file to replay filter and replay NGAP SMC messages into a running AMF in a specific SCTP port in a specific IP address
+
+In this case, we kept all the configuration as in the example before, but we changed (i) the default action to ```DROP```, so only the NAS-5G SMC packets filtered by the property 90 will be forwarded, (ii) we added a another destination for the packets using SCTP protocol, so they will be forwarded to the following address: ```192.168.49.3:38412```, where ideally you will have an AMF running so you could see its response to the forwarded packets.
+
+```bash
+forward
+{
+	...
+    
+	default    = DROP #default action when packets are not selected/satisfied by any rule
+		# either FORWARD to forward the packets or DROP to drop the packets
+	
+    ...
+    
+	#forward packets to a target using SCTP protocol: MMT will be a SCTP client, 
+	# - it connects to the given "sctp-host" at "sctp-port"
+	# - the SCTP packets' payload will be sent to the target using this SCTP connection
+	target-protocols = { SCTP, UDP}
+	target-hosts     = { "192.168.49.3", "192.168.49.3" }
+	target-ports     = { 38412, 2152 }
+}
+```
+
+
+## 3. Run and Observe
