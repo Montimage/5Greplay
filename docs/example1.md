@@ -77,20 +77,20 @@ Or you can compile all rules existing in the folder `rules`, use the following c
 
 ## 2. Configure 5Greplay
 
-After having written the rules and verifying that they were not syntax errors during compilation. You must indicate to 5Greplay **where to forward the traffic and what to do with the packets that did not fulfill the properties** that you defined in your rules. This will be defined by default in the ````5GReplay/mmt-5Greplay.conf``` file. Section 3 of the [User Manual](./5Greplay_Manual.pdf) explains in detail all the fields of the configuration file.
+After having written the rules and verifying that they were not syntax errors during compilation. You must indicate to 5Greplay **where to forward the traffic and what to do with the packets that did not fulfill the properties** that you defined in your rules. This will be defined by default in the `5GReplay/mmt-5Greplay.conf` file. Section 3 of the [User Manual](./5Greplay_Manual.pdf) explains in detail all the fields of the configuration file.
 
-For this example we will use 2 alternative configuration files saved in ````5GReplay/examples/example1_ngap_smc/```. 
+For this example we will use 2 alternative configuration files saved in `5GReplay/examples/example1_ngap_smc/`. 
 
 ### Configuration file 1: `mmt-5greplay-udp.conf`
 
 The change we have done to the default configuration file (and that in general you must do for each usecase) are as follow:
 
-- In ```the exclude-rules``` field of the ```engine``` section, we have excluded all the properties from 0 to 89 and from 91 to 200, in order to only take into account the property 90, that we have define in the Section 1 of this example. 
+- In `the exclude-rules` field of the `engine` section, we have excluded all the properties from 0 to 89 and from 91 to 200, in order to only take into account the property 90, that we have define in the Section 1 of this example. 
 
 ```bash
 	exclude-rules = "0-89,91-200"  # Range of rules to be excluded from the verification
 ```
-- In the ```forward``` Section we have defined that (i) the network interface where we will send the traffic is ```ens38```, in the ```output-nic``` field,  (ii) the number of copies we desire to make of the forwarded packets are 2, in the ```nb-copies``` field, (iii) the destination IP address, port and transport layer protocol, will be ```192.168.49.7:2152```and the UDP protocol will be used, and (iv) the default action that will be taken for the packets that do not fufill the property 90 will be ```FORWARD```, defined in the ```default``` field.
+- In the `forward` Section we have defined that (i) the network interface where we will send the traffic is `ens38`, in the `output-nic` field,  (ii) the number of copies we desire to make of the forwarded packets are 2, in the `nb-copies` field, (iii) the destination IP address, port and transport layer protocol, will be `192.168.49.7:2152`and the UDP protocol will be used, and (iv) the default action that will be taken for the packets that do not fufill the property 90 will be `FORWARD`, defined in the `default` field.
 
 ```bash
 forward
@@ -118,7 +118,7 @@ forward
 
 ### Configuration file 2: `mmt-5greplay-sctp.conf` 
 
-In this case, we kept all the configuration as in the example before, but we changed (i) the default action to ```DROP```, so only the _NAS Security mode Complete_ packets filtered by the property 90 will be forwarded, (ii) we added a another destination for the packets using SCTP protocol, so they will be forwarded to the following address: ```192.168.49.3:38412```, where ideally you will have an AMF running so you could see its response to the forwarded packets.
+In this case, we kept all the configuration as in the example before, but we changed (i) the default action to `DROP`, so only the _NAS Security mode Complete_ packets filtered by the property 90 will be forwarded, (ii) we added a another destination for the packets using SCTP protocol, so they will be forwarded to the following address: `192.168.49.3:38412`, where ideally you will have an AMF running so you could see its response to the forwarded packets.
 
 ```bash
 forward
@@ -168,7 +168,7 @@ Number of packets being successfully forwarded: 26, dropped: 0
 
 ### Configuration file 2
 
-Let's run 5Greplay using `mmt-5greplay-sctp.conf` and with the ```ue_authetication.pcapng``` file as the input:
+Let's run 5Greplay using `mmt-5greplay-sctp.conf` and with the `ue_authetication.pcapng` file as the input:
 
 ```bash
 sudo ./mmt-5greplay replay -c examples/example1_ngap_smc/mmt-5greplay-sctp.conf -t examples/example1_ngap_smc/ue_authetication.pcapng 
