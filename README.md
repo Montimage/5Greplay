@@ -13,7 +13,7 @@ This repository contains the following folders:
 
 ## Pre-requires
 
-Suppose on your machine, you have:
+Suppose on your Ubuntu 18.04 machine, you have:
 
 - **libxml2-dev, libpcap-dev, libconfuse-dev libsctp-dev** :  `sudo apt-get install libxml2-dev libpcap-dev libconfuse-dev libsctp-dev`
 - **gcc, make, git**: `sudo apt install gcc make git`
@@ -95,12 +95,11 @@ Option:
 #to see all parameters, run ./mmt-5greplay replay -h
 #verify a pcap file
 ./mmt-5greplay replay -t ~/pcap/5G-traffic.pcap 
-
 ```
 
-For more details refer to the [docs](docs/) section.
-
+# Example
+[Filtering and replaying NGAP/NAS-5G Security Mode Complete messages](docs/example1.md)
 
 # Documentation
+For more details refer to the [docs](docs/).
 
-[docs](docs/)
