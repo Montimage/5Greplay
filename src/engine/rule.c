@@ -359,7 +359,7 @@ static rule_t *_parse_a_rule( const xmlNode *xml_node ){
 	//init default values
 	rule.id               = UNKNOWN;
 	rule.value            = RULE_VALUE_COMPUTE;
-	rule.type             = RULE_TYPE_SECURITY;
+	rule.type             = RULE_TYPE_FORWARD;
 	rule.description      = NULL;
 	rule.if_satisfied     = NULL;
 	rule.if_not_satisfied = NULL;
@@ -392,7 +392,7 @@ static rule_t *_parse_a_rule( const xmlNode *xml_node ){
 			else if( str_equal( xml_attr_value, "FORWARD" ) )
 				rule.type = RULE_TYPE_FORWARD;
 			else
-				ABORT( "Error 13c: Unexpected type_property: %s", xml_attr_value );
+				ABORT( "Error 13c: Unexpected type_property: %s. Expect one of the following: ATTACK, EVASION, TEST, FORWARD", xml_attr_value );
 		}else if( str_equal( xml_attr_name, "description" ) )
 			rule.description = mmt_mem_dup( xml_attr_value, strlen( (const char*) xml_attr_value ));
 		else if( str_equal( xml_attr_name, "if_satisfied" ) )
