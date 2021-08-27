@@ -73,9 +73,11 @@ In boolean expressions of rules, one can use one or many embedded functions
 	MMT need to verify the expression against any IP packet as `is_exist` tell MMT to exclude `http.uri` from its filter.
 	
 
-2. `is_empty( proto.att )`, e.g., `is_empty(http.uri)` checks whether the string value is empty, i.e., its length is zero.
+2. `is_empty( proto.att )`, e.g., `#is_empty(http.uri)` checks whether the string value is empty, i.e., its length is zero.
 
-3. User can use any standard C functions as embedded function, e.g., `(#strstr( http.user_agent, 'robot') != 0)` to check if `http.user_agent` contains a sub-string `"robot"`.
+3. `is_same_ipv4(const uint32_t*, const char *)`, e.g., `#is_same_ipv4(ip.src, "10.0.0.1")` checks whether the value of `ip.src` is `"10.0.0.1"`.
+
+4. User can use any standard C functions as embedded function, e.g., `(#strstr( http.user_agent, 'robot') != 0)` to check if `http.user_agent` contains a sub-string `"robot"`.
 
    Please note that, before using a C function the library containing that embedded functions need to be included.
    The following libraries have been pre-included:
@@ -237,6 +239,7 @@ Found 1 rule.
 In the XML file of a rule, if an attribute is absent then its value is set by default:
 
 - `property`, `operator`:
+   + `type_property`: `FORWARD`
    + `value` : `COMPUTE` (=> only one `<event>` is required. Thus `delay_min` and `delay_max` must be 0)
    + `delay_units`: `s`
    + `delay_min`: 0
