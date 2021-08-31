@@ -28,8 +28,8 @@ This block configures the input of 5Greplay.
 The options mode and source need to be specified according to the requirements.
 
 - `mode = ONLINE` allows near real-time analysis of network traffic. In PCAP mode, the NIC's network interface name needs to be identified.
-For example:
 
+   For example:
 ```bash
 input{
    mode = ONLINE
@@ -37,8 +37,9 @@ input{
 }
 ```
 
-- `mode = OFFLINE` allows analysis of a PCAP trace file. The source identifies the name of the trace file. The offline analysis is only available for the PCAP mode. For example:
+- `mode = OFFLINE` allows analysis of a PCAP trace file. The source identifies the name of the trace file. The offline analysis is only available for the PCAP mode. 
 
+   For example:
 ```bash
 input{
    mode = OFFLINE
@@ -59,17 +60,16 @@ This block configures general output parameters.
  Excluding rules's descriptions will reduce the size of reports.
  
  For example:
- 
  ```bash
 file-output {
    enable = true
-   output -dir = "./"
+   output-dir = "./"
    sample-interval = 5 #a new sample file is created each 5 seconds
-   report -description = true 
+   report-description = true 
 }
 ```
 
-Disable reports output can gain some execution performance of 5Greplay.
+*Note*: Disable reports output can gain some execution performance of 5Greplay.
 
 # `engine` block
 
@@ -81,7 +81,7 @@ Use x to have one thread to read packets and x threads to analyze the packets.
 
 - `exclude-rules`: indicates the range of rules to be excluded from the verification.
 
-The range of rules is in BNF format: `exclude-rules = "x,y-z"`, in which x,y, z are positive numbers.
+   The range of rules is in BNF format: `exclude-rules = "x,y-z"`, in which x,y, z are positive numbers.
 For example, `exclude-rules = "1,3-5,7,50-100"` will exclude the rules having id 1,3,4,5,7,50,51,...,100.
 
 - `rules-mask`: It indicates the range of rules should be distributed to a specific analysis thread.
@@ -89,33 +89,30 @@ By default, the rules will be distributed increasingly to each thread.
 For example, given five rules having id 1, 5, 6, 7, 8 and two analysis threads, 
 then, the first thread will analyzes rules 1, 5 while the second one analyzes rules 6, 7, 8. 
 This can be represented by: 
-
 ```rules-mask = "(1:1,5)(2:6-8)"```
 
-Generally, the rules-mask uses the following BNF format: `rules-mask = (thread-index:rule-range)`
+   Generally, the rules-mask uses the following BNF format: `rules-mask = (thread-index:rule-range)`
 in which, `thread-index` is a positive integer; `rule-range` is either
 a positive integer, or a range of numbers (see `exclude-rules`).
 
-For example,if we have `thread-nb = 3` and `rules-mask = "(1:1,4-6)(2:3)"`, then, 
+   For example,if we have `thread-nb = 3` and `rules-mask = "(1:1,4-6)(2:3)"`, then, 
 thread 1 verifies rules 1,4,5,6; thread 2 verifies only rule 3;
 and thread 3 verifies the rest.
 
-*Note*: if we have `thread-nb = 2` and `rules-mask = "(1:1)(2:3)"`, 
+   *Note*: if we have `thread-nb = 2` and `rules-mask = "(1:1)(2:3)"`, 
 then only rules 1 and 3 are verified, the other rules are not.
 
 
 - `ip-encapsulation-index`: this option selects which IP layer will be analyzed in case there exist IP encapsulation. 
 Its value can be one of the followings:
+   + `FIRST`: first IP in the protocol hierarchy 
+   + `LAST`: last IP in the protocol hierarchy 
+   + *i*: *ith* IP in the protocol hierarchy.
 
-    + `FIRST`: first IP in the protocol hierarchy 
-    + `LAST`: last IP in the protocol hierarchy 
-    + *i*: *ith* IP in the protocol hierarchy.
-
-For example, given `ETH.IP.UDP.GTP.IP.TCP.VPN.IP.SSL`, 
-
-    + `FIRST`, or 1, indicates `IP` after `ETH` and before `UDP`
-    + `LAST`, or any number >= 3, indicates `IP` after `VPN`
-    + 2 indicates `IP` after `GTP` and before `TCP`
+   For example, given `ETH.IP.UDP.GTP.IP.TCP.VPN.IP.SSL`:
+   + `FIRST`, or 1, indicates `IP` after `ETH` and before `UDP`
+   + `LAST`, or any number >= 3, indicates `IP` after `VPN`
+   + 2 indicates `IP` after `GTP` and before `TCP`
 
 - `max-instances`: maximum number of instances of a rule. Default = 100000
 
@@ -163,7 +160,8 @@ The forward configuration block configures parameters related with the forwardin
 - `default`: Default action when packets are not selected/satisfied by any rule. 
 Either `FORWARD` to forward the packets or `DROP` to drop the packets.
 - `target-protocols`: List of transport protocols over which the forwarded packets' payload will be sent. 
-Currently support either `SCTP`, if the forwarded packets work over SCTP, `UDP` if the forwarded packets work over UDP or both is both types of packets are present.
+
+   Currently support either `SCTP`, if the forwarded packets work over SCTP, `UDP` if the forwarded packets work over UDP or both is both types of packets are present.
 - `target-hosts`: List of IP addresses to forward the packets. Each address matches with the transport protocol selected before.
 - `target-ports`: List of ports to forward the packets. Each address matches with the transport protocol selected before.
 
