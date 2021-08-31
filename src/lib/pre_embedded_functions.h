@@ -114,7 +114,8 @@ extern void mmt_forward_packet(); //this function must be implemented inside mmt
 extern void mmt_set_attribute_number_value(uint32_t, uint32_t, uint64_t); //this function must be implemented inside mmt-probe
 //alias
 #define set_numeric_value mmt_set_attribute_number_value
-#define forward_packet mmt_forward_packet
+#define forward_packet    mmt_forward_packet
+#define drop_packet       mmmt_do_not_forward_packet
 /**
  * This function will be called by #update() if_satisfied function
  */

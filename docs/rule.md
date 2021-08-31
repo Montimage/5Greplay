@@ -71,13 +71,14 @@ In boolean expressions of rules, one can use one or many embedded functions
 	`((ip.src != ip.dst) && ((#is_exist(http.uri) == true ) && (#em_check_URI(http.uri) == 1)))`
 	
 	MMT need to verify the expression against any IP packet as `is_exist` tell MMT to exclude `http.uri` from its filter.
-	
 
-2. `is_empty( proto.att )`, e.g., `#is_empty(http.uri)` checks whether the string value is empty, i.e., its length is zero.
+2. `is_null( proto.att )`, e.g., `#is_null(http.uri)` check whether the value of `http.uri` is null
 
-3. `is_same_ipv4(const uint32_t*, const char *)`, e.g., `#is_same_ipv4(ip.src, "10.0.0.1")` checks whether the value of `ip.src` is `"10.0.0.1"`.
+3. `is_empty( proto.att )`, e.g., `#is_empty(http.uri)` checks whether the value is null or the string value is empty, i.e., its length is zero.
 
-4. User can use any standard C functions as embedded function, e.g., `(#strstr( http.user_agent, 'robot') != 0)` to check if `http.user_agent` contains a sub-string `"robot"`.
+4. `is_same_ipv4(const uint32_t*, const char *)`, e.g., `#is_same_ipv4(ip.src, "10.0.0.1")` checks whether the value of `ip.src` is `"10.0.0.1"`.
+
+5. User can use any standard C functions as embedded function, e.g., `(#strstr( http.user_agent, 'robot') != 0)` to check if `http.user_agent` contains a sub-string `"robot"`.
 
    Please note that, before using a C function the library containing that embedded functions need to be included.
    The following libraries have been pre-included:
@@ -154,6 +155,69 @@ static void em_print_out(
            boolean_expression="(ip.src != ip.dst)"/>
 </property>
 </beginning>
+```
+
+## 3.1 Supported functions
+
+The following functions *must* be called inside a reactive function.
+
+1. `get_numeric_value( proto_id, att_id, event_id, trace)` returns a `uint64_t` value of `proto_id.att_id` field of `event_id` from the satisfied trace.
+
+2. `set_numeric_value( proto_id, att_id, uin64_t )` marks to change `proto_id.att_id` to a `uint64_t` value. The change will be applied only at the moment of sending the packet, e.g., by explicitly call `forward_packet`.
+
+3. `forward_packet()` forwards immediatly the current packet
+
+4. `drop_packet()` does not forward the current packet
+
+## 3.2 Examples
+
+The following rule will match 2 different packets (as it has 2 events and `delay_min="0+"`): 
+
+  - the first packet is NAS security mode COMMAND (having `nas_5g.message_type == 93`)
+  - the second packet is NAS security mode COMPLETE (having `nas_5g.message_type == 4`)
+
+At the moment of getting the second packet, the `em_modif_then_forward` function is called. 
+In this function we can modify the second packet's content then inject it into the outgoing network.
+The function fistly forwards the second packet without any modification by calling `forward_packet()`.
+It then get the current value of `NGAP_ATT_RAN_UE` attribute of `NGAP` protocol in the second packet by calling `get_numeric_value`.
+It then marks the incrasing of this value, by calling `set_numeric_value`, then forward the packet within this change into the network.
+
+*Note*: if the function `set_numeric_value` is called twice to modify the same attribute of a protocol, then only the second call is performed.
+
+
+```xml
+<beginning>
+<embedded_functions><![CDATA[
+
+static void em_modif_then_forward(
+      const rule_info_t *rule, int verdict, uint64_t timestamp, 
+      uint64_t counter, const mmt_array_t * const trace ){
+   const char* trace_str = mmt_convert_execution_trace_to_json_string( trace, rule );
+   //forward the original packet (without any modification)
+   forward_packet();
+   //get old value ran_ue_id
+   uint64_t ran_ue_id = get_numeric_value( PROTO_NGAP, NGAP_ATT_RAN_UE_ID, 2, trace );
+
+   //clone 9 times the current packet
+   for( int i=1; i<10; i++ ){
+      //increase ran_ue_id
+      set_numeric_value( PROTO_NGAP, NGAP_ATT_RAN_UE_ID, ran_ue_id + i );
+      //forward the packet having the modified ran_ue_id
+      forward_packet();
+   }
+}
+]]></embedded_functions>
+
+<property value="THEN"  delay_units="s" delay_min="0+" delay_max="1" property_id="100" 
+    description="Forwarding NAS security mode COMPLETE that answers to NAS security mode COMMAND "
+    if_satisfied="em_modif_then_forward">
+    <event value="COMPUTE" event_id="1" 
+           description="NAS Security mode COMMAND"
+           boolean_expression="(nas_5g.message_type == 93)"/>
+    <event value="COMPUTE" event_id="2" 
+           description="NAS Security mode COMPLETE"
+           boolean_expression="(nas_5g.security_type == 4)"/>
+</property>
 ```
 
 # 4. Compile rules
