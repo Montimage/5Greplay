@@ -26,8 +26,7 @@ Thus, if 5Greplay is configured with the default action in the config file is fo
 
 ```xml
 <property property_id="100" type_property="FORWARD" description="Drop any IP traffic that comes from 192.168.0.15" if_satisfied="#drop()">
-   <event description="Not interested traffic"
-      boolean_expression="(ip.src == ’192.168.0.15’)"/>
+   <event description="Not interested traffic" boolean_expression="(ip.src == '192.168.0.15')"/>
 </property>
 ```
 
@@ -209,7 +208,7 @@ and, `ar_sha` is different with `ar_sha` of event 2.
 Where events 1 and 2 occurred before or will occur after depending on the order that the events should occur (defined by the time intervals specified).
 
 ```xml
-"(((arp.ar_op == 2)&amp;\&amp;(arp.ar_sip == arp.ar_tip.1)) &amp;\&amp;(arp.ar_sha != arp.ar_sha.2))"
+"(((arp.ar_op == 2)&amp;&amp;(arp.ar_sip == arp.ar_tip.1)) &amp;&amp;(arp.ar_sha != arp.ar_sha.2))"
 ```
 
 The following table gives a more detailed explanation about the
