@@ -21,7 +21,9 @@ baseurl: "/" # the subpath of your site, e.g. /blog
 url: "https://5greplay.org" # the base hostname & protocol for your site, e.g. http://example.com
 author: "Montimage EURL"
 github_username: montimage
-google_analytics: xxx 
+google_analytics: UA-NNNNNNNN-N
+
+theme: minim
 
 # Build settings
 markdown: kramdown
