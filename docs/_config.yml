@@ -1,24 +1,10 @@
-# Welcome to Jekyll!
-#
-# This config file is meant for settings that affect your whole blog, values
-# which you are expected to set up once and rarely edit after that. If you find
-# yourself editing this file very often, consider using Jekyll's data files
-# feature for the data you need to update frequently.
-#
-# For technical reasons, this file is *NOT* reloaded automatically when you use
-# 'bundle exec jekyll serve'. If you change this file, please restart the server process.
-
-# Site settings
-# These are used to personalize your new site. If you look in the HTML files,
-# you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
-# You can create any custom variable you would like, and they will be accessible
-# in the templates via {{ site.myvariable }}.
 title: 5Greplay
 email: contact@montimage.com
-description: >- # this means to ignore newlines until "baseurl:"
+description: >-
   5Greplay is a tool for modifying and replaying 5G protocol network traffic in realtime
-baseurl: "/" # the subpath of your site, e.g. /blog
-url: "https://5greplay.org" # the base hostname & protocol for your site, e.g. http://example.com
+
+baseurl: "/"
+url: "https://5greplay.org"
 author: "Montimage EURL"
 github_username: montimage
 _google_analytics: UA-NNNNNNNN-N
@@ -32,44 +18,6 @@ plugins:
   - jekyll-seo-tag
   - jekyll-redirect-from
 
-include:
-  - _pages
-
-# Exclude from processing.
-# The following items will not be processed, by default. Create a custom list
-# to override the default setting.
-exclude:
-  - Gemfile
-  - Gemfile.lock
-  - node_modules
-  - vendor/bundle/
-  - vendor/cache/
-  - vendor/gems/
-  - vendor/ruby/
-
-# Minima date format
-# refer to http://shopify.github.io/liquid/filters/date/ if you want to customize this
-minima:
-  date_format: "%Y-%m-%d"
-  #skin: dark # Available skins: classic dark solarized solarized-dark
-    # generate social links in footer
-  social_links:
-    twitter: montimage
-    github:  montimage
-    # devto: jekyll
-    # dribbble: jekyll
-    # facebook: jekyll
-    # flickr:   jekyll
-    # instagram: jekyll
-    # linkedin: jekyll
-    # pinterest: jekyll
-    # youtube: jekyll
-    # youtube_channel: UC8CXR0-3I70i1tfPg1PAE1g
-    # youtube_channel_name: CloudCannon
-    # telegram: jekyll
-    # googleplus: +jekyll
-    # microdotblog: jekyll
-    # keybase: jekyll
 header_pages:
   - _pages/docs.md
   - _pages/about.md
@@ -89,7 +37,7 @@ collections:
     permalink: /:name
     layout: page
 
-defaults:
+_xdefaults:
   # _pages
   - scope:
       path: ""
@@ -108,7 +56,7 @@ defaults:
       type: docs
     values:
       layout: post
-      
+
 # Archives
 #  Type
 #  - GitHub Pages compatible archive pages built with Liquid ~> type: liquid (default)
