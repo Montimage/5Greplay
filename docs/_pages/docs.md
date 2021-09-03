@@ -1,8 +1,5 @@
 ---
-layout: page
 title: Documentation
-permalink: /docs/
-head_inline: "<style> ul { padding-bottom: 1em; } </style>"
 ---
 
 - User's Guide

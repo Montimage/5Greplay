@@ -78,6 +78,8 @@ defaults:
       type: pages
     values:
       layout: page
+      permalink: /:name
+
   # _posts
   - scope:
       path: ""
