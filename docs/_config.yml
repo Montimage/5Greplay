@@ -21,7 +21,7 @@ baseurl: "/" # the subpath of your site, e.g. /blog
 url: "https://5greplay.org" # the base hostname & protocol for your site, e.g. http://example.com
 author: "Montimage EURL"
 github_username: montimage
-google_analytics: UA-NNNNNNNN-N
+_google_analytics: UA-NNNNNNNN-N
 
 theme: minima
 
@@ -49,17 +49,17 @@ exclude:
 
 # Minima date format
 # refer to http://shopify.github.io/liquid/filters/date/ if you want to customize this
-minima_reboot:
-  date_format: "%Y-%m-%d %H:%M"
+minima:
+  date_format: "%Y-%m-%d"
+  skin: dark # Available skins: classic dark solarized solarized-dark
 
-footer_icons:
+__footer_icons:
   - username: montimage
     url: https://github.com/montimage/5greplay
     icon: icon-github.svg
 
 header_pages:
   - _pages/docs.md
-  - _pages/support.md
   - _pages/about.md
   - _pages/github.md
 
@@ -70,30 +70,12 @@ collections:
   docs:
     output: true
     permalink: /:collection/:path/
+    layout: post
+
   pages:
     output: true
     permalink: /:name
-
-defaults:
-  # _pages
-  - scope:
-      path: ""
-      type: pages
-    values:
-      layout: page
-
-  # _posts
-  - scope:
-      path: ""
-      type: posts
-    values:
-      layout: post
-  # _docs
-  - scope:
-      path: ""
-      type: docs
-    values:
-      layout: post
+    layout: page
 
 # Archives
 #  Type
