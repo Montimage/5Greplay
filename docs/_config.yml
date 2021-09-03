@@ -8,6 +8,7 @@ url: "https://5greplay.org"
 author: "Montimage EURL"
 github_username: montimage
 _google_analytics: UA-NNNNNNNN-N
+_safe: true
 
 theme: minima
 
@@ -15,8 +16,9 @@ theme: minima
 markdown: kramdown
 
 header_pages:
-  - _docs/docs.md
+  - docs.md
   - about.md
+  - github.md
 
 show_excerpts: true
 
@@ -44,7 +46,7 @@ defaults:
     values:
       layout: post
 
-plugins:
+_plugins:
   - jekyll-coffeescript
   - jekyll-commonmark-ghpages
   - jekyll-gist
