@@ -51,13 +51,25 @@ exclude:
 # refer to http://shopify.github.io/liquid/filters/date/ if you want to customize this
 minima:
   date_format: "%Y-%m-%d"
-  _skin: dark # Available skins: classic dark solarized solarized-dark
-
-_footer_icons:
-  - username: montimage
-    url: https://github.com/montimage/5greplay
-    icon: icon-github.svg
-
+  #skin: dark # Available skins: classic dark solarized solarized-dark
+    # generate social links in footer
+  social_links:
+    twitter: montimage
+    github:  montimage
+    # devto: jekyll
+    # dribbble: jekyll
+    # facebook: jekyll
+    # flickr:   jekyll
+    # instagram: jekyll
+    # linkedin: jekyll
+    # pinterest: jekyll
+    # youtube: jekyll
+    # youtube_channel: UC8CXR0-3I70i1tfPg1PAE1g
+    # youtube_channel_name: CloudCannon
+    # telegram: jekyll
+    # googleplus: +jekyll
+    # microdotblog: jekyll
+    # keybase: jekyll
 header_pages:
   - _pages/docs.md
   - _pages/about.md
@@ -77,6 +89,26 @@ collections:
     permalink: /:name
     layout: page
 
+defaults:
+  # _pages
+  - scope:
+      path: ""
+      type: pages
+    values:
+      layout: page
+  # _posts
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: post
+  # _docs
+  - scope:
+      path: ""
+      type: docs
+    values:
+      layout: post
+      
 # Archives
 #  Type
 #  - GitHub Pages compatible archive pages built with Liquid ~> type: liquid (default)
