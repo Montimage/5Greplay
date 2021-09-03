@@ -70,6 +70,9 @@ collections:
   docs:
     output: true
     permalink: /:collection/:path/
+  pages:
+    output: true
+    permalink: /:name
 
 defaults:
   # _pages
@@ -78,7 +81,6 @@ defaults:
       type: pages
     values:
       layout: page
-      permalink: /:name
 
   # _posts
   - scope:
