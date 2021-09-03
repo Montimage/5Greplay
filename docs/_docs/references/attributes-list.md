@@ -1,10 +1,11 @@
-**** List of attributes that 5Greplay can process ***
+# List of attributes that 5Greplay can process
 
 This is a referencial list of the attributes that 5Greplay can parse and that you can use to design you rules. 
 This list contain only a short group of attributes focused on 5G networks, on wich 5Greplay can parse the 
 NGAP, NAS-5G and DIAMETER protocols. However, 5Greplay can process many more protocols, for example of LTE networks
 , and outside the telecomunication context. We are currently working in a easier way to access to this information. 
 Please contat us if you need more information.  
+
 
 meta.direction
 meta.args

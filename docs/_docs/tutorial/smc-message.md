@@ -1,4 +1,4 @@
-# Example 1: Filtering and replaying NGAP/NAS-5G Security Mode Complete messages
+# Filtering and replaying NGAP/NAS-5G Security Mode Complete messages
 
 This document aims to show the main functionalities of 5Greplay through an example. For more details please use the 5Greplay [User Manual](./5Greplay_Manual.pdf) as a reference.
 

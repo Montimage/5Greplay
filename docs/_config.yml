@@ -13,15 +13,10 @@ theme: minima
 
 # Build settings
 markdown: kramdown
-plugins:
-  - jekyll-feed
-  - jekyll-seo-tag
-  - jekyll-redirect-from
 
 header_pages:
-  - _docs/readme.md
+  - _docs/docs.md
   - about.md
-  - github.md
 
 show_excerpts: true
 
@@ -32,12 +27,10 @@ collections:
     permalink: /:collection/:path/
 
 defaults:
-  # _pages
   - scope:
-      path: ""
-      type: pages
+      path: "" # an empty string here means all files in the project
     values:
-      layout: page
+      layout: post
   # _posts
   - scope:
       path: ""
@@ -51,19 +44,17 @@ defaults:
     values:
       layout: post
 
-# Archives
-#  Type
-#  - GitHub Pages compatible archive pages built with Liquid ~> type: liquid (default)
-#  - Jekyll Archives plugin archive pages ~> type: jekyll-archives
-#  Path (examples)
-#  - Archive page should exist at path when using Liquid method or you can
-#    expect broken links (especially with breadcrumbs enabled)
-#  - <base_path>/tags/my-awesome-tag/index.html ~> path: /tags/
-#  - <base_path/categories/my-awesome-category/index.html ~> path: /categories/
-#  - <base_path/my-awesome-category/index.html ~> path: /
-category_archive:
-  type: liquid
-  path: /categories/
-tag_archive:
-  type: liquid
-  path: /tags/
+plugins:
+  - jekyll-coffeescript
+  - jekyll-commonmark-ghpages
+  - jekyll-gist
+  #- jekyll-github-metadata
+  - jekyll-paginate
+  - jekyll-relative-links
+  - jekyll-optional-front-matter
+  - jekyll-readme-index
+  - jekyll-default-layout
+  - jekyll-titles-from-headings
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-redirect-from
