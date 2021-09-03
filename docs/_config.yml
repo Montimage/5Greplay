@@ -23,7 +23,7 @@ author: "Montimage EURL"
 github_username: montimage
 google_analytics: UA-NNNNNNNN-N
 
-theme: minim
+theme: minima
 
 # Build settings
 markdown: kramdown
