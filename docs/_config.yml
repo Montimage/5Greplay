@@ -51,9 +51,9 @@ exclude:
 # refer to http://shopify.github.io/liquid/filters/date/ if you want to customize this
 minima:
   date_format: "%Y-%m-%d"
-  skin: dark # Available skins: classic dark solarized solarized-dark
+  _skin: dark # Available skins: classic dark solarized solarized-dark
 
-__footer_icons:
+_footer_icons:
   - username: montimage
     url: https://github.com/montimage/5greplay
     icon: icon-github.svg
