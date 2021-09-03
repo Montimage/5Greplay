@@ -1,7 +1,19 @@
-- [What's new in this version?](./versions.md)
-- [Installation](./installation.md)
-- [Example: Filtering and replaying NGAP/NAS-5G Security Mode Complete messages](./example1.md)
-- [Workflow to use MMT-5Greplay](./smp_workflow.md)
-- [How to write an embedded function](./rule.md)
-- [Verdict decision of rule types](./verdict.md)
-- [Hash function to access quickly of a message element](./hash.md)
+---
+title: Documentation
+permalink: /docs/
+---
+
+- User's Guide
+  - [Quickstart](guide/01-quickstart)
+  - [Building from Sources](guide/02-building-from-sources)
+
+- Tutorials
+  - [Filtering and replaying SMC messages](tutorial/01-smc-message)
+
+- Troubleshooting
+  - [Simple Issues](troubleshoot/01-simple-issues)
+  - [Now in Github Issues](troubleshoot/02-now-in-github-issues)
+
+- References
+  - [Configuration parameters](reference/configuration)
+  - [Semantics of XML rules](reference/rule-xml-semantics)

@@ -19,9 +19,9 @@ plugins:
   - jekyll-redirect-from
 
 header_pages:
-  - _pages/docs.md
-  - _pages/about.md
-  - _pages/github.md
+  - _docs/readme.md
+  - about.md
+  - github.md
 
 show_excerpts: true
 
@@ -30,14 +30,8 @@ collections:
   docs:
     output: true
     permalink: /:collection/:path/
-    layout: post
 
-  pages:
-    output: true
-    permalink: /:name
-    layout: page
-
-_xdefaults:
+defaults:
   # _pages
   - scope:
       path: ""
