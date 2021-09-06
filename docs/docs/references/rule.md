@@ -1,6 +1,6 @@
 # 1. Sample rules
 
-There are sample rules in [../rules/](../rules/)
+There are sample rules in [`rules`](https://github.com/Montimage/5GReplay/tree/main/rules) folder of source code.
 
 
 # 2. Embedded functions
@@ -112,7 +112,7 @@ When a security and attack rules are satisfied, they will give `not_respected` a
 
 To implement and use a reactive function, one need:
 
-- implement a C function inside `embedded_functions` tag. The function name should be prefixed by `em_` to avoid any confusion with the ones existing in MMT.
+- implement a C function inside `<embedded_functions>` tag. The function name should be prefixed by `em_` to avoid any confusion with the ones existing in MMT.
 
   The function has the following format:
 
@@ -169,7 +169,19 @@ The following functions *must* be called inside a reactive function.
 
 4. `drop_packet()` does not forward the current packet
 
-## 3.2 Examples
+## 3.2 Predefined reactive functions
+
+The following functions have been already defined
+
+1. `#drop()` to drop the current packet
+
+2. `#update( PROTO_ID.ATT_ID, expression )` to alter the current packet then forward it to the outgoing NIC.
+
+- `PROTO_ID` and `ATT_ID` are integers representing respectively IDs of protocol and attribute to be altered
+- `expression` is in format of `expression` to get value to assign to the protocol attribute
+
+
+## 3.3 Examples
 
 The following rule will match 2 different packets (as it has 2 events and `delay_min="0+"`): 
 
@@ -217,6 +229,14 @@ static void em_modif_then_forward(
     <event value="COMPUTE" event_id="2" 
            description="NAS Security mode COMPLETE"
            boolean_expression="(nas_5g.security_type == 4)"/>
+</property>
+
+<property property_id="101" description="" if_satisfied="#drop()">
+    
+</property>
+
+<property property_id="102" description="" if_satisfied="#update(ngap.procedure_code, (ngap.procedure_code.1 + 40))">
+    
 </property>
 ```
 

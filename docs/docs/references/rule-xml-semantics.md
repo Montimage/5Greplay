@@ -1,3 +1,5 @@
+# Semantics of XML rule description
+
 The 5Greplay rules are intended for formally specifying events on the network that denotes packets to be forwarded, dropped or modified. They rely on LTL (Linear Temporal Logic) and are written in XML format. This has the advantage of being a simple and straight forward structure for the verification and processing performed by the tool. In the context of this document, we use the terms of properties and rules interchangeably.
 
 When defining a rule, users must indicate in the rule:
@@ -6,7 +8,7 @@ When defining a rule, users must indicate in the rule:
 - how to modify the packet (definition of the value to be changed in case of the action to be taken is a modification)
 
 
-# Description
+## Description
 
 A 5Greplay rule is a XML file that can contain as many events as required to filter the desired packets to apply the actions defined by the properties (i.e forwarding or dropping it, with or without modification)
 The file needs to begin with a `<beginning>` tag and end with `</beginning>`. 
@@ -16,7 +18,7 @@ A property is a *"general ordered tree"*, that can be graphically represented as
 ![5Greplay property structure](img/rule-struct.png "5Greplay property structure")
 
 
-# Property validation
+## Property validation
 
 The nodes of the property tree are: the property node (required), op- erator nodes (optional) and event nodes (required). The property node is forcibly the root node and the event nodes are forcibly leaf nodes. In general, the left branch represents the context and the right branch rep- resents the trigger. This means that the property is found valid when the trigger is found valid; and the trigger is checked only if the context is valid.
 
@@ -30,7 +32,7 @@ Thus, if 5Greplay is configured with the default action in the config file is fo
 </property>
 ```
 
-# Property attributes
+## Property attributes
 
 The `<property>` tag contains several attributes, some required, some optional:
 
@@ -100,7 +102,7 @@ The string gives the name of the function that should be executed.
 
 
 
-# Operator attributes
+## Operator attributes
 
 The `<operator>` tag in a property contains several attributes, some required, some optional:
 
@@ -122,7 +124,7 @@ The `<operator>` tag in a property contains several attributes, some required, s
    Same as for the `<property>` tag. Note that these attributes are not to be used for the OR and NOT operators.
 
 
-# Event attributes
+## Event attributes
 
 Properties indicate the sequence of events that need to be observed. 
 Events indicate the conditions that need to be verified on a packet or a set of packets for the event to hold. The `<event>` tag in a property
@@ -146,7 +148,7 @@ contains several attributes, some required, some optional:
 A Boolean expression, similar to a Boolean expression in the C language (explained in the following paragraph).
 
 
-# Boolean expressions:
+## Boolean expressions:
 
 The `boolean_expression` is a logical combination of `<protocol name>`.`<field name>` and `<number>` with the following operators:
 
@@ -200,7 +202,7 @@ the event concerned. For instance we can have:
   + `(arp.ar_op == arp.ar_op.1)` means that the field `arp.ar_op` should be equal to the field `arp.ar_op` of the event in the same rule with the `event_id` equal to 1.
 
 
-## Example of a Boolean expression:
+### Example of a Boolean expression:
 
 For example; the following expression means that the event is valid if the packet received corresponds to the ARP protocol;
 the `ar_op` is 2; `ar_sip` is the same as `ar_tip` of an event 1; 

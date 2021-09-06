@@ -1,7 +1,0 @@
-- [What's new in this version?](./versions.md)
-- [Installation](./installation.md)
-- [Example: Filtering and replaying NGAP/NAS-5G Security Mode Complete messages](./example1.md)
-- [Workflow to use MMT-5Greplay](./smp_workflow.md)
-- [How to write an embedded function](./rule.md)
-- [Verdict decision of rule types](./verdict.md)
-- [Hash function to access quickly of a message element](./hash.md)

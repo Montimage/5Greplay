@@ -1,3 +1,4 @@
+# Add or remove rules at runtime
 
 ## 1. Add new rules
 The new rules in XML format must be compiled (e.g., using `compile_rule`) to obtain the rules in .so format.
