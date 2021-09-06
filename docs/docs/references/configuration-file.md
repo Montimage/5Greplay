@@ -1,3 +1,5 @@
+# Parameters in the configuration file
+
 5Greplay requires a configuration file for setting different options:
 
 - Online or offline mode
@@ -17,7 +19,7 @@ To list the attributes that can be overriden, run: `./mmt-5greplay.conf -x`
 A comment line inside a configuration starts by `#` sign. The options are listed in the following:
 
 
-# `input` block
+## 1. `input` block
 
 This block configures the input of 5Greplay.
 
@@ -48,7 +50,7 @@ input{
 ```
 
 
-# `output` block
+## 2. `output` block
 
 This block configures general output parameters. 
 
@@ -71,7 +73,7 @@ file-output {
 
 *Note*: Disable reports output can gain some execution performance of 5Greplay.
 
-# `engine` block
+## 3. `engine` block
 
 The engine configuration block allows configure functionalities related with the 5Greplay rules.
 
@@ -128,7 +130,7 @@ engine{
 }
 ```
 
-# `mempool`block
+## 4. `mempool`block
 
 The mempool configuration block sets the maximum elements of a pool of memory blocks.
 
@@ -148,7 +150,7 @@ mempool{
 }
 ```
 
-# `forward` block
+## 5. `forward` block
 
 The forward configuration block configures parameters related with the forwarding capability of 5Greplay.
 

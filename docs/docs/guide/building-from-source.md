@@ -2,7 +2,7 @@
 
 ## Pre-requires
 
-Suppose on your machine, you have:
+Suppose on your machine installed Ubuntu 18.04, you have:
 
 - **libxml2-dev, libpcap-dev, libconfuse-dev libsctp-dev** :  `sudo apt-get install libxml2-dev libpcap-dev libconfuse-dev libsctp-dev`
 - **gcc, make, git**: `sudo apt install gcc make git`
@@ -24,5 +24,9 @@ Suppose on your machine, you have:
 - enable debug using gdb: `make DEBUG=1`
 
 
-- if you want to use Valgrind DRD or Helgrind, you should do `make DEBUG=1 VALGRIND=1`. The option `VALGRIND=1` adds some instruction allowing Valgrind bypass atomic operations that usually causes false positive errors in Valgrind.
+- if you want to use Valgrind [DRD](https://valgrind.org/docs/manual/drd-manual.html) or 
+[Helgrind](https://valgrind.org/docs/manual/hg-manual.html), you should do `make DEBUG=1 VALGRIND=1`. The option `VALGRIND=1` adds some instruction allowing Valgrind bypass atomic operations that usually causes false positive errors in Valgrind.
 
+# Usage
+
+Please refer to [../tutorial/replay-5g](../tutorial/replay-5g)

@@ -8,7 +8,6 @@ url: "https://5greplay.org"
 author: "Montimage EURL"
 github_username: montimage
 _google_analytics: UA-NNNNNNNN-N
-_safe: true
 
 theme: minima
 
@@ -22,17 +21,12 @@ header_pages:
 
 show_excerpts: true
 
-# Collections
-collections:
-  docs:
-    output: true
-    permalink: /:collection/:path/
-
 defaults:
   - scope:
       path: "" # an empty string here means all files in the project
+      type: pages
     values:
-      layout: post
+      layout: page
   # _posts
   - scope:
       path: ""
@@ -46,7 +40,7 @@ defaults:
     values:
       layout: post
 
-_plugins:
+plugins:
   - jekyll-coffeescript
   - jekyll-commonmark-ghpages
   - jekyll-gist

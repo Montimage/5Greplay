@@ -1,6 +1,6 @@
 # 1. Sample rules
 
-There are sample rules in [../rules/](../rules/)
+There are sample rules in [`rules`](https://github.com/Montimage/5GReplay/tree/main/rules) folder of source code.
 
 
 # 2. Embedded functions
