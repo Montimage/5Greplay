@@ -1,4 +1,5 @@
 CC     = gcc
+CXX    = g++
 RM     = rm -rf
 MKDIR  = mkdir -p
 CP     = cp
@@ -6,7 +7,7 @@ MV     = mv
 LN     = ln -s
 
 #name of executable file to generate
-OUTPUT   = mmt-5greplay
+OUTPUT   = 5Greplay
 
 #directory where probe will be installed on
 ifndef MMT_BASE
@@ -28,17 +29,26 @@ VERSION     := 0.0.1
 
 CACHE_LINESIZE := 64 #$(shell getconf LEVEL1_DCACHE_LINESIZE)
 
-#set of library
-LIBS     += -ldl -lpthread -lxml2 -lconfuse -lsctp
+#always embeddes libconfuse
+LIBS += -l:libconfuse.a
 
+#set of library
+LIBS     += -ldl -lpthread
 #Jul. 19 2021: we currently use directly the function inside libmmt_tmobile.so
-LIBS     += -lmmt_tmobile
+
+ifdef STATIC_LINK
+  CFLAGS += -DSTATIC_LINK
+  LIBS   += -l:libxml2.a -l:libicuuc.a -l:libz.a -l:liblzma.a -l:libicudata.a #xml2 and its dependencies
+  LIBS   +=  -l:libmmt_core.a -l:libmmt_tcpip.so -l:libmmt_tmobile.a  -l:libsctp.a -l:libpcap.a
+else
+  LIBS   += -l:libmmt_core.so -l:libmmt_tmobile.so -l:libxml2.so -l:libsctp.so -l:libpcap.so
+endif
 
 CFLAGS   += -fPIC -Wall -DINSTALL_DIR=\"$(INSTALL_DIR)\" -DVERSION_NUMBER=\"$(VERSION)\" -DGIT_VERSION=\"$(GIT_VERSION)\" -DLEVEL1_DCACHE_LINESIZE=$(CACHE_LINESIZE) \
 				-Wno-unused-variable -Wno-unused-function -Wuninitialized\
 				-I/usr/include/libxml2/  -I$(MMT_DPI_DIR)/include
 
-CLDFLAGS += -L$(MMT_DPI_DIR)/lib -L/usr/local/lib
+CLDFLAGS += -L$(MMT_DPI_DIR)/lib -L./plugins -L/usr/local/lib
 
 #a specific flag for each .o file
 CFLAGS += $(CFLAGS-$@)
@@ -96,43 +106,16 @@ $(MMT_DPI_DIR):
 	
 main:  $(MMT_DPI_DIR) $(LIB_OBJS) --refresh-plugin-engine
 	@echo "[COMPILE] $@"
-	$(QUIET) $(CC) -Wl,--export-dynamic -o $(OUTPUT) $(CLDFLAGS) $(LIB_OBJS)  $(RULE_OBJS) $(LIBS) -lpcap  -l:libmmt_core.so
+# When compiling using static link, we need to use g++ as DPI uses stdc++
+ifdef STATIC_LINK
+	$(QUIET) $(CXX) -std=c++11 -Wl,--export-dynamic -o $(OUTPUT) $(CLDFLAGS) $(LIB_OBJS)  $(RULE_OBJS) $(LIBS)
+else
+	$(QUIET) $(CC) -Wl,--export-dynamic -o $(OUTPUT) $(CLDFLAGS) $(LIB_OBJS)  $(RULE_OBJS) $(LIBS)
+endif
+	
 
 
 RULE_XML := $(sort $(wildcard rules/*.xml))
-
-ifdef STATIC_LINK
-#this block is for statically linking rules into libmmt_security.a
-
-#here we got a list of rule files
-RULE_OBJS := $(patsubst %.xml,%.o, $(RULE_XML))
-
-#Generate code C of a rule
-rules/%.c: main
-	$(QUIET) echo [COMPILE] rules/$*.xml
-	$(QUIET) ./$(OUTPUT) compile $@ rules/$*.xml -c > /dev/null 2>&1
-
-#Compile code C of a rule and add a RULE_SUFFIX is the name of the rule
-# (we replace the non-alphanumeric characters by underscores)
-rules/%.o: rules/%.c
-	@#replace non-alphanumeric characters in the file name of rule(s) by underscores
-	$(eval RULE_SUFFIX=$(shell echo $* | sed "s/[^[:alnum:]]/_/g"))
-	
-	$(QUIET) $(CC) $(CFLAGS) $(CLDFLAGS) -I./src/lib -I./src/dpi -c -o $@ $< -DRULE_SUFFIX=_$(RULE_SUFFIX)
-	@#we do not need its C code any more, delete it
-	$(QUIET) $(RM) $<
-	@#remember the list of suffix of compiled rules
-	$(eval STATIC_RULES_SUFFIX_LIST += SUFFIX($(RULE_SUFFIX)))
-
-
-#update the CFLAG for plugins_engine.so
-CFLAG-PLUGINS-ENGINE +=  -DSTATIC_RULES_SUFFIX_LIST="$(STATIC_RULES_SUFFIX_LIST)"
-  
-SAMPLE_RULES :=
-else
-  SAMPLE_RULES := $(patsubst %.xml,%.so, $(RULE_XML))
-  RULE_OBJS    :=
-endif
 
 # This target is to deal with the issue when user uses 
 #   2 differrent values of INSTALL_DIR for "make" and "make install"
