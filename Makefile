@@ -104,47 +104,28 @@ $(MMT_DPI_DIR):
 	@echo "[COMPILE] $(notdir $@)"
 	$(QUIET) $(CC) $(CFLAGS) $(CLDFLAGS) -c -o $@ $<
 	
-main:  $(MMT_DPI_DIR) $(LIB_OBJS) --refresh-plugin-engine
+main:  $(MMT_DPI_DIR) $(LIB_OBJS)
 	@echo "[COMPILE] $@"
 # When compiling using static link, we need to use g++ as DPI uses stdc++
 ifdef STATIC_LINK
-	$(QUIET) $(CXX) -std=c++11 -Wl,--export-dynamic -o $(OUTPUT) $(CLDFLAGS) $(LIB_OBJS)  $(RULE_OBJS) $(LIBS)
+	$(QUIET) $(CXX) -std=c++11 -Wl,--export-dynamic -o $(OUTPUT) $(CLDFLAGS) $(LIB_OBJS) $(LIBS)
 else
-	$(QUIET) $(CC) -Wl,--export-dynamic -o $(OUTPUT) $(CLDFLAGS) $(LIB_OBJS)  $(RULE_OBJS) $(LIBS)
+	$(QUIET) $(CC) -Wl,--export-dynamic -o $(OUTPUT) $(CLDFLAGS) $(LIB_OBJS) $(LIBS)
 endif
 	
 
+# list of sample rules inside ./rules folder
+RULE_XML  := $(sort $(wildcard rules/*.xml))
+RULE_OBJS := $(patsubst %.xml,%.so, $(RULE_XML))
 
-RULE_XML := $(sort $(wildcard rules/*.xml))
-
-# This target is to deal with the issue when user uses 
-#   2 differrent values of INSTALL_DIR for "make" and "make install"
-# Ex: make; sudo make install INSTALL_DIR=/tmp/mmt/security
-#   - the first "make" will set in the codes MMT_SEC_PLUGINS_REPOSITORY_OPT to /opt/mmt/security/rules
-#   - while the second "make install" will install to /tmp/mmt
-# Thus we need to recompile the codes that use MMT_SEC_PLUGINS_REPOSITORY_OPT to update the new directory.
-# The following target will remove the object files of the codes, thus it will trigger to recompile them.
-# So, in the example above, the MMT_SEC_PLUGINS_REPOSITORY_OPT will be update to /tmp/mmt/security/rules.
-	
---refresh-plugin-engine:
-	$(QUIET) echo [RE-COMPILE] plugins_engine.o
-	$(QUIET) $(CC) $(CFLAGS) $(CLDFLAGS) $(CFLAG-PLUGINS-ENGINE) -c -o $(SRCDIR)/engine/plugins_engine.o $(SRCDIR)/engine/plugins_engine.c
-
-
-uninstall:
-	$(QUIET) $(RM) $(INSTALL_DIR)
-	
 rules/%.so: main
 	$(QUIET) ./$(OUTPUT) compile rules/$*.so rules/$*.xml
 	
-sample-rules: $(SAMPLE_RULES)
+sample-rules: $(RULE_OBJS)
 
 clean-rules:
 	$(QUIET) $(RM) rules/*.so rules/*.o rules/*.c
+	
 clean: clean-rules
-	$(QUIET) $(RM) $(MAIN_OBJS) $(LIB_OBJS) $(OUTPUT) test.* \
-			$(RULE_OBJS) $(TMP_DIR)
-	
-clean-all: clean
-	$(QUIET) $(RM) $(MMT_DPI_HEADER)
-	
+	$(QUIET) $(RM) $(LIB_OBJS) $(OUTPUT) test.* \
+			$(RULE_OBJS)
