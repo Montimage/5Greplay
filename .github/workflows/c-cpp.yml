@@ -13,7 +13,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: setup environment
+    - &setup_environment
+      name: setup environment
       run: |
          sudo apt update && sudo apt-get install libxml2-dev liblzma-dev libicu-dev libpcap-dev libconfuse-dev libsctp-dev gcc make
          sudo dpkg -i lib/mmt-dpi*.deb && sudo ldconfig
@@ -33,6 +34,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+      - *setup_environment
       - name: Build project # This would actually build the project, using zip for an artifact
         run: |
           make STATIC_LINK=1 sample-rules
