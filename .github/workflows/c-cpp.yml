@@ -13,8 +13,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - &setup_environment
-      name: setup environment
+    - name: setup environment
       run: |
          sudo apt update && sudo apt-get install libxml2-dev liblzma-dev libicu-dev libpcap-dev libconfuse-dev libsctp-dev gcc make
          sudo dpkg -i lib/mmt-dpi*.deb && sudo ldconfig
@@ -25,40 +24,36 @@ jobs:
     - name: compile sample rules
       run: make sample-rules
 
-  upload-asset:
-    runs-on: ubuntu-18.04
-    needs: build
-    if: startsWith( github.ref, 'refs/tags/v' )
-    env:
-      TAG_NAME: ${{ github.ref }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - *setup_environment
-      - name: Build project # This would actually build the project, using zip for an artifact
-        run: |
-          make STATIC_LINK=1 sample-rules
-          cp -r /opt/mmt/plugins ./plugins
-          zip 5Greplay.zip plugins rules 5Greplay
-          
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: $TAG_NAME
-          release_name: Release $TAG_NAME
-          draft: false
-          prerelease: false
-      - name: Upload Release Asset
-        id: upload-release-asset 
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-          asset_path: ./5Greplay.zip
-          asset_name: 5Greplay.zip
-          asset_content_type: application/zip
+    - name: Upload artifact
+      if: startsWith( github.ref, 'refs/tags/v' )
+      env:
+        TAG_NAME: ${{ github.ref }}
+      run: |
+        make STATIC_LINK=1 sample-rules
+        cp -r /opt/mmt/plugins ./plugins
+        zip 5Greplay.zip plugins rules 5Greplay
+
+    - name: Create Release
+      if: startsWith( github.ref, 'refs/tags/v' )
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: $TAG_NAME
+        release_name: Release $TAG_NAME
+        draft: false
+        prerelease: false
+
+    - name: Upload Release Asset
+      if: startsWith( github.ref, 'refs/tags/v' )
+      id: upload-release-asset 
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+        asset_path: ./5Greplay.zip
+        asset_name: 5Greplay.zip
+        asset_content_type: application/zip
     
