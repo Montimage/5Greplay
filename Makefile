@@ -2,12 +2,12 @@ CC     = gcc
 CXX    = g++
 RM     = rm -rf
 MKDIR  = mkdir -p
-CP     = cp
+CP     = cp -r
 MV     = mv
 LN     = ln -s
 
 #name of executable file to generate
-OUTPUT   = 5Greplay
+OUTPUT   = 5greplay
 
 #directory where probe will be installed on
 ifndef MMT_BASE
@@ -16,8 +16,6 @@ ifndef MMT_BASE
 else
   $(info INFO: Set default folder of MMT to $(MMT_BASE))
 endif
-
-INSTALL_DIR := $(MMT_BASE)/5greplay
 
 # directory where MMT-DPI was installed
 MMT_DPI_DIR := $(MMT_BASE)/dpi
@@ -44,7 +42,7 @@ else
   LIBS   += -l:libmmt_core.so -l:libmmt_tmobile.so -l:libxml2.so -l:libsctp.so -l:libpcap.so
 endif
 
-CFLAGS   += -fPIC -Wall -DINSTALL_DIR=\"$(INSTALL_DIR)\" -DVERSION_NUMBER=\"$(VERSION)\" -DGIT_VERSION=\"$(GIT_VERSION)\" -DLEVEL1_DCACHE_LINESIZE=$(CACHE_LINESIZE) \
+CFLAGS   += -fPIC -Wall -DVERSION_NUMBER=\"$(VERSION)\" -DGIT_VERSION=\"$(GIT_VERSION)\" -DLEVEL1_DCACHE_LINESIZE=$(CACHE_LINESIZE) \
 				-Wno-unused-variable -Wno-unused-function -Wuninitialized\
 				-I/usr/include/libxml2/  -I$(MMT_DPI_DIR)/include
 
@@ -129,3 +127,17 @@ clean-rules:
 clean: clean-rules
 	$(QUIET) $(RM) $(LIB_OBJS) $(OUTPUT) test.* \
 			$(RULE_OBJS)
+
+#environment variables
+SYS_NAME    = $(shell uname -s)
+SYS_VERSION = $(shell uname -p)
+
+#name of package file
+ZIP_NAME  ?= 5greplay-$(VERSION)_$(GIT_VERSION)_$(SYS_NAME)_$(SYS_VERSION).tar.gz
+DIST_NAME ?= 5greplay-$(VERSION)
+
+dist: sample-rules
+	@[ "${STATIC_LINK}" ] || ( echo ">> STATIC_LINK is not set. Do 'make STATIC_LINK=1 dist"; exit 1 )
+	$(MKDIR) $(DIST_NAME)
+	$(CP) /opt/mmt/plugins ./rules $(OUTPUT) $(DIST_NAME)/
+	tar -czf $(ZIP_NAME) $(DIST_NAME)

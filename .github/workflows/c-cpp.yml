@@ -3,12 +3,12 @@ name: C/C++ CI
 on:
   push:
     branches: [ main, dev ]
+    tags: ["v*"] # Push events to matching v*, i.e. v1.0, v20.15.10
   pull_request:
     branches: [ main ]
 
 jobs:
   build:
-
     runs-on: ubuntu-18.04
 
     steps:
@@ -23,3 +23,41 @@ jobs:
       run: make STATIC_LINK=1 VERBOSE=1
     - name: compile sample rules
       run: make sample-rules
+
+    #The following steps are executed only on new tag
+    - name: Upload artifact
+      if: startsWith( github.ref, 'refs/tags/v' )
+      env:
+        TAG_NAME: ${{ github.ref }}
+      run: |
+        make STATIC_LINK=1 dist
+        #get name of distribution tar file
+        ARTIFACT_PATHNAME=$(ls 5greplay*.tar.gz | head -n 1)
+        ARTIFACT_NAME=$(basename $ARTIFACT_PATHNAME)
+        echo ARTIFACT_NAME=${ARTIFACT_NAME}         >> $GITHUB_ENV
+        echo ARTIFACT_PATHNAME=${ARTIFACT_PATHNAME} >> $GITHUB_ENV
+
+    - name: Create Release
+      if: startsWith( github.ref, 'refs/tags/v' )
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false
+
+    - name: Upload Release Asset
+      if: startsWith( github.ref, 'refs/tags/v' )
+      id: upload-release-asset 
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+        asset_path: ${{ env.ARTIFACT_PATHNAME }}
+        asset_name: ${{ env.ARTIFACT_NAME }}
+        asset_content_type: application/zip
+    
