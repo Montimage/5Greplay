@@ -24,14 +24,18 @@ jobs:
     - name: compile sample rules
       run: make sample-rules
 
+    #The following steps are executed only on new tag
     - name: Upload artifact
       if: startsWith( github.ref, 'refs/tags/v' )
       env:
         TAG_NAME: ${{ github.ref }}
       run: |
-        make STATIC_LINK=1 sample-rules
-        cp -r /opt/mmt/plugins ./plugins
-        zip 5Greplay.zip plugins rules 5Greplay
+        make STATIC_LINK=1 dist
+        #get name of distribution tar file
+        ARTIFACT_PATHNAME=$(ls 5greplay*.tar.gz | head -n 1)
+        ARTIFACT_NAME=$(basename $ARTIFACT_PATHNAME)
+        echo ::set-env name=ARTIFACT_NAME::${ARTIFACT_NAME}
+        echo ::set-env name=ARTIFACT_PATHNAME::${ARTIFACT_PATHNAME}
 
     - name: Create Release
       if: startsWith( github.ref, 'refs/tags/v' )
@@ -40,8 +44,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: $TAG_NAME
-        release_name: Release $TAG_NAME
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
         draft: false
         prerelease: false
 
@@ -53,7 +57,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-        asset_path: ./5Greplay.zip
-        asset_name: 5Greplay.zip
+        asset_path: ${{ env.ARTIFACT_PATHNAME }}
+        asset_name: ${{ env.ARTIFACT_NAME }}
         asset_content_type: application/zip
     
