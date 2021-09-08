@@ -15,7 +15,7 @@ theme: minima
 markdown: kramdown
 
 header_pages:
-  - docs.md
+  - readme.md
   - about.md
   - github.md
 
