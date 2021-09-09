@@ -17,7 +17,8 @@ Codename:	bionic
 
 This tutorial is used to reproduce the Scenario 4 in the ARES [paper](../../publications/ares2021-paper.pdf).
 We will use 5Greplay to replay the traffic that was saved into a pcap file. 
-The generated traffic will be amplified by creating several copies and sent to open5Gs. We will observe thatthe AMF componant of open5Gs will be crashed.
+The generated traffic will be amplified by creating several copies and sent them to open5Gs. 
+We will observe thatthe AMF componant of open5Gs will be crashed.
 
 
 

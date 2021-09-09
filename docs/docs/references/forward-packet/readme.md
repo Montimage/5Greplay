@@ -2,9 +2,11 @@
 
 This document details how 5Greplay forwards packets
 
-5Greplay can forward raw packets as-is into the outgoing NIC using libpcap or DPDK (if the tool is compiled with DPDK).
+5Greplay can forward raw packets as-is into the outgoing NIC using 
+[libpcap](https://github.com/the-tcpdump-group/libpcap) or 
+[DPDK](https://www.dpdk.org/) (if the tool is compiled with DPDK).
 
-The implementation is in [../src/forward](../src/forward) folder.
+The implementation is in [src/forward](https://github.com/Montimage/5GReplay/tree/main/src/forward) folder.
 
 To avoid packets being considered as duplication, then rejected by the endpoint's protocol, 
 5Greplay supports to create a new stream between it and the endpoint, then use this stream to inject the packet's payloads.
@@ -22,7 +24,7 @@ If we want to use a new SCTP connection to forward SCTP packets' payloads,
 and other packets (including UDP ones) are forwarded as they-are, then we can use the following configuration:
 
 ```bash
- forward
+forward
 {
 	enable     = true
 	output-nic = "lo"

@@ -1,8 +1,10 @@
 # Add or remove rules at runtime
 
+This feature is developping and coming soon ...
+
 ## 1. Add new rules
-The new rules in XML format must be compiled (e.g., using `compile_rule`) to obtain the rules in .so format.
-The compiled .so files must be then moved to rules folder (either `/opt/mmt/security/rules` or `./rules`).
+The new rules in XML format must be compiled (e.g., using `compile` command) to obtain the rules in .so format.
+The compiled .so files must be then moved to rule folder  `./rules`.
 Subsequently, mmt-security works only on these .so files.
 
 
@@ -71,7 +73,3 @@ DEBUG("Removed %zu rules", count);
 ```
 
 After removing rules, some protocols/attributes may not be needed. One can unregister them from MMT-DPI to increase DPI performance.
-
-## 3. Example
-
-See [../src/main_sec_standalone.c](../src/main_sec_standalone.c)

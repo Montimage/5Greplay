@@ -1,9 +1,3 @@
----
-title: Simple Issues
----
+Simple issues
 
-# Rules' issues
-## Syntax errors
-## Active `output.enable=true`
-## Use `type_property = "TEST"`
-# Further Debugging
+Coming soon ...

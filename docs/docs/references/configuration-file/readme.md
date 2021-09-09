@@ -7,14 +7,14 @@
 
 By default, 5Greplay will try to load the configuration from `./mmt-5greplay.conf`. 
 A configuration file can be given to 5Greplay by using `-c` parameter, for example:
-`./mmt-5greplay -c /home/tata/probe.conf`
+`./5greplay replay -c /home/tata/probe.conf`
 
 *Note*: An attribute in the configuration file can be overrided by `-X` parameter. 
 Multiple `-X` parameters are accepted. For example, the following command will override source attribute of input block to the coresponding values given after `=` sign.
 
-`./mmt-5greplay.conf -c /home/tata/probe.conf -X input.source=/tmp/a.pcap`
+`./5greplay replay -c /home/tata/smc-replay-attack.conf -Xinput.source=/tmp/a.pcap`
 
-To list the attributes that can be overriden, run: `./mmt-5greplay.conf -x`
+To list the attributes that can be overriden, run: `./5greplay replay -x`
 
 A comment line inside a configuration starts by `#` sign. The options are listed in the following:
 
