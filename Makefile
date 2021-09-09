@@ -139,5 +139,5 @@ DIST_NAME ?= 5greplay-$(VERSION)
 dist: sample-rules
 	@[ "${STATIC_LINK}" ] || ( echo ">> STATIC_LINK is not set. Do 'make STATIC_LINK=1 dist"; exit 1 )
 	$(MKDIR) $(DIST_NAME)
-	$(CP) /opt/mmt/plugins ./rules $(OUTPUT) $(DIST_NAME)/
+	$(CP) /opt/mmt/plugins ./rules mmt-5greplay.conf $(OUTPUT) $(DIST_NAME)/
 	tar -czf $(ZIP_NAME) $(DIST_NAME)
