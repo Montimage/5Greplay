@@ -44,6 +44,14 @@ const char* conf_validate_data_value( const identity_t *ident, const char *data_
 			return error_reason;
 		}
 		break;
+	case CONF_ATT__FORWARD__DEFAULT:
+		if( conf_parse_forward_default_action( &enum_val, data_value ) )
+			return NULL;
+		else{
+			snprintf( error_reason, sizeof( error_reason), "Unexpected value [%s] for [%s]", data_value, ident->ident );
+			return error_reason;
+		}
+		break;
 //#ifdef SECURITY_MODULE
 //	case CONF_ATT__SECURITY__INGORE_REMAIN_FLOW:
 //		if( conf_parse_security_ignore_mode( &enum_val, data_value ) )
@@ -107,6 +115,15 @@ static inline bool _override_element_by_ident( config_t *conf, const identity_t 
 		//input
 	case CONF_ATT__INPUT__MODE:
 		if( conf_parse_input_mode( &enum_val, value_str ) )
+			*((int *)field_ptr) = enum_val;
+		else{
+			log_write( LOG_INFO, "Unexpected value [%s] for [%s]", value_str, ident->ident );
+			return false;
+		}
+		log_write( LOG_INFO, "Overridden value of configuration parameter '%s' by '%d'", ident->ident, enum_val );
+		return true;
+	case CONF_ATT__FORWARD__DEFAULT:
+		if( conf_parse_forward_default_action( &enum_val, value_str ) )
 			*((int *)field_ptr) = enum_val;
 		else{
 			log_write( LOG_INFO, "Unexpected value [%s] for [%s]", value_str, ident->ident );
