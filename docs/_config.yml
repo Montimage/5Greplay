@@ -7,8 +7,7 @@ baseurl: "/"
 url: "https://5greplay.org"
 author: "Montimage EURL"
 github_username: montimage
-# cloud.montimage@gmail.com
-google_analytics: G-P19T5HY6YH
+_google_analytics: UA-207152640-1
 
 theme: minima
 
