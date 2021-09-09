@@ -133,7 +133,7 @@ SYS_NAME    = $(shell uname -s)
 SYS_VERSION = $(shell uname -p)
 
 #name of package file
-ZIP_NAME  ?= 5greplay-$(VERSION)_$(GIT_VERSION)_$(SYS_NAME)_$(SYS_VERSION).tar.gz
+ZIP_NAME  ?= 5greplay-$(VERSION)_$(SYS_NAME)_$(SYS_VERSION).tar.gz
 DIST_NAME ?= 5greplay-$(VERSION)
 
 dist: sample-rules

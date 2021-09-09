@@ -12,9 +12,9 @@ The executable versions of 5Greplay are avaiable at [https://github.com/Montimag
 # Install wget to be able to download 5Greplay
 sudo apt update && sudo apt install -y wget
 # Download 5Greplay, version 0.0.1
-wget https://github.com/Montimage/5GReplay/releases/download/v0.0.1/5greplay-0.0.1_03501eb_Linux_x86_64.tar.gz
+wget https://github.com/Montimage/5GReplay/releases/download/v0.0.1/5greplay-0.0.1_Linux_x86_64.tar.gz
 # Decompress 5Greplay
-tar -xzf 5greplay-0.0.1_03501eb_Linux_x86_64.tar.gz
+tar -xzf 5greplay-0.0.1_Linux_x86_64.tar.gz
 # View 5Greplay's parameter
 cd 5greplay-0.0.1
 ./5greplay -h

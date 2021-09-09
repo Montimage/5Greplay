@@ -146,5 +146,6 @@ size_t conf_parse_list( const char *string, char ***proto_lst );
 int conf_validate( config_t *conf );
 
 bool conf_parse_input_mode( int *result, const char *string );
+bool conf_parse_forward_default_action(int *result, const char *value);
 
 #endif /* SRC_LIB_CONFIGURE_H_ */
