@@ -11,5 +11,5 @@ This repository contains the following folders:
 
 # Documentation
 
-For more details refer to the https://5greplay.org.
+For more details, please refer to https://5greplay.org.
 
