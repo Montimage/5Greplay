@@ -32,4 +32,4 @@ Suppose on your machine installed Ubuntu 18.04, you have:
 
 # Usage
 
-Please refer to [../tutorial/replay-5g](../tutorial/replay-5g)
+Please refer to [../../tutorial/replay-open5gs](../../tutorial/replay-open5gs)

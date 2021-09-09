@@ -9,7 +9,7 @@ permalink: /docs.html
   - [Docker](docs/guide/docker)
 
 - Tutorials
-  - [Replay 5G traffic against open5GS](docs/tutorial/replay-5g)
+  - [Replay 5G traffic against open5GS](docs/tutorial/replay-open5gs)
   - [Filtering and replaying SMC messages](docs/tutorial/smc-message)
 
 - Troubleshooting
