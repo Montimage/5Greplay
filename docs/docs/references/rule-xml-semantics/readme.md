@@ -15,7 +15,7 @@ The file needs to begin with a `<beginning>` tag and end with `</beginning>`.
 Each property begins with a `<property>` tag and ends with `</property>`. 
 A property is a *"general ordered tree"*, that can be graphically represented as shown in Figure
 
-![5Greplay property structure](img/rule-struct.png "5Greplay property structure")
+![5Greplay property structure](rule-struct.png "5Greplay property structure")
 
 
 ## Property validation
