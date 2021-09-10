@@ -12,23 +12,25 @@ In both cases, they can be used in the Boolean expressions by using the syntax:
 
   `#<name_of_function>(<list of parameters>)`
 
-For example:
+For example: `(#em_is_search_engine( http.user_agent ) == true)`
 
-  `(#em_is_search_engine( http.user_agent ) == true)`
-   
 where `http` is the protocol name and `user_agent` is the attribute name (i.e., packet meta-data).
 
-**To avoid any confusion**, a new embedded function name should start by a prefix `em_`.
+- Please refer [here](../protocols-attributes-list) to get the full list of protocols and attributes.
+
+- Protocol and attribute names used in xml rules are **case-sensitive**. They are normally in lower case.
+
+- To **avoid any confusion**, a new embedded function name should start by a prefix `em_`.
 
 ## 2.1. Special terms
 
-1. `true` will be replaced by the number 1. For example 
+1. `true` will be replaced by the number 1. 
 
-  `#em_check( tcp.src_port ) == true`
+   For example: `#em_check( tcp.src_port ) == true`
 
-2. `false` will be replaced by the number 0. For example 
+2. `false` will be replaced by the number 0. 
 
-  `#em_check( tcp.src_port ) == false`
+   For example: `#em_check( tcp.src_port ) == false`
 
 
 ## 2.2 Implement a new embedded function
@@ -47,9 +49,9 @@ static inline bool em_check( double port ){
 
 In side this tag, one can also implement 2 other functions as the followings:
 
-1. `void on_load(){ ... }` being called when the rules inside the xml file being loaded into MMT-5Greplay
+1. `void on_load(){ ... }` being called when the rules inside the xml file being loaded into 5Greplay
 
-2. `void on_unload(){ ... }` being called when exiting MMT-5Greplay
+2. `void on_unload(){ ... }` being called when exiting 5Greplay
 
 
 ## 2.3 Pre-installed embedded functions
@@ -58,7 +60,7 @@ In boolean expressions of rules, one can use one or many embedded functions
 
 1. `is_exist( proto.att )`  checks whether an event has an attribute of a protocol, e.g., `is_exist( http.method )` will return `true` if the current event contains protocol `HTTP` and attribute method has a non-null value, otherwise it will return `false`.
 
-	Normally MMT has a filter that allow an event in a rule to be verified only if any proto.att used in its boolean expression contains value. If one of them has not, the rule will not be verified. This allows to reduce number of verification of boolean expression, thus increases the performance.
+	Normally 5Greplay has a filter that allow an event in a rule to be verified only if any proto.att used in its boolean expression contains value. If one of them has not, the rule will not be verified. This allows to reduce number of verification of boolean expression, thus increases the performance.
 	
 	For example, given an event having the following boolean expression:
 	
@@ -70,7 +72,7 @@ In boolean expressions of rules, one can use one or many embedded functions
 	
 	`((ip.src != ip.dst) && ((#is_exist(http.uri) == true ) && (#em_check_URI(http.uri) == 1)))`
 	
-	MMT need to verify the expression against any IP packet as `is_exist` tell MMT to exclude `http.uri` from its filter.
+	5Greplay needs to verify the expression against any IP packet as `is_exist` tell 5Greplay to exclude `http.uri` from its filter.
 
 2. `is_null( proto.att )`, e.g., `#is_null(http.uri)` check whether the value of `http.uri` is null
 
@@ -78,12 +80,12 @@ In boolean expressions of rules, one can use one or many embedded functions
 
 4. `is_same_ipv4(const uint32_t*, const char *)`, e.g., `#is_same_ipv4(ip.src, "10.0.0.1")` checks whether the value of `ip.src` is `"10.0.0.1"`.
 
-5. User can use any standard C functions as embedded function, e.g., `(#strstr( http.user_agent, 'robot') != 0)` to check if `http.user_agent` contains a sub-string `"robot"`.
+5. We can use any standard C functions as embedded function, e.g., `(#strstr( http.user_agent, 'robot') != 0)` to check if `http.user_agent` contains a sub-string `"robot"`.
 
    Please note that, before using a C function the library containing that embedded functions need to be included.
    The following libraries have been pre-included:
-   
-```C
+
+   ```c
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -91,32 +93,33 @@ In boolean expressions of rules, one can use one or many embedded functions
 #include "pre_embedded_functions.h"
 ```
 
-   Thus when using a function that does not defined inside these libraries, one need to include its library. For example:
-   
+   Consequently when using a function that does not defined inside these libraries, we need to include its library. 
+For example:
+
 ```xml
 <embedded_functions><![CDATA[
 #include <math.h>
-
 static inline bool function em_check( double port ){
     double x = sqrt( port );
-    ...
+    return x >= 5;
 }
 ]]></embedded_functions>
 ```
    
 # 3. Reactive functions
    
-Reactive functions allow user perform some action when a rule is satisfied.
-The functions will be called each time their rules are satisfied. 
-When a security and attack rules are satisfied, they will give `not_respected` and `detected` verdicts respectively.
+Reactive functions allow us to perform some action when a rule is satisfied.
+The functions will be called each time their rules are satisfied.
+ 
+To implement and use a reactive function, we need:
 
-To implement and use a reactive function, one need:
+- implement a C function inside `<embedded_functions>` tag. 
 
-- implement a C function inside `<embedded_functions>` tag. The function name should be prefixed by `em_` to avoid any confusion with the ones existing in MMT.
+   The function name should be prefixed by `em_` to avoid any confusion with the ones existing internally in 5Greplay.
 
-  The function has the following format:
+   The function has the following format:
 
-```C
+   ```C
 typedef void (*mmt_rule_satisfied_callback)(
 		const rule_t *rule,		          //rule being validated
 		int verdict,                     //DETECTED, NOT_RESPECTED
@@ -159,7 +162,10 @@ static void em_print_out(
 
 ## 3.1 Supported functions
 
-The following functions *must* be called inside a reactive function.
+We implement several functions to suport modifying protocol attributes' values, drop a packet, and forward a packet or it copies to the output NIC.
+New functions will be implemented and add time by time. 
+
+The following functions **must** be called inside a reactive function.
 
 1. `get_numeric_value( proto_id, att_id, event_id, trace)` returns a `uint64_t` value of `proto_id.att_id` field of `event_id` from the satisfied trace.
 
@@ -183,18 +189,7 @@ The following functions have been already defined
 
 ## 3.3 Examples
 
-The following rule will match 2 different packets (as it has 2 events and `delay_min="0+"`): 
-
-  - the first packet is NAS security mode COMMAND (having `nas_5g.message_type == 93`)
-  - the second packet is NAS security mode COMPLETE (having `nas_5g.message_type == 4`)
-
-At the moment of getting the second packet, the `em_modif_then_forward` function is called. 
-In this function we can modify the second packet's content then inject it into the outgoing network.
-The function fistly forwards the second packet without any modification by calling `forward_packet()`.
-It then get the current value of `NGAP_ATT_RAN_UE` attribute of `NGAP` protocol in the second packet by calling `get_numeric_value`.
-It then marks the incrasing of this value, by calling `set_numeric_value`, then forward the packet within this change into the network.
-
-*Note*: if the function `set_numeric_value` is called twice to modify the same attribute of a protocol, then only the second call is performed.
+The following XML file defines 3 rules:
 
 
 ```xml
@@ -223,49 +218,64 @@ static void em_modif_then_forward(
 <property value="THEN"  delay_units="s" delay_min="0+" delay_max="1" property_id="100" 
     description="Forwarding NAS security mode COMPLETE that answers to NAS security mode COMMAND "
     if_satisfied="em_modif_then_forward">
-    <event value="COMPUTE" event_id="1" 
-           description="NAS Security mode COMMAND"
+    <event value="COMPUTE" event_id="1" description="NAS Security mode COMMAND"
            boolean_expression="(nas_5g.message_type == 93)"/>
-    <event value="COMPUTE" event_id="2" 
-           description="NAS Security mode COMPLETE"
+    <event value="COMPUTE" event_id="2" description="NAS Security mode COMPLETE"
            boolean_expression="(nas_5g.security_type == 4)"/>
 </property>
 
-<property property_id="101" description="" if_satisfied="#drop()">
-    
+<property property_id="101" if_satisfied="#drop()"
+    description="Do not forward any UDP packets having dest_port other than 2152">
+    <event event_id="1" description="From UE and GTP packets"
+           boolean_expression="( (udp.dest_port != 2152 ) )"/>
 </property>
 
-<property property_id="102" description="" if_satisfied="#update(ngap.procedure_code, (ngap.procedure_code.1 + 40))">
-    
+<property property_id="102" description="" if_satisfied="#update(ngap.procedure_code, (ngap.procedure_code.1 + 100))">
+    <event event_id="1" description="having RAN UE ID"
+           boolean_expression="(ngap.ran_ue_id != 0)"/>
 </property>
 ```
 
+1. Rule 100 will match 2 different packets (as it has 2 events and `delay_min="0+"`): 
+
+   - the first packet is NAS security mode COMMAND (having `nas_5g.message_type == 93`)
+   - the second packet is NAS security mode COMPLETE (having `nas_5g.message_type == 4`)
+
+   At the moment of getting the second packet, the `em_modif_then_forward` function is called. 
+In this function we can modify the second packet's content then inject it into the outgoing network.
+The function fistly forwards the second packet without any modification by calling `forward_packet()`.
+It then get the current value of `NGAP_ATT_RAN_UE` attribute of `NGAP` protocol in the second packet by calling `get_numeric_value`.
+It then marks the incrasing of this value, by calling `set_numeric_value`, then forward the packet within this change into the network.
+
+   *Note*: if the function `set_numeric_value` is called twice to modify the same attribute of a protocol, then only the second call is performed.
+
+2. Rule 101 does not forward the UDP packets that have `dest_port` other than 2152 by explicitly call `drop()` function.
+
+3. Rule 102 checks whether a packet contains not-zero `ran_ue_id` of `ngap`. If so, it increases the `procedure_code` value by 100. 
+(and then, by default, it forwards the modified packet to the outgoing NIC)
+
 # 4. Compile rules
 
-MMT-5Greplay rules are specified in plain text following a XML format.
-These rules need to be encoded in a suitable format, that is a dynamic C library, before being able to use by MMT-5Greplay.
+5Greplay rules are specified in plain text following a XML format.
+These rules need to be encoded in a suitable format, that is a dynamic C library, before being able to use by 5Greplay.
 
-The compiled rules must put in either `./rules` or `/opt/mmt/security/rules`.
-The former has higher priority and only one of them will be taken into account by MMT-5Greplay.
-Specifically, if MMT-5Greplay found `./rules` folder in the current folder executing, it will use the rules inside this folder and
-it does not take into account the rules in `/opt/mmt/security/rules`.
+The compiled rules must put in `./rules` folder.
 
 ## 4.1 Compile rules
-MMT-5Greplay provides a compiler to do the such of task. Its source code is in [`src/main_gen_plugin.c`](../src/main_gen_plugin.c) file.
 
-- use `make compile_rule` to compile this program to get an executable program `compile_rule`
+5Greplay provides a compiler to do the such of task. To do so, we need to install `gcc` beforehand, e.g., `sudo apt install gcc`.
 
-- use `compile_rule` to compile rules in a XML file. For example:
+- use `compile` to compile rules in a XML file. For example:
 
-   `./compile_rule rules/1.so rules/1.ssh.xml`
+   `./5greplay compile_rule rules/1.so rules/1.xml`
    
-   The program uses 3 parameters in form: `./compile_rule output_file property_file [gcc parameters]`
+   The program uses 3 parameters in form: `output_file property_file [gcc parameters]`
 
    where:
 
-   - `output_file`: is the path of file containing the result that can be either a .c file or .so file.
-   - `property_file`: is the path where the property file can be found.
-   - `options`: 
+   + `output_file`: is the path of file containing the result that can be either a .c file or .so file.
+   + `property_file`: is the path where the property file can be found.
+   + `options`: 
       
       - `-c`: will generate only the C code. This option allows manually modifying the generated code before compiling it. 
        After generating the C code, the tool prints out the command that needs to be executed for compiling it.
@@ -273,54 +283,48 @@ MMT-5Greplay provides a compiler to do the such of task. Its source code is in [
        - gcc parameters: used to generate the C code, and compile it to obtain the .so file.
                       These parameters will be directly transmitted to the gcc compiler, for example, `"-I /tmp -lmath"`
        
-Please note that, the compiled rules must be put in the directory `./rules` or `/opt/mmt/security/rules/`
-
 ## 4.2 Obtain information inside compiled rules 
 
-To get some basic information about a compiled rule (such as, ID, description) MMT provides a tool:
-[`src/main_plugin_info.c`](../src/main_plugin_info.c)
-
-- use `make rule_info` to obtain its executable program
-- use `./rule_info` to print information of all compiled rules in `./rules` or `/opt/mmt/security/rules/`
+To get some basic information about a compiled rule (such as, ID, description), we use `info` command.
 
    By default, the tool will print out the information on all rules, for example:
-   
+
 ```
-./rule_info 
-Found 37 rules.
-1 - Rule id: 1
-	- type            : attack
-	- events_count    : 4
-	- variables_count : 5
-	- variables       : ip.dst (178.13), ip.src (178.12), tcp.dest_port (354.2), tcp.flags (354.6), tcp.src_port (354.1)
-	- description     : Several attempts to connect via ssh (brute force attack). Source address is either infected machine or attacker (no spoofing is possible).
-	- if_satisfied    : (nil)
-	- version         : 1.1.5 (70a367f - 2017-6-8 12:42:25), dpi version 1.6.8.0 (b3e727b)
-2 - Rule id: 10
-	- type            : evasion
+./5greplay info
+mmt-5greplay: 5Greplay v0.0.1-5c9a333 using DPI v1.7.0.0 (a8ad3c2) is running on pid 24680
+mmt-5greplay: Ignore duplicated rule id 103 (Inject only packet from UE -> Core but not inversed direction)
+Found 3 rules.
+1 - Rule id: 103
+	- type            : DROP
 	- events_count    : 2
-   ...
+	- variables_count : 2
+	- variables       : sctp.ch_type (304.5), sctp.dest_port (304.2)
+	- description     : Inject only SCTP packets from UE -> Core but not inversed direction
+	- if_satisfied    : 0x7f84c2d95db5
+	- version         : 0.0.1 (5c9a333 - 2021-9-9 11:36:44), dpi version 1.7.0.0 (a8ad3c2)
 ...
 ```
 
-- The tool can also be used to inspect a specific compiled rule by giving the rule path as parameter, for example:
+The tool can also be used to inspect a specific compiled rule by giving the rule path as parameter, for example:
 
 ```
-./rule_info /opt/mmt/security/rules/4.arp.so 
-Found 1 rule.
-1 - Rule id: 4
-	- type            : attack
-	- events_count    : 3
-	- variables_count : 7
-	- variables       : arp.ar_op (30.5), arp.ar_sha (30.6), arp.ar_sip (30.7), arp.ar_tip (30.9), ethernet.dst (99.2), ethernet.packet_count (99.4099), ethernet.src (99.3)
-	- description     : IPv4 address conflict detection (RFC5227). Possible arp poisoning.
-	- if_satisfied    : (nil)
-	- version         : 1.1.5 (70a367f - 2017-6-8 12:42:28), dpi version 1.6.8.0 (b3e727b)
+./5greplay info rules/forward-localhost.so
+mmt-5greplay: 5Greplay v0.0.1-5c9a333 using DPI v1.7.0.0 (a8ad3c2) is running on pid 21983
+Found 2 rules.
+1 - Rule id: 103
+	- type            : DROP
+	- events_count    : 2
+	- variables_count : 2
+	- variables       : sctp.ch_type (304.5), sctp.dest_port (304.2)
+	- description     : Inject only SCTP packets from UE -> Core but not inversed direction
+	- if_satisfied    : 0x7f2925125db5
+	- version         : 0.0.1 (5c9a333 - 2021-9-9 11:36:44), dpi version 1.7.0.0 (a8ad3c2)
+...
 ```
  
 # 5. Default values
 
-In the XML file of a rule, if an attribute is absent then its value is set by default:
+In the XML file of a rule, if an attribute of an XML tag is absent then its value is set by default:
 
 - `property`, `operator`:
    + `type_property`: `FORWARD`
@@ -328,18 +332,6 @@ In the XML file of a rule, if an attribute is absent then its value is set by de
    + `delay_units`: `s`
    + `delay_min`: 0
    + `delay_max`: 0
-   
-An example of `COMPUTE`rule:
-
-```XML
-<property property_id="11" type_property="EVASION" 
-    description="IP packet size incorrect">
-    <event value="COMPUTE" event_id="1" 
-           description="Packet size incorrect"
-           boolean_expression="((meta.packet_len &lt; 34)"/>
-</property>
-```
-
  
 # 6. Write a high performance rule
  
@@ -347,20 +339,23 @@ An example of `COMPUTE`rule:
  
  - use only the proto.att in boolean expression when need. 
 
-   - Please refer to the usage of function `is_exist` in section 2.3 to get an example.
-   - Use explicitly the following tcp flags to filter out unwanted verification: tcp.fin, tcp.syn, tcp.rst, tcp.psh, tcp.ack, tcp.urg, tcp.ece, tcp.cwr.
-  		
-  	  For example, the 2 following boolean expressions have the same meaning:
-  		
-    `(tcp.flags == 4)` and `((tcp.flags == 4) && (tcp.rst == 1))`
-  		
-  	  They both return `true` when only RST flag of a TCP packet is on, but the latter is better as MMT verifies its rule only when `tcp.flags` and `tcp.rst` are not zero. Usually less than about 1% packets having `tcp.rst != 0`, consequently the rule using the second expression will be verified against only 1% packets.
+   - Please refer to the usage of function `is_exist` to get an example.
+   - Use explicitly the following tcp flags to filter out unwanted verification: 
+   `tcp.fin`, `tcp.syn`, `tcp.rst`, `tcp.psh`, `tcp.ack`, `tcp.urg`, `tcp.ece`, `tcp.cwr`.
+
+   For example, the 2 following boolean expressions have the same meaning:
+
+   `(tcp.flags == 4)` and `((tcp.flags == 4) && (tcp.rst == 1))`
+
+   They both return `true` when only RST flag of a TCP packet is on, but the latter is better as 5Greplay verifies its rule only when `tcp.flags` and `tcp.rst` are not zero. Usually less than about 1% packets having `tcp.rst != 0`, consequently the rule using the second expression will be verified against only 1% packets.
 
  - reduce `delay_max` of a rule to a suitable value. 
 
- 	When having a higher value of `delay_max` MMT-5Greplay creates more rule instances to correlate different events of different packets. When `delay_max` is zero, the rule is call simple rule, MMT-5Greplay verifies the rule and gives verdict immediately without creating any rule instances. A simple rule is verified much faster than a complex one that has non-zero `delay_max`.
- 	
- 	At 10Gbps, MMT-5Greplay can verify 12400 simple rules or 600 complex rules.
+   When having a higher value of `delay_max` 5Greplay creates more rule instances to correlate different events of different packets. 
+   When `delay_max` is zero, we call *simple rule*, 5Greplay verifies the rule and gives verdict immediately without creating any rule instances.
+   A simple rule is verified much faster than a complex one that has non-zero `delay_max`.
+
+   At 10Gbps, 5Greplay can verify upto 12400 simple rules or 600 complex rules.
  
  - optimize implementation of embedded functions.
 

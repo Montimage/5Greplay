@@ -5,7 +5,7 @@
 - Online or offline mode
 - Default action to be taken with the non-filtered packets
 
-By default, 5Greplay will try to load the configuration from `./mmt-5greplay.conf`. 
+By default, 5Greplay will try to load the configuration from `./5greplay.conf` file in the current folder. 
 A configuration file can be given to 5Greplay by using `-c` parameter, for example:
 `./5greplay replay -c /home/tata/probe.conf`
 
