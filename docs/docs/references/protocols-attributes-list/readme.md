@@ -2,6 +2,8 @@
 
 The list of protocols and their attributes are given in [protocols-attributes-list.txt](protocols-attributes-list.txt).
 
+We can also get this list by running `./5greplay list`.
+
 For example:
 
 ```

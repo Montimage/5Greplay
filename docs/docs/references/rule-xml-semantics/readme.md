@@ -237,3 +237,9 @@ The name is a number that clearly identifies the event and needs to be exactly t
 
 
 Embedded functions can be used to extend the elements used in the Boolean expressions.
+
+
+# Links
+
+- [Rule](../rule)
+- [Replay Example](../../tutorial/replay-open5gs)

@@ -90,3 +90,9 @@ We got the following error of open5Gs AMF (Open5GS daemon v2.3.3):
 
 After digging in github issue of [open5Gs repository](https://github.com/open5gs/open5gs), we found that
 [`ogs_pkbuf_alloc`](https://github.com/open5gs/open5gs/issues?q=ogs_pkbuf_alloc) error occurs when number of UEs pass a [pre-configured number](https://github.com/open5gs/open5gs/pull/423).
+
+# Links
+
+- [Command line parameters](../../references/commands)
+- [Configuration file](../../references/configuration-file)
+- [XML rule file](../../references/rule)
