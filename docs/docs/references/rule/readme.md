@@ -367,3 +367,8 @@ An example of `COMPUTE`rule:
 	 - The embedded functions are called each time their boolean expressions are verified. Consequently, rather than initialize something, for example, connection to database, inside these functions, one can do such a task, only once, inside function `on_load` then store the connection into a static local variable that will be used inside the embedded functions.
 	
 	 - alway use embedded function with `static inline` keyword. For more information about advantage of `inline`, please refer to document of gcc: [An Inline Function is As Fast As a Macro](https://gcc.gnu.org/onlinedocs/gcc/Inline.html)
+
+# Links
+
+- [Rule XML semantics](../rule-xml-semantics)
+- [Replay Example](../../tutorial/replay-open5gs)

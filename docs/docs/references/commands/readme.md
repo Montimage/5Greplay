@@ -81,3 +81,7 @@ sudo ./5greplay replay -t ~/pcap/5G-traffic.pcap
 
 ![screenshot](screenshot.gif)
 
+# Links
+
+- [Configuration file](../configuration-file)
+- [Replay Example](../../tutorial/replay-open5gs)

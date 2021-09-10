@@ -219,3 +219,9 @@ We recommend to use the open source projects [free5gc](https://github.com/free5g
 Also, we can used [UERANSIM](https://github.com/aligungr/UERANSIM) to have the UE and RAN implementation. 
 You can design rules to filter and forward packets between the core and the RAN netwroks, **and much more!**
 
+
+# Links
+
+- [Command line parameters](../../references/commands)
+- [Configuration file](../../references/configuration-file)
+- [XML rule file](../../references/rule)

@@ -188,3 +188,7 @@ forward {
    target-ports     = { 38412, 2152 }
 }
 ```
+# Links
+
+- [Command line parameters](../commands)
+- [Replay Example](../../tutorial/replay-open5gs)
