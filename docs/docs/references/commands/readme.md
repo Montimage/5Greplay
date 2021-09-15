@@ -2,7 +2,7 @@
 
 5Greplay command uses the following form: `command [option]`
 
- - command : is one of the following `compile`, `info`, `list`, `replay`
+ - command is one of the following: `compile`, `info`, `list`, `extract`, `replay`
  - option  : run "./5greplay command -h" to get option of each command, for example, `./5greplay replay -h`
  
 
@@ -48,12 +48,34 @@ This command lists all protocols and their attributes supported by 5Greplay. Thi
 ./5greplay list
 ```
 
+## extract
+
+This command is available from v0.0.2.
+
+It is used to extract values of a given protocol's attribute from a pcap file or NIC. 
+This is helpful when we want to see what we have inside packets of a pcap file, for example.
+
+```
+./5greplay extract -h
+mmt-5greplay: 5Greplay v0.0.2-319c69b using DPI v1.7.0.0 (a8ad3c2) is running on pid 28283
+extract [<option>]
+Option:
+	-t <trace file>: Gives the trace file to analyse.
+	-i <interface> : Gives the interface name for live traffic analysis. Either -i or -t can be used but not both.
+	-p             : Protocol's name to be extracted. Default: ethernet
+	-a             : Attribute's attribute to be extracted. Default: src
+	-d             : Index of protocol to extract. For example: ETH.IP.UDP.GTP.IP, if d=3 (or ignored) IP after ETH, d=6 represent IP after GTP. Default: 0
+	-r             : ID of protocol stack. Default: 1
+	-h             : Prints this help then exit
+```
+
 ## replay 
 
 This command can replay
  
 - either real-time traffic by capturing traffic from a given NIC,
 - or traffic saved in a pcap file.
+
 
 ```bash
 #Get list of parameters
