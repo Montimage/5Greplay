@@ -14,13 +14,14 @@ int compile( int argc, char** argv );
 int info(    int argc, char** argv );
 int replay(  int argc, char** argv );
 int list(    int argc, char** argv );
+int extract( int argc, char ** argv);
 
 char *str_hex2str(char *hstr, int start_index, int end_index);
 
 void _usage( const char *prog ){
 	char *s = str_hex2str(NULL, 0, 0);
 	fprintf( stderr, "Usage: %s command [option]", prog );
-	fprintf( stderr, "\n - command : is one of the following compile, info, replay");
+	fprintf( stderr, "\n - command : is one of the following: compile, info, extract, replay");
 	fprintf( stderr, "\n - option  : run \"%s command -h\" to get option of each command", prog );
 	fprintf( stderr, "\n");
 }
@@ -52,7 +53,9 @@ int main( int argc, char** argv ){
 	else if( strcmp( command, "replay" ) == 0 )
 		ret = replay( argc, argv );
 	else if( strcmp( command, "list" ) == 0 )
-			ret = list( argc, argv );
+		ret = list( argc, argv );
+	else if( strcmp( command, "extract" ) == 0 )
+		ret = extract( argc, argv );
 	else if( strcmp( command, "-h") == 0 ){
 		_usage( prog );
 		return EXIT_SUCCESS;
