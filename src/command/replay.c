@@ -629,7 +629,7 @@ int replay(int argc, char** argv) {
 	init_extraction();
 
 	//Initialize dpi handler
-	mmt_dpi_handler = mmt_init_handler(DLT_EN10MB, 0, mmt_errbuf);
+	mmt_dpi_handler = mmt_init_handler( config->stack_type, 0, mmt_errbuf);
 	if (!mmt_dpi_handler) { /* pcap error ? */
 		fprintf(stderr, "MMT handler init failed for the following reason: %s\n", mmt_errbuf);
 		return EXIT_FAILURE;
