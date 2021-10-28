@@ -252,26 +252,28 @@ static inline forward_packet_conf_t *_parse_forward_packet( cfg_t *cfg ){
 	ASSERT( ret->target_size == cfg_size( cfg, "target-hosts"), "Number of elements in target-protocols and target-hosts are different");
 	ASSERT( ret->target_size == cfg_size( cfg, "target-ports"), "Number of elements in target-protocols and target-ports are different");
 
-	ret->targets = mmt_mem_alloc( sizeof( forward_packet_target_conf_t ) * ret->target_size );
-	int i;
-	char *str;
-	for( i=0; i<ret->target_size; i++) {
-		//protocol
-		str = cfg_getnstr(cfg, "target-protocols", i);
-		if( IS_EQUAL_STRINGS(str, "SCTP") )
-			ret->targets[i].protocol = FORWARD_PACKET_PROTO_SCTP;
-		else if( IS_EQUAL_STRINGS(str, "UDP") )
-			ret->targets[i].protocol = FORWARD_PACKET_PROTO_UDP;
-		else
-			ABORT("Does not support yet the protocol: %s", str);
-		//host
-		str = cfg_getnstr(cfg, "target-hosts", i);
-		ret->targets[i].host = mmt_strdup( str );
-		//port
-		//ret->targets[i].port = cfg_getnint(cfg, "target-ports", i);
-		//do not understand why ret->targets[i].port is zero
-		str = cfg_getnstr(cfg, "target-ports", i);
-		ret->targets[i].port = atoi( str );
+	if( ret->target_size ){
+		ret->targets = mmt_mem_alloc( sizeof( forward_packet_target_conf_t ) * ret->target_size );
+		int i;
+		char *str;
+		for( i=0; i<ret->target_size; i++) {
+			//protocol
+			str = cfg_getnstr(cfg, "target-protocols", i);
+			if( IS_EQUAL_STRINGS(str, "SCTP") )
+				ret->targets[i].protocol = FORWARD_PACKET_PROTO_SCTP;
+			else if( IS_EQUAL_STRINGS(str, "UDP") )
+				ret->targets[i].protocol = FORWARD_PACKET_PROTO_UDP;
+			else
+				ABORT("Does not support yet the protocol: %s", str);
+			//host
+			str = cfg_getnstr(cfg, "target-hosts", i);
+			ret->targets[i].host = mmt_strdup( str );
+			//port
+			//ret->targets[i].port = cfg_getnint(cfg, "target-ports", i);
+			//do not understand why ret->targets[i].port is zero
+			str = cfg_getnstr(cfg, "target-ports", i);
+			ret->targets[i].port = atoi( str );
+		}
 	}
 	return ret;
 }
