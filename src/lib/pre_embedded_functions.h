@@ -112,10 +112,12 @@ static inline uint64_t get_numeric_value(uint32_t proto_id, uint32_t att_id, int
 extern void mmt_do_not_forward_packet(); //this function must be implemented inside mmt-probe
 extern void mmt_forward_packet(); //this function must be implemented inside mmt-probe
 extern void mmt_set_attribute_number_value(uint32_t, uint32_t, uint64_t); //this function must be implemented inside mmt-probe
+extern int mmt_replace_data_at_protocol_id( uint32_t proto_id, uint16_t data_length, const char* data);
 //alias
-#define set_numeric_value mmt_set_attribute_number_value
-#define forward_packet    mmt_forward_packet
-#define drop_packet       mmmt_do_not_forward_packet
+#define set_numeric_value           mmt_set_attribute_number_value
+#define replace_data_at_protocol_id mmt_replace_data_at_protocol_id
+#define forward_packet              mmt_forward_packet
+#define drop_packet                 mmmt_do_not_forward_packet
 /**
  * This function will be called by #update() if_satisfied function
  */
