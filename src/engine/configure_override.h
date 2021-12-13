@@ -141,7 +141,9 @@ DECLARE_CONF_ATT(
 	(CONF_ATT__FORWARD__SNAP_LEN,  "forward.snap-len",   &conf->forward->snap_len,   UINT16_T),
 	(CONF_ATT__FORWARD__NB_COPIES, "forward.nb-copies",  &conf->forward->nb_copies,  UINT32_T),
 	(CONF_ATT__FORWARD__DEFAULT,   "forward.default",    &conf->forward->default_action,  UINT32_T),
-	(CONF_ATT__FORWARD__PROMISC,   "forward.promisc",    &conf->forward->promisc,    UINT16_T)
+	(CONF_ATT__FORWARD__TARGET_PROTOCOLS,   "forward.target-protocols", &conf->forward->targets,  LIST),
+	(CONF_ATT__FORWARD__TARGET_HOSTS,       "forward.target-hosts",     &conf->forward->targets,  LIST),
+	(CONF_ATT__FORWARD__TARGET_PORTS,       "forward.target-ports",     &conf->forward->targets,  LIST)
 )
 
 /**
