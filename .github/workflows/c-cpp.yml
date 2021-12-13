@@ -52,8 +52,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
+        tag_name: ${{ env.PACKAGE_VERSION }}
+        release_name: Release ${{ env.PACKAGE_VERSION }}
         draft: false
         prerelease: false
 
@@ -84,5 +84,5 @@ jobs:
         context: .
         push: true
         tags: |
-          ghcr.io/montimage/5greplay:${{ github.ref }}
+          ghcr.io/montimage/5greplay:${{ env.PACKAGE_VERSION }}
           ghcr.io/montimage/5greplay:latest
