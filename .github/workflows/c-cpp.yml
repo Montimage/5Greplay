@@ -77,5 +77,5 @@ jobs:
         context: .
         push: true
         tags: |
-          ghcr.io/montimage/5greplay:${{ github.ref }}
-          ghcr.io/montimage/5greplay:latest
+          ghcr.io/${{ github.repository_owner }}/5greplay:${{ github.ref }}
+          ghcr.io/${{ github.repository_owner }}/5greplay:latest
