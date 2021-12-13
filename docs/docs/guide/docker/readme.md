@@ -7,11 +7,9 @@ A new image is created and pushed automatically when having a new release.
 
 You need to install Docker firstly: [get-docker](https://docs.docker.com/get-docker)
 
-```bash
-# pull the latest image of 5Greplay
-docker pull ghcr.io/montimage/5greplay:latest
+Then you can run 5Greplay: 
 
-# run 5Greplay 
+```bash
 docker run --rm -it ghcr.io/montimage/5greplay
 ```
 
