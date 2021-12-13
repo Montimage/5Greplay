@@ -31,3 +31,7 @@ rsync.sh
 /.project
 /.settings
 /.externalToolBuilders
+/5greplay
+*.o
+*.so
+
