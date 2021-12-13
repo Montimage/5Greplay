@@ -171,7 +171,7 @@ int extract(int argc, char ** argv){
 	struct pkthdr header; // MMT packet header
 
 	char filename[MAX_FILENAME_SIZE + 1];
-	int type;
+	int type = TRACE_FILE;
 
 	pcap_t *pcap;
 	const unsigned char *data;

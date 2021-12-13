@@ -10,8 +10,17 @@ on:
 jobs:
   build:
     runs-on: ubuntu-18.04
-
     steps:
+    - name: Initialize variables
+      env:
+        IS_NEED_TO_PACKAGE: ${{ startsWith( github.ref, 'refs/tags/v' ) }}
+        GITHUB_REF: ${{ github.ref }}
+      run: |
+        cat <<EOF >> $GITHUB_ENV
+        IS_NEED_TO_PACKAGE=$IS_NEED_TO_PACKAGE
+        PACKAGE_VERSION=$(echo $GITHUB_REF | tr -d 'refs/tags/' )
+        EOF
+
     - uses: actions/checkout@v2
     - name: setup environment
       run: |
@@ -26,7 +35,7 @@ jobs:
 
     #The following steps are executed only on new tag
     - name: Upload artifact
-      if: startsWith( github.ref, 'refs/tags/v' )
+      if: ${{ fromJSON(env.IS_NEED_TO_PACKAGE) }}
       env:
         TAG_NAME: ${{ github.ref }}
       run: |
@@ -38,19 +47,19 @@ jobs:
         echo ARTIFACT_PATHNAME=${ARTIFACT_PATHNAME} >> $GITHUB_ENV
 
     - name: Create Release
-      if: startsWith( github.ref, 'refs/tags/v' )
+      if: ${{ fromJSON(env.IS_NEED_TO_PACKAGE) }}
       id: create_release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
+        tag_name: ${{ env.PACKAGE_VERSION }}
+        release_name: Release ${{ env.PACKAGE_VERSION }}
         draft: false
         prerelease: false
 
     - name: Upload Release Asset
-      if: startsWith( github.ref, 'refs/tags/v' )
+      if: ${{ fromJSON(env.IS_NEED_TO_PACKAGE) }}
       id: upload-release-asset 
       uses: actions/upload-release-asset@v1
       env:
@@ -60,4 +69,21 @@ jobs:
         asset_path: ${{ env.ARTIFACT_PATHNAME }}
         asset_name: ${{ env.ARTIFACT_NAME }}
         asset_content_type: application/zip
-    
+
+    - name: Log in to the Container registry
+      if: ${{ fromJSON(env.IS_NEED_TO_PACKAGE) }}
+      uses: docker/login-action@v1
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+      
+    - name: Build and push Docker images
+      if: ${{ fromJSON(env.IS_NEED_TO_PACKAGE) }}
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        push: true
+        tags: |
+          ghcr.io/${{ github.repository_owner }}/5greplay:${{ env.PACKAGE_VERSION }}
+          ghcr.io/${{ github.repository_owner }}/5greplay:latest

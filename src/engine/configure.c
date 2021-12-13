@@ -406,12 +406,16 @@ void conf_release( config_t *conf){
 }
 
 int conf_validate( config_t *conf ){
-	int ret = 0;
+	int ret = 0, i;
 	//forward packet requires engine
 	if( conf->forward->is_enable ){
 		bool is_enable_engine = false;
 		//when engine module is availabe inside mmt-probe => take into account its setting parameter
 		ASSERT( conf->forward->nb_copies > 0, "Number of copies of packet to be sent must be greater than 0: nb-copies > 0");
+		for( i=0; i<conf->forward->target_size; i++ ){
+			ASSERT( conf->forward->targets[i].host != NULL, "%d-th elements of forward.target-hosts need to be initialized", (i+1) );
+			ASSERT( conf->forward->targets[i].port != 0, "%d-th elements of forward.target-ports need to be initialized", (i+1) );
+		}
 	}
 
 #ifdef DPDK_CAPTURE_MODULE

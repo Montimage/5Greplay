@@ -97,8 +97,33 @@ const char* conf_validate_data_value( const identity_t *ident, const char *data_
 	return NULL;
 }
 
+static inline void _free_str_array( size_t size, char **array ){
+	int i;
+	for( i=0; i<size; i++ )
+		mmt_mem_free( array[i] );
+	mmt_mem_free( array );
+}
+
+static inline void _renew_forward_targets( config_t *conf, size_t size ){
+	int i;
+	//no need to free/allocate memory
+	if( conf->forward->target_size == size )
+		return;
+
+	for( i=0; i<conf->forward->target_size; i++ ){
+		mmt_mem_free( conf->forward->targets[i].host );
+	}
+	mmt_mem_free( conf->forward->targets );
+
+	//allocate new memory
+	conf->forward->target_size = size;
+	conf->forward->targets = mmt_mem_alloc_and_init_zero( sizeof( forward_packet_target_conf_t ) * size );
+}
+
 static inline bool _override_element_by_ident( config_t *conf, const identity_t *ident, const char *value_str ){
 	uint32_t int_val = 0;
+	char **str_array = NULL, *str;
+	size_t size;
 	int i;
 	DEBUG("Update %s to %s", ident->ident, value_str );
 	void *field_ptr = conf_get_ident_attribute_field(conf, ident->val );
@@ -149,21 +174,53 @@ static inline bool _override_element_by_ident( config_t *conf, const identity_t 
 		*string_ptr = mmt_strdup( value_str );
 		log_write( LOG_INFO, "Overridden value of configuration parameter '%s' by '%s'", ident->ident, *string_ptr );
 		return true;
+
 	case LIST:
-		/*
+		size = str_split( value_str, ',', &str_array );
+		if( size == 0 ){
+			_free_str_array( size, str_array );
+			break;
+		}
+
 		switch( ident->val ){
+		case CONF_ATT__FORWARD__TARGET_PROTOCOLS:
+			_renew_forward_targets( conf, size );
+			for( i=0; i<size; i++ ){
+				str = str_array[i];
 
-		case CONF_ATT__RADIUS_REPORT__OUTPUT_CHANNEL:
-			int_val = conf_parse_output_channel( value_str );
-			if( int_val == *(output_channel_conf_t *) field_ptr )
-				return false;
+				if( IS_EQUAL_STRINGS(str, "SCTP") )
+					conf->forward->targets[i].protocol = FORWARD_PACKET_PROTO_SCTP;
+				else if( IS_EQUAL_STRINGS(str, "UDP") )
+					conf->forward->targets[i].protocol = FORWARD_PACKET_PROTO_UDP;
+				else
+					ABORT("Does not support yet the protocol: %s", str);
+			}
+			_free_str_array( size, str_array );
+			return true;
 
-			(*(output_channel_conf_t *) field_ptr) = int_val;
-			log_write( LOG_INFO, "Overridden value of configuration parameter '%s' by '%d'",
-							ident->ident, *((output_channel_conf_t *)field_ptr) );
+		case CONF_ATT__FORWARD__TARGET_HOSTS:
+			_renew_forward_targets( conf, size );
+
+			for( i=0; i<size; i++ ){
+				str = str_array[i];
+				if( conf->forward->targets[i].host != NULL )
+					mmt_mem_free( conf->forward->targets[i].host );
+				conf->forward->targets[i].host = mmt_strdup( str );
+			}
+
+			_free_str_array( size, str_array );
+			return true;
+
+		case CONF_ATT__FORWARD__TARGET_PORTS:
+			_renew_forward_targets( conf, size );
+
+			for( i=0; i<size; i++ ){
+				str = str_array[i];
+				conf->forward->targets[i].port = atoi( str );
+			}
+			_free_str_array( size, str_array );
 			return true;
 		}
-		*/
 		break;
 	case BOOL:
 		int_val = _parse_bool( value_str );
@@ -249,7 +306,7 @@ void conf_print_identities_list(){
 			"uint16_t",
 			"uint32_t",
 			"string",
-			"string"
+			"string (Comma-separated values)"
 	};
 
 	const identity_t *identities;
