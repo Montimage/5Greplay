@@ -85,5 +85,5 @@ jobs:
         context: .
         push: true
         tags: |
-          ghcr.io/montimage/5greplay:${{ env.PACKAGE_VERSION }}
-          ghcr.io/montimage/5greplay:latest
+          ghcr.io/${{ github.repository_owner }}/5greplay:${{ env.PACKAGE_VERSION }}
+          ghcr.io/${{ github.repository_owner }}/5greplay:latest
