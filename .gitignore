@@ -34,4 +34,5 @@ rsync.sh
 /5greplay
 *.o
 *.so
-
+.sass-cache
+_site
