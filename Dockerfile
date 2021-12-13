@@ -10,12 +10,7 @@ RUN apt-get update && apt-get install --yes \
        libsasl2-2 \
        gcc
 
-COPY 5greplay*.tar.gz /tmp/package.tar.gz
-
-RUN echo "Install 5Greplay" && \
-        mkdir -p $INSTALL_DIR && \
-        tar -xzf /tmp/package.tar.gz -C $INSTALL_DIR && \
-        rm /tmp/package.tar.gz
+ADD ./* $INSTALL_DIR/
 
 WORKDIR $INSTALL_DIR
 ENTRYPOINT ["5greplay"]

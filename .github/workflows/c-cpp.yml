@@ -18,7 +18,7 @@ jobs:
       run: |
         cat <<EOF >> $GITHUB_ENV
         IS_NEED_TO_PACKAGE=$IS_NEED_TO_PACKAGE
-        PACKAGE_VERSION=$(echo $GITHUB_REF | tr 'refs/tags/' '' )
+        PACKAGE_VERSION=$(echo $GITHUB_REF | tr -d 'refs/tags/' )
         EOF
 
     - uses: actions/checkout@v2
