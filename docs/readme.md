@@ -10,6 +10,7 @@ permalink: /docs.html
 
 - Tutorials
   - [Replay 5G traffic against open5GS](docs/tutorial/replay-open5gs)
+  - [Replay 5G traffic against OAI 5G core](docs/tutorial/replay-oaicn)
   - [Filtering and replaying SMC messages](docs/tutorial/smc-message)
 
 - Troubleshooting
