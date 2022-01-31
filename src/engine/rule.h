@@ -95,8 +95,7 @@ typedef struct rule_operator_struct{
 } rule_operator_t;
 
 static const char *rule_type_string[] = {
-		"ATTACK", "SECURITY", "EVASION", "TEST",
-		"DROP", "FORWARD"
+		"ATTACK", "SECURITY", "EVASION", "TEST", "FORWARD"
 };
 
 typedef struct rule_struct{
