@@ -22,7 +22,7 @@ void on_load(){
 //customized function to
 // generate randomly number from 5000 -> 6000
 uint64_t em_my_random(){
-	uint64_t max = 6000, min = 5000);
+	uint64_t max = 6000, min = 5000;
 	return (rand() % (max-min) + min);
 }
 
