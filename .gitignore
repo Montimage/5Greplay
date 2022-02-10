@@ -36,3 +36,5 @@ rsync.sh
 *.so
 .sass-cache
 _site
+.swp
+.autotools

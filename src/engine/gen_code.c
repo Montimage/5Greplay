@@ -564,24 +564,6 @@ void _iterate_variables_to_init_structure( void *key, void *data, void *user_dat
 	}
 }
 
-static inline size_t _alnumify( uint16_t rule_id, const char *fn_name, char *buffer, size_t buffer_size ){
-	int i;
-	//add rule_id at the end to get an unique
-	if( buffer_size == 0 || fn_name == NULL )
-		return 0;
-
-	buffer_size = snprintf( buffer, buffer_size, "%s_rule_%d", fn_name, rule_id );
-	//fix the first character, e.g., a function name must be started by [a-z,A-Z,_]
-	buffer[0] = '_';
-	//replace all non-alnum characters by _
-	for( i=1; i<buffer_size; i++ ){
-		if( ! isalnum( buffer[i] ))
-			buffer[i] = '_';
-	}
-
-	return buffer_size;
-}
-
 static inline bool _is_embedded_function_name( const char *str ){
 	if( str && str[0] == '#' )
 		return true;
@@ -610,8 +592,8 @@ static inline void _get_if_statisfied_function_name( const rule_t *rule, char *b
 		return;
 	}
 	//an embedded function, e.g., #update_data( PROTO_S1AP, RAN_UE_ID, s1ap.ran_ue_id.1 + 1 )
-	//=> we need to create a function having a name contain only alnum characters
-	_alnumify( rule_id, fn_name, buffer, buffer_size );
+	//=> we need to create an unique function for this rule
+	snprintf( buffer, buffer_size, "_fn_if_satisified_%d", rule->id );
 
 	return;
 }
@@ -1012,19 +994,11 @@ static void _iterate_variable_if_satisified_to_print( void *key, void *data, voi
  * Example: if a rule having if_satisfied="update( ngap.ran_ue_id, (ngap.ran_ue_id.1 + 1 + 3))"
  * Then the following code will be generated:
  *
+<code>
 
-//this function must be implemented inside mmt-probe
-extern void set_attribute_number_value(uint32_t, uint32_t, uint64_t);
-
-static inline void _set_number_update( const proto_attribute_t *proto, double new_val){
-    set_attribute_number_value( proto->proto_id, proto->att_id, new_val);
-}
-
-static void _update__ngap_ran_ue_id___ngap_ran_ue_id_1___1___3___rule_1 (
+static void _fn_if_satisified_6 (
        const rule_info_t *rule, int verdict, uint64_t timestamp,
        uint64_t counter, const mmt_array_t * const trace ){
-    proto_attribute_t __ngap_ran_ue_id = {.proto = "ngap", .proto_id = 903, .att = "ran_ue_id", .att_id = 4, .data_type = 0, .dpi_type = 2};
-    const proto_attribute_t *_ngap_ran_ue_id = &__ngap_ran_ue_id;
 
     if( unlikely( trace == NULL )) return;
     const void *data;
@@ -1033,17 +1007,149 @@ static void _update__ngap_ran_ue_id___ngap_ran_ue_id_1___1___3___rule_1 (
     double _ngap_ran_ue_id_1 = 0;
     if( likely( data != NULL ))  _ngap_ran_ue_id_1 = *(double*) data;
 
-    _set_number_update(_ngap_ran_ue_id , (_ngap_ran_ue_id_1 + 1 + 3));
-}
+    uint64_t new_val = (_ngap_ran_ue_id_1 + 100);
+    mmt_set_attribute_number_value( 903, 4, new_val );
 
+    mmt_forward_packet();
+} //end of _fn_if_satisified_6
+</code>
  *
- * Finally when the rule is satisfied, MMT will call _update__ngap_ran_ue_id___ngap_ran_ue_id_1___1___3___rule_1
+ * Finally when the rule is satisfied, MMT will call fn_if_satisified_6
  *
  */
+
+void _gen_if_satisfied_embedded_update_body( FILE *fd, const rule_t *rule, const operation_t *op ){
+	char new_fn_name[255];
+	const char *fn_string = rule->if_satisfied;
+	char *string;
+	int i;
+	link_node_t *node;
+
+	ASSERT( op->params_size == 2, "Error in if_satisifed function of rule %d: require 2 parameters in 'update' function. "
+			"For example: #update( ngap.ran_ue_id, (ngap.ran_ue_id.1 + 3))", rule->id );
+	//first parameter
+	expression_t *expr = op->params_list->data;
+	ASSERT( expr->type == VARIABLE, "Error in if_satisifed function of rule %d: "
+			"first parameter of #update function must be an variable in format proto.att", rule->id );
+
+	variable_t *var = expr->variable;
+	//no ref_index: we need proto.att, not proto.att.ref
+	ASSERT( var->ref_index == UNKNOWN_REF_INDEX, "Error in if_satisifed function of rule %d: "
+			"First parameter of #update function must be in format proto.att, not proto.att.ref", rule->id);
+
+	//TODO: support numeric value for now
+	ASSERT( var->data_type == MMT_SEC_MSG_DATA_TYPE_NUMERIC,
+			"Error in if_satisifed function of rule %d: "
+			"Support only attributes having numeric values for now.", rule->id );
+
+	_gen_code_line( fd );
+	//as we ensure there are only 2 parameters
+	ASSERT( op->params_list->next != NULL,  "Error in if_satisifed function of rule %d: require 2 parameters in 'update' function. "
+			"For example: #update( ngap.ran_ue_id, (ngap.ran_ue_id.1 + 3))", rule->id );
+
+	expr = op->params_list->next->data;
+	//generate variables
+	mmt_map_t *map;
+	//set of variables
+	size_t var_count = get_unique_variables_of_expression( expr->father, &map, YES );
+	if( var_count != 0 ){
+			fprintf(fd, "\n\t if( unlikely( trace == NULL )) return;" );
+			fprintf(fd, "\n\t const void *data;\n");
+			struct _user_data user_data = {.file = fd};
+			mmt_map_iterate( map, _iterate_variable_if_satisified_to_print, &user_data );
+	}
+	mmt_map_free(map, NO);
+
+	expr_stringify_expression(&string, expr );
+	fprintf( fd, "\n\n\t uint64_t new_val = %s;", string);
+	mmt_mem_free( string );
+
+	fprintf( fd, "\n\t mmt_set_attribute_number_value( %"PRIu32", %"PRIu32", new_val );",
+			var->proto_id, var->att_id);
+	_gen_comment_line( fd, "\n\t modify %s.%s", var->proto, var->att );
+
+	//explicitly require to forward packet
+	fprintf( fd, "\n\n\t mmt_forward_packet();" );
+
+	//here we call set_number_update in pre_embedded_functions
+	//fprintf( fd, "\n\n\t set_number_%s;", string ); //change the function name to
+	mmt_mem_free( string );
+}
+
+void _gen_if_satisfied_embedded_drop_body( FILE *fd, const rule_t *rule, const operation_t *op ){
+	ASSERT( op->params_size == 0, "Error in if_satisifed function of rule %d: Do not require any parameter in 'drop' function.",
+			rule->id );
+	//we simply call this function that is implemented in ../forward/forward_packet.c
+	fprintf( fd, "\n\n\t mmt_do_not_forward_packet();" );
+}
+
+/**
+ * Generate body function for #fuzz
+ * @param fd
+ * @param rule
+ * @param op
+
+For example, if we have if_satisfied="#fuzz(ngap.ran_ue_id, ngap.amf_ue_id, ngap.procedure_code, ngap.pdu_present )"
+The following code will be generated:
+
+<code>
+ static void _fn_if_satisified_7 (
+       const rule_info_t *rule, int verdict, uint64_t timestamp,
+       uint64_t counter, const mmt_array_t * const trace ){
+
+    srandom(time(NULL));//init the seed
+    mmt_set_attribute_number_value( 903, 4, random() );
+    mmt_forward_packet();
+    mmt_set_attribute_number_value( 903, 3, random() );
+    mmt_forward_packet();
+    mmt_set_attribute_number_value( 903, 1, random() );
+    mmt_forward_packet();
+    mmt_set_attribute_number_value( 903, 2, random() );
+    mmt_forward_packet();
+} //end of _fn_if_satisified_7
+</code>
+ */
+void _gen_if_satisfied_embedded_fuzz_body( FILE *fd, const rule_t *rule, const operation_t *op ){
+	char *string;
+	ASSERT( op->params_size > 0, "Error in if_satisifed function of rule %d: Require at least one parameter in 'fuzz' function.",
+					rule->id );
+	link_node_t *node = op->params_list;
+	int i = 0;
+	fprintf(fd, "\n\t srandom(time(NULL));//init the seed ");
+	//for each proto.att to be fuzzed
+	while( node ){
+		i ++;
+		expression_t *expr = node->data;
+		ASSERT( expr->type == VARIABLE, "Error in if_satisifed function of rule %d: "
+				"%d-th parameter of #fuzz function must be an variable in format proto.att", rule->id, i );
+
+		variable_t *var = expr->variable;
+		//no ref_index: we need proto.att, not proto.att.ref
+		ASSERT( var->ref_index == UNKNOWN_REF_INDEX, "Error in if_satisifed function of rule %d: "
+				"%d-th parameter of #fuzz function must be in format proto.att, not proto.att.ref", rule->id, i);
+
+		//TODO: support numeric value for now
+		ASSERT( var->data_type == MMT_SEC_MSG_DATA_TYPE_NUMERIC,
+				"Error in if_satisifed function of rule %d: "
+				"%d-th parameter supports only numeric values for now.", rule->id, i );
+
+		fprintf( fd, "\n\t mmt_set_attribute_number_value( %"PRIu32", %"PRIu32", random() );",
+				var->proto_id, var->att_id);
+		_gen_comment_line( fd, "\n\t modify %s.%s", var->proto, var->att );
+		//forward packet immediately
+		fprintf( fd, "\n\t mmt_forward_packet();" );
+
+		node = node->next;
+	}
+}
+
 void _gen_if_satisfied_embedded_function_for_a_rule( FILE *fd, const rule_t *rule ){
 	char new_fn_name[255];
 	const char *fn_string = rule->if_satisfied;
 	char *string;
+	int i;
+	link_node_t *node;
+
 	_get_if_statisfied_function_name( rule, new_fn_name, sizeof( new_fn_name));
 
 	fprintf(fd, "\n");
@@ -1065,69 +1171,15 @@ void _gen_if_satisfied_embedded_function_for_a_rule( FILE *fd, const rule_t *rul
 			"Error: expect an embedded function in if_satisifed of rule %d", rule->id );
 
 	const operation_t *op = expr->operation;
-	if( strcmp( op->name, "update" ) == 0 ){
-		ASSERT( op->params_size == 2, "Error in if_satisifed function of rule %d: require 2 parameters in 'update' function. "
-				"For example: #update( ngap.ran_ue_id, (ngap.ran_ue_id.1 + 3))", rule->id );
-		//first parameter
-		expr = op->params_list->data;
-		ASSERT( expr->type == VARIABLE, "Error in if_satisifed function of rule %d: "
-				"first parameter of #update function must be an variable in format proto.att", rule->id );
-
-		variable_t *var = expr->variable;
-		//no ref_index: we need proto.att, not proto.att.ref
-		ASSERT( var->ref_index == UNKNOWN_REF_INDEX, "Error in if_satisifed function of rule %d: "
-				"First parameter of #update function must be in format proto.att, not proto.att.ref", rule->id);
-
-		//TODO: support numeric value for now
-		ASSERT( var->data_type == MMT_SEC_MSG_DATA_TYPE_NUMERIC,
-				"Error in if_satisifed function of rule %d: "
-				"Support only attributes having numeric values for now.", rule->id );
-
-		expr_stringify_variable(&string, var);
-
-		//define 2 variables: first is an object, second is a pointer points to the first one
-		fprintf( fd, "\t proto_attribute_t _%s = {.proto = \"%s\", .proto_id = %"PRIu32", .att = \"%s\", .att_id = %"PRIu32", .data_type = %d, .dpi_type = %d};",
-					string,
-					var->proto, var->proto_id,
-					var->att, var->att_id,
-					var->data_type,
-					var->dpi_type);
-		_gen_code_line( fd );
-		//the pointer will be used in the update function
-		fprintf( fd, "\n\t const proto_attribute_t *%s = &_%s;\n", string, string );
-		mmt_mem_free( string );
-	}
-	//drop(): no parameter
-	else if( strcmp( op->name, "drop") == 0 ){
-		ASSERT( op->params_size == 0, "Error in if_satisifed function of rule %d: Do not require any parameter in 'drop' function.",
-				rule->id );
-	}
-
-	//else ABORT("Error: Support only 'update' embedded function");
-	//generate variables
-	mmt_map_t *map;
-	//set of variables
-	size_t var_count = get_unique_variables_of_expression( fn_expr, &map, YES );
-	if( var_count != 0 ){
-			fprintf(fd, "\n\t if( unlikely( trace == NULL )) return;" );
-			fprintf(fd, "\n\t const void *data;\n");
-			struct _user_data user_data = {.file = fd};
-			mmt_map_iterate( map, _iterate_variable_if_satisified_to_print, &user_data );
-	}
-	mmt_map_free(map, NO);
-
-	expr_stringify_operation( &string, op );
-
-	if( strcmp( op->name, "update" ) == 0 ){
-		//explicitly require to forward packet
-		fprintf( fd, "\n\n\t mmt_forward_packet();" );
-		//here we call set_number_update in pre_embedded_functions
-		fprintf( fd, "\n\n\t set_number_%s;", string ); //change the function name to
-	} else if( strcmp( op->name, "drop" ) == 0 )
-		fprintf( fd, "\n\n\t mmt_do_not_forward_packet();" ); //change the function name to
+	//generate body for each kind of function
+	if( strcmp( op->name, "update" ) == 0 )
+		_gen_if_satisfied_embedded_update_body( fd, rule, op );
+	else if( strcmp( op->name, "drop") == 0 )
+		_gen_if_satisfied_embedded_drop_body( fd, rule, op );
+	else if(strcmp( op->name, "fuzz") == 0 )
+		_gen_if_satisfied_embedded_fuzz_body( fd, rule, op );
 	else
-		fprintf( fd, "\n\n\t %s;", string ); //does not change the function name
-	_gen_comment_line( fd, "main function");
+		ABORT("Error in if_satisifed function of rule %d: Do not support yet '%s' function.", rule->id, op->name);
 
 	fprintf(fd, "\n} //end of %s\n", new_fn_name); //close
 	expr_free_an_expression(fn_expr, YES);
