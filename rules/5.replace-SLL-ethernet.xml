@@ -17,7 +17,7 @@ static void em_replace_sll_by_ethernet(
 }
 ]]></embedded_functions>
 
-<property property_id="105" type_property="FORWARD" 
+<property property_id="5" type_property="FORWARD" 
     description="Replace Linux cooked-mode capture (SLL) by Ethernet"
     if_satisfied="em_replace_sll_by_ethernet">
     <event description="Got SLL packet"
