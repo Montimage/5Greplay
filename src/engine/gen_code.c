@@ -1115,7 +1115,7 @@ void _gen_if_satisfied_embedded_fuzz_body( FILE *fd, const rule_t *rule, const o
 					rule->id );
 	link_node_t *node = op->params_list;
 	int i = 0;
-	fprintf(fd, "\n\t srandom(time(NULL));//init the seed ");
+	//fprintf(fd, "\n\t srandom(time(NULL));//init the seed ");
 	//for each proto.att to be fuzzed
 	while( node ){
 		i ++;

@@ -20,9 +20,9 @@ void on_load(){
 }
 
 //customized function to
-// generate randomly number from 5000 -> 6000
+// generate randomly number from 15 -> 20
 uint64_t em_my_random(){
-	uint64_t max = 6000, min = 5000;
+	uint64_t max = 20, min = 15;
 	return (rand() % (max-min) + min);
 }
 
@@ -30,15 +30,13 @@ uint64_t em_my_random(){
 #define random em_my_random
 ]]></embedded_functions>
 
-<property value="THEN" property_id="7" type_property="FORWARD" 
+<property property_id="7" type_property="FORWARD" 
     description="Fuzz attributes of NGAP protocol" 
-    if_satisfied="#fuzz(ngap.ran_ue_id, ngap.amf_ue_id, ngap.procedure_code, ngap.pdu_present )" >
-    
-    <event value="COMPUTE" event_id="1" 
-        description="Downlink NAS Transport, Authentication request"
-           boolean_expression="((ngap.procedure_code == 4) &amp;&amp; (nas_5g.message_type == 86))"/>
-    <event value="COMPUTE" event_id="2" 
-           description="Nothing"
-           boolean_expression="(ngap.ran_ue_id != 0)"/>
+    if_satisfied="#fuzz(ngap.ran_ue_id, ngap.amf_ue_id, ngap.procedure_code, ngap.pdu_present )"
+    >
+
+    <event  
+        description="Whether existing NGAP"
+        boolean_expression="(ngap.procedure_code != 0)"/>
 </property>
 </beginning>
