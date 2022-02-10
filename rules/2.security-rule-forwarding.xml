@@ -48,7 +48,7 @@ bool em_check(){
 
 
   
-<property property_id="103" type_property="FORWARD" 
+<property property_id="2" type_property="FORWARD" 
     description="Inject only packet from UE -> Core but not inversed direction">
     <event description="From UE and NAS-5G packets"
            boolean_expression="( ( #is_same_ipv4(ip.src, '127.0.0.1') ) &amp;&amp; ((sctp.dest_port == 38412 ) &amp;&amp;(sctp.ch_type == 0)) )"/>

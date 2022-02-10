@@ -98,9 +98,9 @@ variable_t *expr_create_a_variable( char *proto, char *attr, uint16_t ref_index 
 	var->att   = attr;
 	var->ref_index = ref_index;
 	var->proto_id  = get_protocol_id_by_name( var->proto );
-	ASSERT( var->proto_id != ((uint32_t)-1), "Error: Unknown protocol \"%s\".", proto );
+	ASSERT( var->proto_id != 0, "Error: Unknown protocol \"%s\".", proto );
 	var->att_id    = get_attribute_id_by_protocol_id_and_attribute_name( var->proto_id, var->att );
-	ASSERT( var->att_id != ((uint32_t)-1), "Error: Unknown attribute \"%s\" of protocol \"%s\".", attr, proto );
+	ASSERT( var->att_id != 0, "Error: Unknown attribute \"%s\" of protocol \"%s\".", attr, proto );
 	var->dpi_type  = get_attribute_data_type( var->proto_id, var->att_id  );
 	var->data_type = convert_data_type( var->dpi_type );
 
