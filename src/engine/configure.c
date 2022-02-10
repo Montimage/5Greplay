@@ -124,12 +124,18 @@ static inline cfg_t *_load_cfg_from_file(const char *filename) {
 			CFG_END()
 	};
 
+	cfg_opt_t dump_opts[] = {
+			CFG_BOOL("enable",                 false, CFGF_NONE),
+			CFG_STR("output-file","./pcap/dump.pcap", CFGF_NONE),
+			CFG_END()
+	};
 	cfg_opt_t opts[] = {
 			CFG_SEC("input",   input_opts, CFGF_NONE),
 			CFG_SEC("output",  output_opts, CFGF_NONE),
 			CFG_SEC("engine",  engine_opts, CFGF_NONE),
 			CFG_SEC("mempool", mempool_opts, CFGF_NONE),
 			CFG_SEC("forward", forward_packet_opts, CFGF_NONE),
+			CFG_SEC("dump-packet", dump_opts, CFGF_NONE),
 
 
 			CFG_INT("stack-type", DLT_EN10MB, CFGF_NONE),
@@ -231,6 +237,18 @@ static inline output_conf_t * _parse_output( cfg_t *cfg ){
 	ret->output_dir = _cfg_get_dir(cfg, "output-dir");
 	ret->sample_interval = _cfg_getint( cfg, "sample-interval", 0, 120, 5 );
 	ret->is_report_description   = cfg_getbool(cfg, "report-description");
+	return ret;
+}
+
+static inline dump_packet_conf_t * _parse_dump_packet( cfg_t *cfg ){
+	cfg = _get_first_cfg_block( cfg, "dump-packet" );
+	if( cfg == NULL )
+		return NULL;
+
+	dump_packet_conf_t *ret = mmt_mem_alloc( sizeof( dump_packet_conf_t ));
+
+	ret->is_enable   = cfg_getbool(cfg, "enable");
+	ret->output_file = _cfg_get_str(cfg, "output-file");
 	return ret;
 }
 
@@ -358,6 +376,7 @@ config_t* conf_load_from_file( const char* filename ){
 
 	conf->input = _parse_input_source( cfg );
 	conf->output = _parse_output(cfg);
+	conf->dump_packet = _parse_dump_packet(cfg);
 
 	conf->engine = _parse_engine_block( cfg );
 	conf->forward = _parse_forward_packet(cfg);
@@ -399,6 +418,10 @@ void conf_release( config_t *conf){
 		}
 		mmt_mem_free( conf->forward->targets );
 		mmt_mem_free( conf->forward );
+	}
+	if( conf->dump_packet ){
+		mmt_mem_free( conf->dump_packet->output_file );
+		mmt_mem_free( conf->dump_packet );
 	}
 	mmt_mem_free( conf->mempool );
 	mmt_mem_free( conf->dpdk_options );

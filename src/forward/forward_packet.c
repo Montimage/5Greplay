@@ -20,6 +20,7 @@
 #include "proto/inject_proto.h"
 #include "../lib/process_packet.h"
 #include "../lib/mmt_lib.h"
+#include "dump_packet.h"
 
 #define MAX_PACKET_SIZE 0xFFFF
 
@@ -40,6 +41,8 @@ struct forward_packet_context_struct{
 		uint32_t nb_packets, nb_bytes;
 		time_t last_time;
 	}stat;
+
+	FILE *pcap_dump;
 };
 
 //TODO: need to be fixed in multi-threading
@@ -71,24 +74,28 @@ static inline void _update_stat( forward_packet_context_t *context, uint32_t nb_
 static inline bool _send_packet_to_nic( forward_packet_context_t *context ){
 	int ret = INJECT_PROTO_NO_AVAIL;
 	uint16_t delta = context->packet_delta;
+	const uint8_t *data = &context->packet_data[delta];
+	const uint16_t size = context->packet_size - delta;
+	//send the packet only if it has data to send
+	if( delta >= context->packet_size )
+		return false;
 	//try firstly using a real connection by using proto_injector
 	//do not use proto_injector when DPDK
 #ifndef NEED_DPDK
-	ret = inject_proto_send_packet(context->proto_injector, context->ipacket, &context->packet_data[delta], context->packet_size - delta);
+	ret = inject_proto_send_packet(context->proto_injector, context->ipacket, data, size);
 #endif
 	//if no protocol is available, then use default injector (libpcap/DPDK) to inject the raw packet to output NIC
-	if( ret == INJECT_PROTO_NO_AVAIL ){
-		//send the packet only if it has data to send
-		if( delta < context->packet_size )
-			ret = inject_packet_send_packet(context->injector,  & context->packet_data[delta], context->packet_size - delta);
-	}
+	if( ret == INJECT_PROTO_NO_AVAIL )
+		ret = inject_packet_send_packet(context->injector,  data, size);
 
 	if( ret > 0 ){
 		context->nb_forwarded_packets += ret;
-
 		_update_stat( context, ret );
 	}
 
+	//dump to file
+	if( context->pcap_dump )
+		dump_packet_write_to_pcap_file( context->pcap_dump, data, size );
 	return (ret > 0);
 }
 
@@ -117,6 +124,12 @@ forward_packet_context_t* forward_packet_alloc( const config_t *config, mmt_hand
 	context->has_a_satisfied_rule = false;
 	context->stat.last_time = time(NULL);
 
+	if( config->dump_packet->is_enable ){
+		context->pcap_dump = dump_packet_create_pcap_file( config->dump_packet->output_file );
+		ASSERT(context->pcap_dump != NULL, "Cannot open '%s' file for writing  packets",
+			config->dump_packet->output_file );
+	}
+
 	//TODO: not work in multi-threading
 	cache = context;
 
@@ -138,6 +151,10 @@ void forward_packet_release( forward_packet_context_t *context ){
 	}
 
 	inject_proto_release( context->proto_injector );
+
+	if( context->pcap_dump )
+		dump_packet_close_pcap_file( context->pcap_dump );
+
 	mmt_mem_free( context->packet_data );
 	mmt_mem_free( context );
 }
@@ -223,7 +240,8 @@ void mmt_set_attribute_number_value(uint32_t proto_id, uint32_t att_id, uint64_t
 	int ret = 0;
 	ret = update_ngap_data(context->packet_data, context->packet_size, context->ipacket, proto_id, att_id, new_val );
 	if( ! ret )
-		DEBUG("Cannot update packet data for packet id%"PRIu64, context->ipacket->packet_id);
+		log_write( LOG_ERR, "Cannot set new value %"PRIu64" for att %d of proto %d for packet id %"PRIu64,
+			new_val, att_id, proto_id, context->ipacket->packet_id);
 }
 
 

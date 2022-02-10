@@ -97,6 +97,12 @@ typedef struct mempool_conf_struct{
 	uint32_t smp_ring_size;
 }mempool_conf_t;
 
+
+typedef struct dump_packet_conf_struct{
+	bool is_enable;
+	char *output_file;
+}dump_packet_conf_t;
+
 /**
  * Configuration of MMT-Probe
  */
@@ -111,6 +117,7 @@ typedef struct config_struct{
 	forward_packet_conf_t *forward;
 	engine_conf_t *engine;
 	mempool_conf_t *mempool;
+	dump_packet_conf_t *dump_packet;
 }config_t;
 
 
