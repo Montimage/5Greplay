@@ -23,7 +23,7 @@ MMT_DPI_DIR := $(MMT_BASE)/dpi
 
 #get git version abbrev
 GIT_VERSION := $(shell git log --format="%h" -n 1)
-VERSION     := 0.0.4
+VERSION     := 0.0.5
 
 CACHE_LINESIZE := 64 #$(shell getconf LEVEL1_DCACHE_LINESIZE)
 
@@ -100,7 +100,7 @@ $(MMT_DPI_DIR):
 	
 %.o: %.c
 	@echo "[COMPILE] $(notdir $@)"
-	$(QUIET) $(CC) $(CFLAGS) $(CLDFLAGS) -c -o $@ $<
+	$(QUIET) $(CC) -lm $(CFLAGS) $(CLDFLAGS) -c -o $@ $<
 	
 main:  $(MMT_DPI_DIR) $(LIB_OBJS)
 	@echo "[COMPILE] $@"
