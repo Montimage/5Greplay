@@ -79,18 +79,21 @@ static inline bool _send_packet_to_nic( forward_packet_context_t *context ){
 	//send the packet only if it has data to send
 	if( delta >= context->packet_size )
 		return false;
-	//try firstly using a real connection by using proto_injector
-	//do not use proto_injector when DPDK
-#ifndef NEED_DPDK
-	ret = inject_proto_send_packet(context->proto_injector, context->ipacket, data, size);
-#endif
-	//if no protocol is available, then use default injector (libpcap/DPDK) to inject the raw packet to output NIC
-	if( ret == INJECT_PROTO_NO_AVAIL )
-		ret = inject_packet_send_packet(context->injector,  data, size);
 
-	if( ret > 0 ){
-		context->nb_forwarded_packets += ret;
-		_update_stat( context, ret );
+	if( context->config->is_enable ){
+		//try firstly using a real connection by using proto_injector
+		//do not use proto_injector when DPDK
+		#ifndef NEED_DPDK
+			ret = inject_proto_send_packet(context->proto_injector, context->ipacket, data, size);
+		#endif
+		//if no protocol is available, then use default injector (libpcap/DPDK) to inject the raw packet to output NIC
+		if( ret == INJECT_PROTO_NO_AVAIL )
+			ret = inject_packet_send_packet(context->injector,  data, size);
+
+		if( ret > 0 ){
+			context->nb_forwarded_packets += ret;
+			_update_stat( context, ret );
+		}
 	}
 
 	//dump to file
@@ -109,8 +112,6 @@ forward_packet_context_t* forward_packet_alloc( const config_t *config, mmt_hand
 	int i;
 	const forward_packet_target_conf_t *target;
 	const forward_packet_conf_t *conf = config->forward;
-	if( ! conf->is_enable )
-		return NULL;
 
 	forward_packet_context_t *context = mmt_mem_alloc_and_init_zero( sizeof( forward_packet_context_t ));
 	context->config = conf;
@@ -290,4 +291,23 @@ int mmt_replace_data_at_protocol_id( uint32_t proto_id, uint16_t data_length, co
 	context->packet_size = new_packet_size;
 
 	return offset;
+}
+
+/**
+ *  This is an embedded function that can be called in rules by user
+ *   to update the parameters in sctp_sendmsg function
+ *  See : https://linux.die.net/man/3/sctp_sendmsg
+ * @param ppid
+ * @param flags
+ * @param stream_no
+ * @param timetolive
+ * @return
+ */
+int mmt_update_sctp_param( uint32_t ppid, uint32_t flags, uint16_t stream_no, uint32_t timetolive ){
+	forward_packet_context_t *context = _get_current_context();
+	if( context == NULL )
+		return -3;
+
+	inject_sctp_update_param( context->proto_injector->sctp, ppid, flags, stream_no, timetolive, 0);
+	return 0;
 }

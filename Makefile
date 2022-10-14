@@ -141,3 +141,6 @@ dist: sample-rules
 	$(MKDIR) $(DIST_NAME)
 	$(CP) /opt/mmt/plugins ./rules mmt-5greplay.conf $(OUTPUT) $(DIST_NAME)/
 	tar -czf $(ZIP_NAME) $(DIST_NAME)
+
+docker-image:
+	docker build --tag ${OUTPUT}:${VERSION} . 

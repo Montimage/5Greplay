@@ -27,11 +27,23 @@
 #include "inject_sctp.h"
 #include "../../lib/mmt_lib.h"
 
+typedef struct sctp_param {
+	uint32_t ppid;
+	uint32_t flags;
+	uint16_t stream_no;
+	uint32_t timetolive;
+	uint32_t context;
+} sctp_param_t ;
+
 struct inject_sctp_context_struct{
 	int client_fd;
 	uint16_t nb_copies;
 	const char* host;
 	uint16_t port;
+
+	// the parameters to pass to sctp_sendmsg function to send sctp packets
+	// see more: https://linux.die.net/man/3/sctp_sendmsg
+	sctp_param_t sctp_param;
 };
 
 void _sctp_connect( inject_sctp_context_t *context ){
@@ -58,10 +70,22 @@ inject_sctp_context_t* inject_sctp_alloc( const forward_packet_target_conf_t *co
 	context->host      = conf->host;
 	context->port      = conf->port;
 	context->nb_copies = nb_copies;
+	//sctp parameters to send packets
+	inject_sctp_update_param( context, 0,
+			60, //payload protocol id of NGAP protcol
+			0, 0, 0);
+
 	_sctp_connect( context );
 	return context;
 }
 
+void inject_sctp_update_param( inject_sctp_context_t *context, uint32_t ppid, uint32_t flags, uint16_t stream_no, uint32_t timetolive, uint32_t ctx ){
+	context->sctp_param.context = ctx;
+	context->sctp_param.flags   = flags;
+	context->sctp_param.ppid    = htonl( ppid );
+	context->sctp_param.stream_no = ( stream_no );
+	context->sctp_param.timetolive = timetolive;
+}
 
 static inline void _reconnect_sctp_if_need( inject_sctp_context_t *context ){
 	struct sctp_status status;
@@ -101,11 +125,11 @@ int inject_sctp_send_packet( inject_sctp_context_t *context, const uint8_t *pack
 		//returns the number of bytes written on success and -1 on failure.
 		ret = sctp_sendmsg( context->client_fd, packet_data,  packet_size, NULL,
 				0,
-				htonl(0x3C), //payload protocol id => S1AP
-				0,  //flags
-				0,  //stream no
-				0,  //TTL
-				0   //context
+				context->sctp_param.ppid, //payload protocol id
+				context->sctp_param.flags,  //flags
+				context->sctp_param.stream_no,  //stream no
+				context->sctp_param.timetolive,  //TTL
+				context->sctp_param.context   //context
 			);
 		//ret = sctp_send( context->client_fd, packet_data, packet_size, NULL, 0 );
 		if( ret > 0 )

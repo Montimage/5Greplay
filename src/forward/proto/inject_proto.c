@@ -5,18 +5,10 @@
  *      Author: nhnghia
  */
 
-#include "inject_proto.h"
-#include "inject_sctp.h"
-#include "inject_udp.h"
+#include <mmt_core.h>
 #include <tcpip/mmt_tcpip.h>
 #include "../../lib/mmt_lib.h"
-
-struct inject_proto_context_struct {
-	inject_sctp_context_t *sctp;
-	inject_udp_context_t  *udp;
-};
-
-
+#include "inject_proto.h"
 
 inject_proto_context_t* inject_proto_alloc( const config_t *config ){
 	inject_proto_context_t *context = mmt_mem_alloc_and_init_zero( sizeof( inject_proto_context_t ));
