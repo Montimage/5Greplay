@@ -23,6 +23,7 @@
 #include <netinet/in.h>
 #include <netinet/sctp.h>
 #include <arpa/inet.h>
+#include <errno.h>
 
 #include "inject_sctp.h"
 #include "../../lib/mmt_lib.h"
@@ -44,6 +45,7 @@ struct inject_sctp_context_struct{
 	// the parameters to pass to sctp_sendmsg function to send sctp packets
 	// see more: https://linux.die.net/man/3/sctp_sendmsg
 	sctp_param_t sctp_param;
+	bool shown_error;
 };
 
 void _sctp_connect( inject_sctp_context_t *context ){
@@ -61,6 +63,7 @@ void _sctp_connect( inject_sctp_context_t *context ){
 	ASSERT( ret >= 0, "Cannot connect to %s:%d using SCTP", context->host, context->port );
 
 	context->client_fd = conn_fd;
+	context->shown_error = false;
 }
 
 inject_sctp_context_t* inject_sctp_alloc( const forward_packet_target_conf_t *conf, uint32_t nb_copies ){
@@ -71,9 +74,9 @@ inject_sctp_context_t* inject_sctp_alloc( const forward_packet_target_conf_t *co
 	context->port      = conf->port;
 	context->nb_copies = nb_copies;
 	//sctp parameters to send packets
-	inject_sctp_update_param( context, 0,
+	inject_sctp_update_param( context,
 			60, //payload protocol id of NGAP protcol
-			0, 0, 0);
+			0, 0, 0, 0);
 
 	_sctp_connect( context );
 	return context;
@@ -134,6 +137,10 @@ int inject_sctp_send_packet( inject_sctp_context_t *context, const uint8_t *pack
 		//ret = sctp_send( context->client_fd, packet_data, packet_size, NULL, 0 );
 		if( ret > 0 )
 			nb_pkt_sent ++;
+		else if(! context->shown_error ){
+			context->shown_error = true;
+			log_write( LOG_ERR, "SCTP error when injecting payload %d: %s (please check sctp parameters)", ret, strerror(errno) );
+		}
 	}
 
 	//sleep(1);

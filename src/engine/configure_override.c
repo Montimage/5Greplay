@@ -168,7 +168,7 @@ static inline bool _override_element_by_ident( config_t *conf, const identity_t 
 	case CHAR_STAR:
 		string_ptr = (char **) field_ptr;
 		//value does not change ==> do nothing
-		if( IS_EQUAL_STRINGS( *string_ptr, value_str ) )
+		if( (*string_ptr != NULL) && IS_EQUAL_STRINGS( *string_ptr, value_str ) )
 			return false;
 		mmt_mem_free( *string_ptr );
 		*string_ptr = mmt_strdup( value_str );
