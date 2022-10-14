@@ -1,0 +1,42 @@
+<beginning>
+
+ 
+<property value="THEN" property_id="10" type_property="FORWARD" 
+    description="5G testing" if_satisfied="#update(ngap.procedure_code, (ngap.procedure_code.1 + 1))">
+    <event value="COMPUTE" event_id="1" 
+        description="Downlink NAS Transport, Authentication request"
+           boolean_expression="((ngap.procedure_code == 4) &amp;&amp; (nas_5g.message_type == 86))"/>
+    <event value="COMPUTE" event_id="2" 
+           description="Nothing"
+           boolean_expression="(ngap.procedure_code != 0)"/>
+</property>
+
+<!--
+<embedded_functions><![CDATA[
+//initialize random seed when loading this rule file
+// see https://linux.die.net/man/3/rand
+void on_load(){
+	srand(time(NULL)); 
+}
+
+// generate randomly number in [1,255]
+static inline int em_rand(int min, int max){
+	return (rand() % (max-min) + min);
+}
+]]></embedded_functions>
+
+ 
+<property value="THEN" property_id="10" type_property="FORWARD" 
+    description="5G testing" if_satisfied="#update(ngap.procedure_code, (#em_rand(1, 255)))">
+    <event value="COMPUTE" event_id="1" 
+        description="Downlink NAS Transport, Authentication request"
+           boolean_expression="((ngap.procedure_code == 4) &amp;&amp; (nas_5g.message_type == 86))"/>
+    <event value="COMPUTE" event_id="2" 
+           description="Nothing"
+           boolean_expression="(ngap.procedure_code != 0)"/>
+</property>
+
+-->
+
+</beginning>
+

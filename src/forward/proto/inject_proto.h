@@ -11,9 +11,15 @@
 #define SRC_MODULES_SECURITY_FORWARD_PROTO_INJECT_PROTO_H_
 
 #include "../../engine/configure.h"
+#include "inject_sctp.h"
+#include "inject_udp.h"
 #include <mmt_core.h>
 
-typedef struct inject_proto_context_struct inject_proto_context_t;
+typedef struct inject_proto_context_struct {
+	inject_sctp_context_t *sctp;
+	inject_udp_context_t  *udp;
+} inject_proto_context_t;
+
 
 #define INJECT_PROTO_NO_AVAIL (-1)
 

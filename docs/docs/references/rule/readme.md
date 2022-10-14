@@ -175,6 +175,8 @@ The following functions **must** be called inside a reactive function.
 
 4. `drop_packet()` does not forward the current packet
 
+5. `update_sctp_param( uint32_t ppid, uint32_t flags, uint16_t stream_no, uint32_t timetolive )` updates parameters in `sctp_sendmsg` function that is used to create a SCTP communication channel between 5Grepay and its target. See example in [rules/11.modify-sctp-params.xml](../../../rules/11.modify-sctp-params.xml)
+
 ## 3.2 Predefined reactive functions
 
 The following functions have been already defined
