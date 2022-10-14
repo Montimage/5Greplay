@@ -2,6 +2,7 @@
 - extended `ngap.ran_ue_id` to store 64-bit values
 - add config parameters for SCTP connection medium
 - fix bug when dumping packet without forwarding
+- fix bug in `-Xegine.exclude-rules` parameter
 
 # Version 0.0.4
 - dump output packets to a pcap file
