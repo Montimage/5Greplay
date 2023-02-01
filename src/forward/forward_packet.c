@@ -61,8 +61,9 @@ static inline void _update_stat( forward_packet_context_t *context, uint32_t nb_
 	time_t now = time(NULL); //return number of second from 1970
 	if( now != context->stat.last_time ){
 		float interval = (now - context->stat.last_time);
-		log_write_dual(LOG_INFO, "Statistics of forwarded packets %.2f pps, %.2f bps",
+		log_write_dual(LOG_INFO, "Statistics of forwarded packets %.2f pps (total: %"PRIu64" packets), %.2f bps",
 				context->stat.nb_packets   / interval,
+				context->nb_forwarded_packets,
 				context->stat.nb_bytes * 8 / interval);
 		//reset stat
 		context->stat.last_time  = now;

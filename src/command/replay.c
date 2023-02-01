@@ -584,6 +584,7 @@ void signal_handler(int signal_type) {
 
 	if( signal_type == SIGINT ){
 		log_write( LOG_ERR,"Releasing resource ... (press Ctrl+c again to exit immediately)");
+		termination();
 		signal(SIGINT, signal_handler);
 	}
 	exit( signal_type );

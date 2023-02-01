@@ -1,3 +1,8 @@
+# Version 0.0.6
+- SCTP socket uses `SCTP_NODELAY` to generate UDP packet as fast as possible
+- reconnect to SCTP server once it closed the connection
+- enhance statistics: print total number of injected packets
+
 # Version 0.0.5
 - extended `ngap.ran_ue_id` to store 64-bit values
 - add config parameters for SCTP connection medium
