@@ -1,5 +1,5 @@
 # Version 0.0.6
-- SCTP socket uses `SCTP_NODELAY` to generate UDP packet as fast as possible
+- SCTP socket uses `SCTP_NODELAY` to generate UDP packets as fast as possible. It prevents SCTP to cumulate multiple chunks in a single UDP packet.
 - reconnect to SCTP server once it closed the connection
 - enhance statistics: print total number of injected packets
 
