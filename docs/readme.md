@@ -26,7 +26,11 @@ permalink: /docs.html
   - [Forward packets](docs/references/forward-packet)
   - [List of protocols and attributes](docs/references/protocols-attributes-list) 
 
-- Publications
+- Publications using 5Greplay
   - Zujany Salazar, Huu Nghia Nguyen, Wissam Mallouli, Ana R. Cavalli, Edgardo Montes de Oca:
-    5Greplay: a 5G Network Traffic Fuzzer - Application to Attack Injection. ARES 2021: 106:1-106:8
+    "5Greplay: a 5G Network Traffic Fuzzer - Application to Attack Injection". ARES 2021, pp. 106:1-106:8
     [pdf](docs/publications/ares2021-paper.pdf) [slide](docs/publications/ares2021-slide.pdf)
+  - O. -M. Dumitru-Guzu and C. Vlădeanu:
+    "Analysis of Potential Threats in NextGen 5G Core", ISETC 2022, pp. 1-4, doi: [10.1109/ISETC56213.2022.10010163](https://ieeexplore.ieee.org/document/10010163).
+  - 
+  - *(to add your publication, please email us at contact@montimage.com)*
