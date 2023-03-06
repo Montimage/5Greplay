@@ -278,7 +278,7 @@ The compiled rules must put in `./rules` folder.
 
 - use `compile` to compile rules in a XML file. For example:
 
-   `./5greplay compile_rule rules/1.so rules/1.xml`
+   `./5greplay compile rules/1.so rules/1.xml`
    
    The program uses 3 parameters in form: `output_file property_file [gcc parameters]`
 
