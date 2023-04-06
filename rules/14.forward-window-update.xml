@@ -1,0 +1,45 @@
+<beginning>
+<embedded_functions><![CDATA[
+#include "http2_mmt_plugin.h"
+#include <stdlib.h>
+#include <unistd.h>
+
+	void on_load(){
+		
+
+		printf("Loaded successfully rule http2 Post  \n" );
+		
+	}
+	
+	static void em_modif_then_forward(
+	   const rule_info_t *rule, int verdict, uint64_t timestamp, 
+	   uint64_t counter, const mmt_array_t * const trace ){	
+  	const char* trace_str = mmt_convert_execution_trace_to_json_string( trace, rule );
+   	printf( "DETECT Header Window Update %d\n%s\n", rule->id, trace_str );
+
+   	printf( "em_modif_then_forward \n");
+		for(int i=0;i<10;i++){
+     		forward_packet();
+     		set_numeric_value( PROTO_HTTP2, HTTP2_WINDOW_UPDATE, i );
+     		printf("Wait 10 ms\n");
+ 		usleep(10000); // Sleep for 10 milliseconds
+		}
+	}
+
+
+
+	void on_unload(){
+		printf("Unloaded successfully rule 1\n");
+	}
+
+]]></embedded_functions>
+<property value="THEN" property_id="14" type_property="FORWARD" 
+    description="Modify stream id" if_satisfied="em_modif_then_forward">
+  <event value="COMPUTE" event_id="1" description="Forward "
+         		  boolean_expression="( http2.type == 8 )" />
+   <event value="COMPUTE" event_id="2" 
+           description="Nothing"
+           boolean_expression="( http2.header_method != 0)"/>  
+</property>
+</beginning>
+

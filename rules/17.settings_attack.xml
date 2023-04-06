@@ -1,0 +1,64 @@
+<beginning>
+<embedded_functions><![CDATA[
+#include "http2_mmt_plugin.h"
+#include <stdlib.h>
+#include <unistd.h>
+#include <nghttp2/nghttp2.h>
+
+static unsigned long int number_request =100;
+volatile bool canSendWinUpdate= false;
+	
+static void em_forward1(
+	const rule_info_t *rule, int verdict, uint64_t timestamp, 
+	uint64_t counter, const mmt_array_t * const trace ){	
+  	const char* trace_str = mmt_convert_execution_trace_to_json_string( trace, rule );
+   	printf( "WIndow Update %d\n%s\n", rule->id, trace_str );
+
+   	printf( "em_forward1 \n");
+   	uint32_t method= (uint32_t)get_numeric_value( PROTO_HTTP2, HTTP2_HEADER_STREAM_ID, 1, trace );
+	uint32_t type=  (uint32_t)get_numeric_value( PROTO_HTTP2, HTTP2_WINDOW_UPDATE, 1, trace );
+	printf("Ho ricevuto i valori method = %d e type= %d \n",(int)method,(int)type);
+	for(int i=1;i<number_request;i+=2){
+     			set_numeric_value( PROTO_HTTP2, HTTP2_HEADER_STREAM_ID, i );
+     			forward_packet();
+     			usleep(1000);
+		}
+     	canSendWinUpdate=true;
+	}
+
+	static void em_forward2(
+	   const rule_info_t *rule, int verdict, uint64_t timestamp, 
+	   uint64_t counter, const mmt_array_t * const trace ){	
+  	const char* trace_str = mmt_convert_execution_trace_to_json_string( trace, rule );
+   	printf( "WIndow Update %d\n%s\n", rule->id, trace_str );
+
+   	printf( "em_forward2 \n");
+
+if(canSendWinUpdate==true){
+     			forward_packet();
+		canSendWinUpdate=false;
+		}
+     	
+	}
+
+
+
+	void on_unload(){
+		printf("Unloaded successfully rule 1\n");
+	}
+
+]]></embedded_functions>
+<property   property_id="1" type_property="FORWARD" 
+    description="Forward get" if_satisfied="em_forward1">
+  <event  event_id="1" description="GET forward "
+         		  boolean_expression="( (http2.header_method == 130  )||(http2.header_method == 66))" />
+ 
+    </property>
+<property   property_id="2" type_property="FORWARD" 
+    description="Forward window update" if_satisfied="em_forward2">
+
+ <event  event_id="1" description="Win Update Forward "
+         		  boolean_expression="( (http2.type == 8)) " /> 
+</property>
+</beginning>
+
