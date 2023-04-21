@@ -85,7 +85,7 @@ In boolean expressions of rules, one can use one or many embedded functions
    Please note that, before using a C function the library containing that embedded functions need to be included.
    The following libraries have been pre-included:
 
-   ```c
+```c
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
