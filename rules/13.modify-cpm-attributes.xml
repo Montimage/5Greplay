@@ -1,0 +1,15 @@
+<beginning>
+<embedded_functions><![CDATA[
+
+static void em_modify_cpm(
+      const rule_info_t *rule, int verdict, uint64_t timestamp,
+      uint64_t counter, const mmt_array_t * const trace ){
+    // Modify station Id
+    set_numeric_value(PROTO_CPM,3, 75013);
+    forward_packet();
+}
+]]></embedded_functions>
+<property property_id="13" type_property="FORWARD" description="Modify multiple attributes in a CPM message" if_satisfied="em_modify_cpm">
+    <event description="Identify a CPM packet" boolean_expression="((cpm.protocolversion == 1 ) &amp;&amp;(cpm.messageid == 50))"/>
+</property>
+</beginning>
