@@ -1,0 +1,15 @@
+<beginning>
+
+<property property_id="3" type_property="FORWARD" 
+    description="Inject only SCTP packets from UE -> Core but not inversed direction">
+    <event description="From UE and NAS-5G packets"
+           boolean_expression="( (sctp.dest_port == 38412 ) &amp;&amp;(sctp.ch_type == 0))"/>
+</property>
+
+<property property_id="104" type_property="FORWARD" 
+    description="Inject only UDP packets from UE -> Core but not inversed direction">
+    <event description="From UE and GTP packets"
+           boolean_expression="( (udp.dest_port == 2152 ) )"/>
+</property>
+
+</beginning>

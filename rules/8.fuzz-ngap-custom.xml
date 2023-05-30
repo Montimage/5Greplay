@@ -1,0 +1,55 @@
+<beginning>
+<!--
+You can use embedded_functions to implement your own fuzzer. 
+For example:
+-->
+<embedded_functions><![CDATA[
+//initialize random seed when loading this rule file
+// see https://linux.die.net/man/3/rand
+void on_load(){
+	srand(time(NULL)); 
+}
+
+//customized function to
+// generate randomly number in [min, max]
+static inline int em_rand(int max, int min){
+	return (rand() % (max-min) + min);
+}
+
+static inline void em_fuzz( int proto_id, int att_id, int min, int max){
+	int val = em_rand(min, max);
+	printf("Fuzz att %d of proto %d with %d\n", proto_id, att_id, val);
+	set_numeric_value( proto_id, att_id, val );
+	forward_packet(); 
+}
+
+
+//callback function when its rule is satisfied
+static void em_custom_fuzzer( const rule_info_t *rule, int verdict, uint64_t timestamp, 
+		uint64_t counter, const mmt_array_t * const trace ){
+	bool ret = true;
+	//sent the original packet
+	forward_packet();
+
+	//see the constants here:
+	// https://github.com/Montimage/mmt-dpi/blob/master/src/mmt_mobile/include/proto_ngap.h
+	
+	//fuzz ran_ue_id
+	em_fuzz( PROTO_NGAP, NGAP_ATT_RAN_UE_ID, 100, 110 );
+	
+	//fuzz amf_ue_id
+	em_fuzz( PROTO_NGAP, NGAP_ATT_AMF_UE_ID, 110, 120 );
+	
+	//fuzz procedure code
+	em_fuzz( PROTO_NGAP, NGAP_ATT_PROCEDURE_CODE, 1, 10 );
+}
+]]></embedded_functions>
+
+<property property_id="8" type_property="FORWARD" 
+    description="Fuzz attributes of NGAP protocol" if_satisfied="em_custom_fuzzer">
+    <event  
+        description="Whether existing NGAP"
+        boolean_expression="(ngap.procedure_code != 0)"/>
+</property>
+
+</beginning>

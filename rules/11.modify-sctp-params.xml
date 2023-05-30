@@ -1,0 +1,28 @@
+<beginning>
+
+<embedded_functions><![CDATA[
+
+static void em_modify_sctp_param(
+      const rule_info_t *rule, int verdict, uint64_t timestamp, 
+      uint64_t counter, const mmt_array_t * const trace ){
+	static uint32_t ppid = 0;
+	ppid += 1;
+	//For the signification of parameters: https://linux.die.net/man/3/sctp_sendmsg
+	update_sctp_param( 
+	   ppid,  // payload protocol id
+		0,   // flags 
+		0,   // stream_no
+		0    //timetolive 
+	);
+
+	forward_packet();
+}
+]]></embedded_functions>
+
+<property property_id="11" type_property="FORWARD" 
+    description="Modify NGAP binary data within random procedure_code" if_satisfied="em_modify_sctp_param">
+    <event description="Got NGAP packet"
+           boolean_expression="(ngap.packet_count > 0)"/>
+</property>
+
+</beginning>

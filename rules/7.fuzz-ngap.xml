@@ -1,0 +1,42 @@
+<beginning>
+<!--
+The #fuzz function will be parsed by 5Greplay then generate the code.
+See "3.2 Predefined reactive functions" section in ../docs/docs/references/rule for the details
+or here:  https://5greplay.org/docs/references/rule/
+
+The attributes to be fuzz need to be in #fuzz function parameters.
+Currently it supports only numeric attributes.
+New value is generated randomly by calling `random` function
+https://linux.die.net/man/3/random
+
+You can use embedded_functions to override the `random` function. 
+For example:
+
+-->
+<embedded_functions><![CDATA[
+//initialize random seed when loading this rule file
+void on_load(){
+	srand(time(NULL)); 
+}
+
+//customized function to
+// generate randomly number from 15 -> 20
+uint64_t em_my_random(){
+	uint64_t max = 20, min = 15;
+	return (rand() % (max-min) + min);
+}
+
+//override the random function
+#define random em_my_random
+]]></embedded_functions>
+
+<property property_id="7" type_property="FORWARD" 
+    description="Fuzz attributes of NGAP protocol" 
+    if_satisfied="#fuzz(ngap.ran_ue_id, ngap.amf_ue_id, ngap.procedure_code, ngap.pdu_present )"
+    >
+
+    <event  
+        description="Whether existing NGAP"
+        boolean_expression="(ngap.procedure_code != 0)"/>
+</property>
+</beginning>

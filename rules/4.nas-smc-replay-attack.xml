@@ -1,0 +1,12 @@
+<beginning>
+<!-- Property 4: Forwarding NAS security mode COMPLETE that answers to NAS security mode COMMAND.-->
+<property value="THEN"  delay_units="ms" delay_min="0" delay_max="10" property_id="4" type_property="FORWARD" 
+    description="Forwarding NAS security mode COMPLETE that answers to NAS security mode COMMAND " >
+    <event value="COMPUTE" event_id="1" 
+           description="NAS Security mode COMMAND"
+           boolean_expression="(nas_5g.message_type == 93)"/>
+    <event value="COMPUTE" event_id="2" 
+           description="NAS Security mode COMPLETE"
+           boolean_expression="(nas_5g.security_type == 4)"/>
+</property>
+</beginning>
