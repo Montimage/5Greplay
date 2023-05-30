@@ -1,0 +1,60 @@
+<beginning>
+<embedded_functions><![CDATA[
+#include "../lib/http2.h"
+#include <stdlib.h>
+
+static unsigned long int number_request = 0;
+
+
+
+	void on_load(){
+		const char *str = getenv("REQ_NUMBER");
+		if( str == NULL ){
+			
+			//printf("Rule 13: no value of REQ_NUMBER\n" );
+			number_request=50000;
+		}
+		else{
+		number_request = strtoul( str, NULL, 0 );
+		}
+		//printf("NUMBER_REQUESTS %lu\n", number_request);
+		//printf("Loaded successfully rule http2 Post  \n" );
+		
+	}
+	
+	static void em_modif_then_forward(
+	   const rule_info_t *rule, int verdict, uint64_t timestamp, 
+	   uint64_t counter, const mmt_array_t * const trace ){	
+  	const char* trace_str = mmt_convert_execution_trace_to_json_string( trace, rule );
+   	//printf( "DETECT Header Method Post %d\n%s\n", rule->id, trace_str );
+   	// uint32_t stream_id = get_numeric_value( PROTO_HTTP2, HTTP2_STREAM_ID, 2, trace );
+   	printf( "em_modif_then_forward \n");
+   	//for(int i=0;i<20;i++){
+
+
+	for(int i=1;i<number_request;i+=2){
+		
+     		set_numeric_value( PROTO_HTTP2, HTTP2_HEADER_STREAM_ID, i );
+     		forward_packet();
+     	         
+     	       }
+
+	}
+
+
+
+	void on_unload(){
+		//printf("Unloaded successfully rule 1\n");
+	}
+
+]]></embedded_functions>
+<property value="THEN" property_id="17" type_property="FORWARD" 
+    description="Modify stream id" if_satisfied="em_modif_then_forward">
+  <event value="COMPUTE" event_id="1" description="Modify stream id"
+         		  boolean_expression="( http2.header_method == 130 )" />
+   <event value="COMPUTE" event_id="2" 
+           description="Nothing"
+           boolean_expression="( http2.header_method != 0)"/>  
+</property>
+</beginning>
+

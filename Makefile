@@ -37,16 +37,15 @@ LIBS     += -ldl -lpthread
 ifdef STATIC_LINK
   CFLAGS += -DSTATIC_LINK
   LIBS   += -l:libxml2.a -l:libicuuc.a -l:libz.a -l:liblzma.a -l:libicudata.a #xml2 and its dependencies
-  LIBS   +=  -l:libmmt_core.a -l:libmmt_tcpip.so -l:libmmt_tmobile.a  -l:libsctp.a -l:libpcap.a 
+  LIBS   +=  -l:libmmt_core.a -l:libmmt_tcpip.so -l:libmmt_tmobile.a  -l:libsctp.a -l:libpcap.a -l:libmmt_tcpip.a
 else
-  LIBS   += -l:libmmt_core.so -l:libmmt_tmobile.so -l:libxml2.so -l:libsctp.so -l:libpcap.so
+  LIBS   += -l:libmmt_core.so -l:libmmt_tmobile.so -l:libxml2.so -l:libsctp.so -l:libpcap.so -l:libmmt_tcpip.a
 endif
 
-LIBS += -l:libmmt_http2.so -l:libnghttp2.so
 
 CFLAGS   += -fPIC -Wall -DVERSION_NUMBER=\"$(VERSION)\" -DGIT_VERSION=\"$(GIT_VERSION)\" -DLEVEL1_DCACHE_LINESIZE=$(CACHE_LINESIZE) \
 				-Wno-unused-variable -Wno-unused-function -Wuninitialized\
-				-I/usr/include/libxml2/  -I$(MMT_DPI_DIR)/include  -I$(MMT_DPI_DIR)/include/dpi/mobile -I/usr/include/nghttp2 -lnghttp2
+				-I/usr/include/libxml2/  -I$(MMT_DPI_DIR)/include  -I$(MMT_DPI_DIR)/include/dpi/mobile 
 
 CLDFLAGS += -L$(MMT_DPI_DIR)/lib -L./plugins -L/usr/local/lib  -L/opt/mmt/plugins
 

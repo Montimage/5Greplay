@@ -1,6 +1,6 @@
 <beginning>
 <embedded_functions><![CDATA[
-#include "http2_mmt_plugin.h"
+#include "../lib/http2.h"
 #include <stdlib.h>
 
 static unsigned long int number_request = 0;
@@ -11,14 +11,14 @@ static unsigned long int number_request = 0;
 		const char *str = getenv("REQ_NUMBER");
 		if( str == NULL ){
 			
-			printf("Rule 13: no value of REQ_NUMBER\n" );
+			//printf("Rule 13: no value of REQ_NUMBER\n" );
 			number_request=50000;
 		}
 		else{
 		number_request = strtoul( str, NULL, 0 );
 		}
-		printf("NUMBER_REQUESTS %lu\n", number_request);
-		printf("Loaded successfully rule http2 Post  \n" );
+		//printf("NUMBER_REQUESTS %lu\n", number_request);
+		//printf("Loaded successfully rule http2 Post  \n" );
 		
 	}
 	
@@ -26,9 +26,9 @@ static unsigned long int number_request = 0;
 	   const rule_info_t *rule, int verdict, uint64_t timestamp, 
 	   uint64_t counter, const mmt_array_t * const trace ){	
   	const char* trace_str = mmt_convert_execution_trace_to_json_string( trace, rule );
-   	printf( "DETECT Header Method Post %d\n%s\n", rule->id, trace_str );
+   	//printf( "DETECT Header Method Post %d\n%s\n", rule->id, trace_str );
    	// uint32_t stream_id = get_numeric_value( PROTO_HTTP2, HTTP2_STREAM_ID, 2, trace );
-   	printf( "em_modif_then_forward \n");
+   	//printf( "em_modif_then_forward \n");
    	//for(int i=0;i<20;i++){
 
 
@@ -44,7 +44,7 @@ static unsigned long int number_request = 0;
 
 
 	void on_unload(){
-		printf("Unloaded successfully rule 1\n");
+		//printf("Unloaded successfully rule 1\n");
 	}
 
 ]]></embedded_functions>

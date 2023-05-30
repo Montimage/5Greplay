@@ -262,8 +262,8 @@ void mmt_set_attribute_number_value(uint32_t proto_id, uint32_t att_id, uint64_t
 		else{
 			int difference=update_http2_data(context->packet_data, context->packet_size, context->ipacket, proto_id, att_id, new_val );
 			context->packet_size=context->packet_size+difference;
-			printf("mmt_set_attribute_number_value difference %d \n",difference);
-			printf("mmt_set_attribute_number_value Packet size %d\n",context->packet_size);
+			//printf("mmt_set_attribute_number_value difference %d \n",difference);
+			//printf("mmt_set_attribute_number_value Packet size %d\n",context->packet_size);
 		}
 	break;
 	

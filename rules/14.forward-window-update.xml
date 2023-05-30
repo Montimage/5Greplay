@@ -1,13 +1,13 @@
 <beginning>
 <embedded_functions><![CDATA[
-#include "http2_mmt_plugin.h"
+#include "../lib/http2.h"
 #include <stdlib.h>
 #include <unistd.h>
 
 	void on_load(){
 		
 
-		printf("Loaded successfully rule http2 Post  \n" );
+		//printf("Loaded successfully rule http2 Post  \n" );
 		
 	}
 	
@@ -19,8 +19,10 @@
 
    	printf( "em_modif_then_forward \n");
 		for(int i=0;i<10;i++){
+
+     		set_numeric_value( PROTO_HTTP2, HTTP2_INJECT_WIN_UPDATE, 0 );
      		forward_packet();
-     		set_numeric_value( PROTO_HTTP2, HTTP2_WINDOW_UPDATE, i );
+     		set_numeric_value( PROTO_HTTP2, HTTP2_RESTORE_PACKET, 0 );
      		printf("Wait 10 ms\n");
  		usleep(10000); // Sleep for 10 milliseconds
 		}
