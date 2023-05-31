@@ -9,7 +9,11 @@ on:
 
 jobs:
   build:
+<<<<<<< HEAD
     runs-on: ubuntu-18.04
+=======
+    runs-on: ubuntu-20.04
+>>>>>>> 1504e105ebffbd4bd044d6f7b1b272f612035f22
     steps:
     - name: Initialize variables
       env:

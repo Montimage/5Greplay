@@ -14,6 +14,7 @@ This repository contains the following folders:
 
 For more details, please refer to https://5greplay.org.
 
+<<<<<<< HEAD
 
 In order to run the DOS attacks related to HTTP2 Post, it is necessary to follow these steps:
 
@@ -76,5 +77,7 @@ sudo LD_LIBRARY_PATH=/opt/mmt/plugins  ./5greplay replay -t ~/Documenti/Nokiahtt
 ```
 
 
+=======
+>>>>>>> 1504e105ebffbd4bd044d6f7b1b272f612035f22
 # 
 ![](https://komarev.com/ghpvc/?username=montimage-5greplay&style=flat-square&label=Page+Views)

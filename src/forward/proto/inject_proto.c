@@ -25,10 +25,13 @@ inject_proto_context_t* inject_proto_alloc( const config_t *config ){
 		case FORWARD_PACKET_PROTO_UDP:
 			context->udp = inject_udp_alloc(target, conf->nb_copies );
 			break;
+<<<<<<< HEAD
 		case FORWARD_PACKET_PROTO_TCP:
 			context->tcp = inject_tcp_alloc(target, conf->nb_copies );
 			http2_handshake(context->tcp);
 			break;
+=======
+>>>>>>> 1504e105ebffbd4bd044d6f7b1b272f612035f22
 		default:
 			ABORT("Does not support forwarding using a protocol to %s:%d", target->host, target->port );
 		}
@@ -68,6 +71,7 @@ static inline int _get_udp_data_offset( const ipacket_t *ipacket ){
 	return get_packet_offset_at_index(ipacket, index) + 8; //8 bytes of UDP header ( each 2 bytes: src, dst port, length, checksum)
 }
 
+<<<<<<< HEAD
 static inline int _get_http_data_offset( const ipacket_t *ipacket ){
 	int index = get_protocol_index_by_id( ipacket, PROTO_HTTP2 );
 	//not found Http
@@ -78,6 +82,8 @@ static inline int _get_http_data_offset( const ipacket_t *ipacket ){
 }
 
 
+=======
+>>>>>>> 1504e105ebffbd4bd044d6f7b1b272f612035f22
 int inject_proto_send_packet( inject_proto_context_t *context, const ipacket_t *ipacket, const uint8_t *packet_data, uint16_t packet_size ){
 	int offset;
 	int ret =  0;
@@ -92,6 +98,7 @@ int inject_proto_send_packet( inject_proto_context_t *context, const ipacket_t *
 	if( context->udp ){
 		offset = _get_udp_data_offset( ipacket );
 		if( offset >= 0 ){
+<<<<<<< HEAD
 			DEBUG("Packet_id %"PRIu64" UDP_DATA offset: %d", ipacket->packet_id, offset );
 			ret += inject_udp_send_packet(context->udp, packet_data + offset, packet_size - offset);
 		}
@@ -106,6 +113,12 @@ int inject_proto_send_packet( inject_proto_context_t *context, const ipacket_t *
 			ret += inject_http2_send_packet(context->tcp, packet_data + offset, packet_size-offset);
 		}
 	}
+=======
+			DEBUG("%"PRIu64" UDP_DATA offset: %d", ipacket->packet_id, offset );
+			ret += inject_udp_send_packet(context->udp, packet_data + offset, packet_size - offset);
+		}
+	}
+>>>>>>> 1504e105ebffbd4bd044d6f7b1b272f612035f22
 	if( ret == 0 )
 		return INJECT_PROTO_NO_AVAIL;
 	return ret;

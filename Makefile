@@ -37,6 +37,7 @@ LIBS     += -ldl -lpthread
 ifdef STATIC_LINK
   CFLAGS += -DSTATIC_LINK
   LIBS   += -l:libxml2.a -l:libicuuc.a -l:libz.a -l:liblzma.a -l:libicudata.a #xml2 and its dependencies
+<<<<<<< HEAD
   LIBS   +=  -l:libmmt_core.a -l:libmmt_tcpip.so -l:libmmt_tmobile.a  -l:libsctp.a -l:libpcap.a -l:libmmt_tcpip.a
 else
   LIBS   += -l:libmmt_core.so -l:libmmt_tmobile.so -l:libxml2.so -l:libsctp.so -l:libpcap.so -l:libmmt_tcpip.a
@@ -48,6 +49,18 @@ CFLAGS   += -fPIC -Wall -DVERSION_NUMBER=\"$(VERSION)\" -DGIT_VERSION=\"$(GIT_VE
 				-I/usr/include/libxml2/  -I$(MMT_DPI_DIR)/include  -I$(MMT_DPI_DIR)/include/dpi/mobile 
 
 CLDFLAGS += -L$(MMT_DPI_DIR)/lib -L./plugins -L/usr/local/lib  -L/opt/mmt/plugins
+=======
+  LIBS   +=  -l:libmmt_core.a -l:libmmt_tcpip.so -l:libmmt_tmobile.a  -l:libsctp.a -l:libpcap.a
+else
+  LIBS   += -l:libmmt_core.so -l:libmmt_tmobile.so -l:libxml2.so -l:libsctp.so -l:libpcap.so
+endif
+
+CFLAGS   += -fPIC -Wall -DVERSION_NUMBER=\"$(VERSION)\" -DGIT_VERSION=\"$(GIT_VERSION)\" -DLEVEL1_DCACHE_LINESIZE=$(CACHE_LINESIZE) \
+				-Wno-unused-variable -Wno-unused-function -Wuninitialized\
+				-I/usr/include/libxml2/  -I$(MMT_DPI_DIR)/include
+
+CLDFLAGS += -L$(MMT_DPI_DIR)/lib -L./plugins -L/usr/local/lib
+>>>>>>> 1504e105ebffbd4bd044d6f7b1b272f612035f22
 
 #a specific flag for each .o file
 CFLAGS += $(CFLAGS-$@)
@@ -144,4 +157,8 @@ dist: sample-rules
 	tar -czf $(ZIP_NAME) $(DIST_NAME)
 
 docker-image:
+<<<<<<< HEAD
 	docker build --tag ${OUTPUT}:${VERSION} . 
+=======
+	docker build --tag ${OUTPUT}:${VERSION} . 
+>>>>>>> 1504e105ebffbd4bd044d6f7b1b272f612035f22

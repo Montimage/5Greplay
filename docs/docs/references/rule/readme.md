@@ -5,9 +5,15 @@ There are sample rules in [`rules`](https://github.com/Montimage/5GReplay/tree/m
 
 # 2. Embedded functions
 
+<<<<<<< HEAD
 Embedded functions are functions that allow implementing calculations 
 that are too complicated to define using only classical operators on fields in the Boolean expressions of security rules. 
 One can either use existing embedded functions or implement a new function. 
+=======
+Embedded functions are functions that allow implementing calculations
+that are too complicated to define using only classical operators on fields in the Boolean expressions of security rules.
+One can either use existing embedded functions or implement a new function.
+>>>>>>> 1504e105ebffbd4bd044d6f7b1b272f612035f22
 In both cases, they can be used in the Boolean expressions by using the syntax:
 
   `#<name_of_function>(<list of parameters>)`
@@ -24,11 +30,19 @@ where `http` is the protocol name and `user_agent` is the attribute name (i.e., 
 
 ## 2.1. Special terms
 
+<<<<<<< HEAD
 1. `true` will be replaced by the number 1. 
 
    For example: `#em_check( tcp.src_port ) == true`
 
 2. `false` will be replaced by the number 0. 
+=======
+1. `true` will be replaced by the number 1.
+
+   For example: `#em_check( tcp.src_port ) == true`
+
+2. `false` will be replaced by the number 0.
+>>>>>>> 1504e105ebffbd4bd044d6f7b1b272f612035f22
 
    For example: `#em_check( tcp.src_port ) == false`
 
@@ -61,6 +75,7 @@ In boolean expressions of rules, one can use one or many embedded functions
 1. `is_exist( proto.att )`  checks whether an event has an attribute of a protocol, e.g., `is_exist( http.method )` will return `true` if the current event contains protocol `HTTP` and attribute method has a non-null value, otherwise it will return `false`.
 
 	Normally 5Greplay has a filter that allow an event in a rule to be verified only if any proto.att used in its boolean expression contains value. If one of them has not, the rule will not be verified. This allows to reduce number of verification of boolean expression, thus increases the performance.
+<<<<<<< HEAD
 	
 	For example, given an event having the following boolean expression:
 	
@@ -72,6 +87,19 @@ In boolean expressions of rules, one can use one or many embedded functions
 	
 	`((ip.src != ip.dst) && ((#is_exist(http.uri) == true ) && (#em_check_URI(http.uri) == 1)))`
 	
+=======
+
+	For example, given an event having the following boolean expression:
+
+	`((ip.src != ip.dst) && (#em_check_URI(http.uri) == 1))`
+
+	This event is verified only if `ip.src` and `ip.dst` and `http.uri` are not null, hence only HTTP packets are verified (it does not verify every IP packets).
+
+	However, if one use the following expression, that is totally having the same meaning with the previous one:
+
+	`((ip.src != ip.dst) && ((#is_exist(http.uri) == true ) && (#em_check_URI(http.uri) == 1)))`
+
+>>>>>>> 1504e105ebffbd4bd044d6f7b1b272f612035f22
 	5Greplay needs to verify the expression against any IP packet as `is_exist` tell 5Greplay to exclude `http.uri` from its filter.
 
 2. `is_null( proto.att )`, e.g., `#is_null(http.uri)` check whether the value of `http.uri` is null
@@ -85,7 +113,11 @@ In boolean expressions of rules, one can use one or many embedded functions
    Please note that, before using a C function the library containing that embedded functions need to be included.
    The following libraries have been pre-included:
 
+<<<<<<< HEAD
    ```c
+=======
+```c
+>>>>>>> 1504e105ebffbd4bd044d6f7b1b272f612035f22
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -93,7 +125,11 @@ In boolean expressions of rules, one can use one or many embedded functions
 #include "pre_embedded_functions.h"
 ```
 
+<<<<<<< HEAD
    Consequently when using a function that does not defined inside these libraries, we need to include its library. 
+=======
+Consequently when using a function that does not defined inside these libraries, we need to include its library.
+>>>>>>> 1504e105ebffbd4bd044d6f7b1b272f612035f22
 For example:
 
 ```xml
@@ -105,6 +141,7 @@ static inline bool function em_check( double port ){
 }
 ]]></embedded_functions>
 ```
+<<<<<<< HEAD
    
 # 3. Reactive functions
    
@@ -114,12 +151,27 @@ The functions will be called each time their rules are satisfied.
 To implement and use a reactive function, we need:
 
 - implement a C function inside `<embedded_functions>` tag. 
+=======
+
+# 3. Reactive functions
+
+Reactive functions allow us to perform some action when a rule is satisfied.
+The functions will be called each time their rules are satisfied.
+
+To implement and use a reactive function, we need:
+
+- implement a C function inside `<embedded_functions>` tag.
+>>>>>>> 1504e105ebffbd4bd044d6f7b1b272f612035f22
 
    The function name should be prefixed by `em_` to avoid any confusion with the ones existing internally in 5Greplay.
 
    The function has the following format:
 
+<<<<<<< HEAD
    ```C
+=======
+```c
+>>>>>>> 1504e105ebffbd4bd044d6f7b1b272f612035f22
 typedef void (*mmt_rule_satisfied_callback)(
 		const rule_t *rule,		          //rule being validated
 		int verdict,                     //DETECTED, NOT_RESPECTED
@@ -128,7 +180,11 @@ typedef void (*mmt_rule_satisfied_callback)(
 		const mmt_array_t * const trace  //historic of messages that validates the rule
 );
 ```
+<<<<<<< HEAD
    
+=======
+
+>>>>>>> 1504e105ebffbd4bd044d6f7b1b272f612035f22
 - put the function name in attribute `if_satisfied` of the rule you want to react. For example: `if_satisfied="em_print_out"`
 
 
@@ -136,7 +192,11 @@ typedef void (*mmt_rule_satisfied_callback)(
 <beginning>
 <embedded_functions><![CDATA[
 static void em_print_out(
+<<<<<<< HEAD
       const rule_info_t *rule, int verdict, uint64_t timestamp, 
+=======
+      const rule_info_t *rule, int verdict, uint64_t timestamp,
+>>>>>>> 1504e105ebffbd4bd044d6f7b1b272f612035f22
       uint64_t counter, const mmt_array_t * const trace ){
    const char* trace_str = mmt_convert_execution_trace_to_json_string( trace, rule );
    printf( "detect rule %d\n%s\n", rule->id, trace_str );
@@ -148,12 +208,21 @@ static void em_print_out(
 ]]></embedded_functions>
 
 <!-- Property 10: HTTP using a port different from 80 and 8080.-->
+<<<<<<< HEAD
 <property value="THEN" delay_units="s" delay_min="0" delay_max="0" property_id="10" type_property="EVASION" 
     description="HTTP using a port different from 80 and 8080." if_satisfied="em_print_out">
     <event value="COMPUTE" event_id="1" 
         description="HTTP packet using a port different from 80 and 8080"
            boolean_expression="((http.method != '')&amp;&amp;((tcp.dest_port != 80)&amp;&amp;(tcp.dest_port != 8080)))"/>
     <event value="COMPUTE" event_id="2" 
+=======
+<property value="THEN" delay_units="s" delay_min="0" delay_max="0" property_id="10" type_property="EVASION"
+    description="HTTP using a port different from 80 and 8080." if_satisfied="em_print_out">
+    <event value="COMPUTE" event_id="1"
+        description="HTTP packet using a port different from 80 and 8080"
+           boolean_expression="((http.method != '')&amp;&amp;((tcp.dest_port != 80)&amp;&amp;(tcp.dest_port != 8080)))"/>
+    <event value="COMPUTE" event_id="2"
+>>>>>>> 1504e105ebffbd4bd044d6f7b1b272f612035f22
            description="HTTP packet"
            boolean_expression="(ip.src != ip.dst)"/>
 </property>
@@ -163,7 +232,11 @@ static void em_print_out(
 ## 3.1 Supported functions
 
 We implement several functions to suport modifying protocol attributes' values, drop a packet, and forward a packet or it copies to the output NIC.
+<<<<<<< HEAD
 New functions will be implemented and add time by time. 
+=======
+New functions will be implemented and add time by time.
+>>>>>>> 1504e105ebffbd4bd044d6f7b1b272f612035f22
 
 The following functions **must** be called inside a reactive function.
 
@@ -187,15 +260,25 @@ The following functions have been already defined
 
 - `proto_id` and `att_id` epresent respectively protocol and attribute to be altered
 - `expression` is in format of `expression` to get value to assign to the protocol attribute
+<<<<<<< HEAD
 - Example: 
    + `#update(ngap.ran_ue_id, (ngap.ran_ue_id + 100)` will increase `ran_ue_id` by 100
    + `#update(ngap.ran_ue_id, (ngap.ran_ue_id.1 * 2)` will replace `ran_ue_id` of the current packet 
+=======
+- Example:
+   + `#update(ngap.ran_ue_id, (ngap.ran_ue_id + 100)` will increase `ran_ue_id` by 100
+   + `#update(ngap.ran_ue_id, (ngap.ran_ue_id.1 * 2)` will replace `ran_ue_id` of the current packet
+>>>>>>> 1504e105ebffbd4bd044d6f7b1b272f612035f22
    by the double of `ran_ue_id` of the packet having `event_id=1`
 
 3. `#fuzz(proto.att, proto.att, ...)` to alter the current packet then forward its copies to the outgoing NIC.
 
 - Currently (Feb 10, 2022) only numeric values are supported
+<<<<<<< HEAD
 - Each proto.att will be set a new random value generated by C `random` function. 
+=======
+- Each proto.att will be set a new random value generated by C `random` function.
+>>>>>>> 1504e105ebffbd4bd044d6f7b1b272f612035f22
  See an example in [rules/7.fuzz-ngap.xml](../../../rules/7.fuzz-ngap.xml) on how to override the `random` function.
 
 ## 3.3 Examples
@@ -208,7 +291,11 @@ The following XML file defines 3 rules:
 <embedded_functions><![CDATA[
 
 static void em_modif_then_forward(
+<<<<<<< HEAD
       const rule_info_t *rule, int verdict, uint64_t timestamp, 
+=======
+      const rule_info_t *rule, int verdict, uint64_t timestamp,
+>>>>>>> 1504e105ebffbd4bd044d6f7b1b272f612035f22
       uint64_t counter, const mmt_array_t * const trace ){
    const char* trace_str = mmt_convert_execution_trace_to_json_string( trace, rule );
    //forward the original packet (without any modification)
@@ -226,7 +313,11 @@ static void em_modif_then_forward(
 }
 ]]></embedded_functions>
 
+<<<<<<< HEAD
 <property value="THEN"  delay_units="s" delay_min="0+" delay_max="1" property_id="100" 
+=======
+<property value="THEN"  delay_units="s" delay_min="0+" delay_max="1" property_id="100"
+>>>>>>> 1504e105ebffbd4bd044d6f7b1b272f612035f22
     description="Forwarding NAS security mode COMPLETE that answers to NAS security mode COMMAND "
     if_satisfied="em_modif_then_forward">
     <event value="COMPUTE" event_id="1" description="NAS Security mode COMMAND"
@@ -247,12 +338,20 @@ static void em_modif_then_forward(
 </property>
 ```
 
+<<<<<<< HEAD
 1. Rule 100 will match 2 different packets (as it has 2 events and `delay_min="0+"`): 
+=======
+1. Rule 100 will match 2 different packets (as it has 2 events and `delay_min="0+"`):
+>>>>>>> 1504e105ebffbd4bd044d6f7b1b272f612035f22
 
    - the first packet is NAS security mode COMMAND (having `nas_5g.message_type == 93`)
    - the second packet is NAS security mode COMPLETE (having `nas_5g.message_type == 4`)
 
+<<<<<<< HEAD
    At the moment of getting the second packet, the `em_modif_then_forward` function is called. 
+=======
+At the moment of getting the second packet, the `em_modif_then_forward` function is called.
+>>>>>>> 1504e105ebffbd4bd044d6f7b1b272f612035f22
 In this function we can modify the second packet's content then inject it into the outgoing network.
 The function fistly forwards the second packet without any modification by calling `forward_packet()`.
 It then get the current value of `NGAP_ATT_RAN_UE` attribute of `NGAP` protocol in the second packet by calling `get_numeric_value`.
@@ -262,7 +361,11 @@ It then marks the incrasing of this value, by calling `set_numeric_value`, then 
 
 2. Rule 101 does not forward the UDP packets that have `dest_port` other than 2152 by explicitly call `drop()` function.
 
+<<<<<<< HEAD
 3. Rule 102 checks whether a packet contains not-zero `ran_ue_id` of `ngap`. If so, it increases the `procedure_code` value by 100. 
+=======
+3. Rule 102 checks whether a packet contains not-zero `ran_ue_id` of `ngap`. If so, it increases the `procedure_code` value by 100.
+>>>>>>> 1504e105ebffbd4bd044d6f7b1b272f612035f22
 (and then, by default, it forwards the modified packet to the outgoing NIC)
 
 # 4. Compile rules
@@ -279,13 +382,18 @@ The compiled rules must put in `./rules` folder.
 - use `compile` to compile rules in a XML file. For example:
 
    `./5greplay compile rules/1.so rules/1.xml`
+<<<<<<< HEAD
    
+=======
+
+>>>>>>> 1504e105ebffbd4bd044d6f7b1b272f612035f22
    The program uses 3 parameters in form: `output_file property_file [gcc parameters]`
 
    where:
 
    + `output_file`: is the path of file containing the result that can be either a .c file or .so file.
    + `property_file`: is the path where the property file can be found.
+<<<<<<< HEAD
    + `options`: 
       
       - `-c`: will generate only the C code. This option allows manually modifying the generated code before compiling it. 
@@ -295,12 +403,27 @@ The compiled rules must put in `./rules` folder.
                       These parameters will be directly transmitted to the gcc compiler, for example, `"-I /tmp -lmath"`
        
 ## 4.2 Obtain information inside compiled rules 
+=======
+   + `options`:
+
+      - `-c`: will generate only the C code. This option allows manually modifying the generated code before compiling it.
+       After generating the C code, the tool prints out the command that needs to be executed for compiling it.
+
+       - gcc parameters: used to generate the C code, and compile it to obtain the .so file.
+                      These parameters will be directly transmitted to the gcc compiler, for example, `"-I /tmp -lmath"`
+
+## 4.2 Obtain information inside compiled rules
+>>>>>>> 1504e105ebffbd4bd044d6f7b1b272f612035f22
 
 To get some basic information about a compiled rule (such as, ID, description), we use `info` command.
 
    By default, the tool will print out the information on all rules, for example:
 
+<<<<<<< HEAD
 ```
+=======
+```bash
+>>>>>>> 1504e105ebffbd4bd044d6f7b1b272f612035f22
 ./5greplay info
 mmt-5greplay: 5Greplay v0.0.1-5c9a333 using DPI v1.7.0.0 (a8ad3c2) is running on pid 24680
 mmt-5greplay: Ignore duplicated rule id 103 (Inject only packet from UE -> Core but not inversed direction)
@@ -318,7 +441,11 @@ Found 3 rules.
 
 The tool can also be used to inspect a specific compiled rule by giving the rule path as parameter, for example:
 
+<<<<<<< HEAD
 ```
+=======
+```bash
+>>>>>>> 1504e105ebffbd4bd044d6f7b1b272f612035f22
 ./5greplay info rules/forward-localhost.so
 mmt-5greplay: 5Greplay v0.0.1-5c9a333 using DPI v1.7.0.0 (a8ad3c2) is running on pid 21983
 Found 2 rules.
@@ -332,7 +459,11 @@ Found 2 rules.
 	- version         : 0.0.1 (5c9a333 - 2021-9-9 11:36:44), dpi version 1.7.0.0 (a8ad3c2)
 ...
 ```
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 1504e105ebffbd4bd044d6f7b1b272f612035f22
 # 5. Default values
 
 In the XML file of a rule, if an attribute of an XML tag is absent then its value is set by default:
@@ -343,6 +474,7 @@ In the XML file of a rule, if an attribute of an XML tag is absent then its valu
    + `delay_units`: `s`
    + `delay_min`: 0
    + `delay_max`: 0
+<<<<<<< HEAD
  
 # 6. Write a high performance rule
  
@@ -352,6 +484,17 @@ In the XML file of a rule, if an attribute of an XML tag is absent then its valu
 
    - Please refer to the usage of function `is_exist` to get an example.
    - Use explicitly the following tcp flags to filter out unwanted verification: 
+=======
+
+# 6. Write a high performance rule
+
+ To write a rule having a high performance one need to:
+
+ - use only the proto.att in boolean expression when need.
+
+   - Please refer to the usage of function `is_exist` to get an example.
+   - Use explicitly the following tcp flags to filter out unwanted verification:
+>>>>>>> 1504e105ebffbd4bd044d6f7b1b272f612035f22
    `tcp.fin`, `tcp.syn`, `tcp.rst`, `tcp.psh`, `tcp.ack`, `tcp.urg`, `tcp.ece`, `tcp.cwr`.
 
    For example, the 2 following boolean expressions have the same meaning:
@@ -360,18 +503,32 @@ In the XML file of a rule, if an attribute of an XML tag is absent then its valu
 
    They both return `true` when only RST flag of a TCP packet is on, but the latter is better as 5Greplay verifies its rule only when `tcp.flags` and `tcp.rst` are not zero. Usually less than about 1% packets having `tcp.rst != 0`, consequently the rule using the second expression will be verified against only 1% packets.
 
+<<<<<<< HEAD
  - reduce `delay_max` of a rule to a suitable value. 
 
    When having a higher value of `delay_max` 5Greplay creates more rule instances to correlate different events of different packets. 
+=======
+ - reduce `delay_max` of a rule to a suitable value.
+
+   When having a higher value of `delay_max` 5Greplay creates more rule instances to correlate different events of different packets.
+>>>>>>> 1504e105ebffbd4bd044d6f7b1b272f612035f22
    When `delay_max` is zero, we call *simple rule*, 5Greplay verifies the rule and gives verdict immediately without creating any rule instances.
    A simple rule is verified much faster than a complex one that has non-zero `delay_max`.
 
    At 10Gbps, 5Greplay can verify upto 12400 simple rules or 600 complex rules.
+<<<<<<< HEAD
  
  - optimize implementation of embedded functions.
 
 	 - The embedded functions are called each time their boolean expressions are verified. Consequently, rather than initialize something, for example, connection to database, inside these functions, one can do such a task, only once, inside function `on_load` then store the connection into a static local variable that will be used inside the embedded functions.
 	
+=======
+
+ - optimize implementation of embedded functions.
+
+	 - The embedded functions are called each time their boolean expressions are verified. Consequently, rather than initialize something, for example, connection to database, inside these functions, one can do such a task, only once, inside function `on_load` then store the connection into a static local variable that will be used inside the embedded functions.
+
+>>>>>>> 1504e105ebffbd4bd044d6f7b1b272f612035f22
 	 - alway use embedded function with `static inline` keyword. For more information about advantage of `inline`, please refer to document of gcc: [An Inline Function is As Fast As a Macro](https://gcc.gnu.org/onlinedocs/gcc/Inline.html)
 
 # Links
