@@ -21,7 +21,6 @@
 #include "inject_http2.h"
 #include <mmt_core.h>
 
-#define PROTO_HTTP2 700
 
 typedef struct inject_proto_context_struct {
 	inject_sctp_context_t *sctp;
