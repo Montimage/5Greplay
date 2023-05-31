@@ -35,13 +35,12 @@ struct inject_tcp_context_struct{
 
 void http2_handshake(inject_tcp_context_t *context){
 //Establish http2 connection
-	printf("\nHttp2_hanshake call\n");
-	int ret;
-	
+	//printf("\nHttp2_hanshake call\n");
+	int ret;	
 	//ret = send( conn_fd, preface,  strlen(preface), 0 );
 	//ASSERT( ret >= 0, "Cannot send http2 preface to %s:%d using tcp", context->host, context->port );
 // Send the SETTINGS frame to the server
-	printf(" %d",context->client_fd);
+	//printf(" %d",context->client_fd);
 	char magic_settings[] = {
 		0x50,0x52,0x49,0x20,0x2a,0x20,0x48,0x54,0x54,0x50,0x2f,0x32,0x2e,0x30,0x0d,0x0a,0x0d,0x0a,0x53,0x4d,0x0d,0x0a,0x0d,0x0a,//preface HTTP2
 		0x00,0x00,0x1e,
@@ -52,22 +51,20 @@ void http2_handshake(inject_tcp_context_t *context){
 		0x00,0x00,0x06,0x00,0x00,0x07,0xd0
 
 	    };
-
 	 for(int i =0;i<strlen(magic_settings);i++)
-		 printf(" %02x ",magic_settings[i]);
-		 
+		 printf(" %02x ",magic_settings[i]);		 
 	ret =send(context->client_fd, magic_settings, sizeof(magic_settings), 0);
 	if( ret < 0) 
 		printf("Cannot send http2 SETTINGS FRAME to %s:%d using tcp\n", context->host, context->port );
-	printf("[TCP_connect] I send settings frame to server\n");
+	//printf("[TCP_connect] I send settings frame to server\n");
 	// Wait for the server's response
-	     char response[4096];
-  		memset(response, 0, sizeof(response));
+	char response[4096];
+  	memset(response, 0, sizeof(response));
 	    ret=read(context->client_fd, response, sizeof(response));
-	   	if( ret <0)
+	   if( ret <0)
 	   	printf("Cannot receive Http2 Answer from %s:%d using tcp\n", context->host, context->port );
 	    
-	    	printf("I received this response %s with \n",response);
+	    	//printf("I received this response %s with \n",response);
 	char settings_0[]={
 		0x00,0x00,0x00,//length
 		0x04,//setting
@@ -76,12 +73,7 @@ void http2_handshake(inject_tcp_context_t *context){
 	ret =send(context->client_fd, settings_0, sizeof(settings_0), 0);
 	if( ret < 0)
 		printf("Cannot send Http2 SETTINGS_0 frame from %s:%d using tcp\n", context->host, context->port );
-	printf("I sent settings[0] frame   \n");
-
-
-
-
-
+	//printf("I sent settings[0] frame   \n");
 }
 void _tcp_connect( inject_tcp_context_t *context ){
 	int conn_fd, ret;
@@ -139,9 +131,8 @@ int inject_http2_send_packet( inject_tcp_context_t *context, const uint8_t *pack
 	uint16_t nb_pkt_sent = 0;
 	int ret, i;
 	char response[4096];
-	printf("Packet size %u ",packet_size);
-	printf("[inject_tcp]Send  ");
-	
+	//printf("Packet size %u ",packet_size);
+	//printf("[inject_tcp]Send  ");
 	//for (int i=0;i<packet_size;i++)
 	//	printf(" %02x",packet_data[i]);
 //	_reconnect_tcp_if_need( context );
@@ -158,7 +149,7 @@ int inject_http2_send_packet( inject_tcp_context_t *context, const uint8_t *pack
   		  }
 		if( ret > 0 ){
 			nb_pkt_sent ++;
-			printf("Http2 packet sent \n");
+			//printf("Http2 packet sent \n");
 		}
 		memset(response, 0, sizeof(response));
 		//ret=read(context->client_fd, response, sizeof(response));

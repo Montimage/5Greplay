@@ -18,7 +18,6 @@
 #include "../../engine/configure.h"
 #include "inject_sctp.h"
 #include "inject_udp.h"
-<<<<<<< HEAD
 #include "inject_http2.h"
 #include <mmt_core.h>
 
@@ -28,13 +27,7 @@ typedef struct inject_proto_context_struct {
 	inject_sctp_context_t *sctp;
 	inject_udp_context_t  *udp;
 	inject_tcp_context_t  *tcp;
-=======
-#include <mmt_core.h>
 
-typedef struct inject_proto_context_struct {
-	inject_sctp_context_t *sctp;
-	inject_udp_context_t  *udp;
->>>>>>> 1504e105ebffbd4bd044d6f7b1b272f612035f22
 } inject_proto_context_t;
 
 

@@ -1,6 +1,6 @@
 
 /** 1207
- * This file is generated automatically on 2023-05-30 19:21:55
+ * This file is generated automatically on 2023-05-31 11:07:49
  */
 #include <string.h>
 #include <stdio.h>
@@ -52,9 +52,9 @@ static void em_forward1(
    	uint32_t method= (uint32_t)get_numeric_value( PROTO_HTTP2, HTTP2_HEADER_STREAM_ID, 1, trace );
 	uint32_t type=  (uint32_t)get_numeric_value( PROTO_HTTP2, HTTP2_WINDOW_UPDATE, 1, trace );
 	//printf("Ho ricevuto i valori method = %d e type= %d \n",(int)method,(int)type);
-	set_numeric_value( PROTO_HTTP2, HTTP2_INJECT_WIN_UPDATE, 0 );
-    	forward_packet();
-	set_numeric_value( PROTO_HTTP2, HTTP2_RESTORE_PACKET, 0 );
+	//set_numeric_value( PROTO_HTTP2, HTTP2_INJECT_WIN_UPDATE, 0 );
+    	//forward_packet();
+	//set_numeric_value( PROTO_HTTP2, HTTP2_RESTORE_PACKET, 0 );
 	for(int i=1;i<number_request;i+=2){
      			set_numeric_value( PROTO_HTTP2, HTTP2_HEADER_STREAM_ID, i );
      			forward_packet();
@@ -243,7 +243,7 @@ static void *create_new_fsm_16(){
   * PUBLIC API
  */
 
-static const rule_version_info_t version = {.created_date=1685467315, .hash = "27d1deb", .number="0.0.6", .index=600, .dpi="1.7.8 (68bd7d93)"};
+static const rule_version_info_t version = {.created_date=1685524069, .hash = "dcce935", .number="0.0.6", .index=600, .dpi="1.7.8 (68bd7d93)"};
 const rule_version_info_t * mmt_sec_get_rule_version_info(){ return &version;};
 
  //======================================GENERAL======================================

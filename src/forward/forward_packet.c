@@ -15,11 +15,6 @@
 #include <netinet/ether.h>
 #include <time.h>
 
-<<<<<<< HEAD
-
-
-=======
->>>>>>> 1504e105ebffbd4bd044d6f7b1b272f612035f22
 #include "forward_packet.h"
 #include "inject_packet.h"
 #include "proto/inject_proto.h"
@@ -235,13 +230,10 @@ void mmt_forward_packet(){
 //this function is implemented inside mmt-dpi to update NGAP protocol
 extern uint32_t update_ngap_data( u_char *data, uint32_t data_size, const ipacket_t *ipacket, uint32_t proto_id, uint32_t att_id, uint64_t new_val );
 
-<<<<<<< HEAD
+
 //this function is implemented inside mmt-dpi to update HTTP2 protocol
 extern uint32_t update_http2_data( u_char *data, uint32_t data_size, const ipacket_t *ipacket, uint32_t proto_id, uint32_t att_id, uint64_t new_val );
 
-
-=======
->>>>>>> 1504e105ebffbd4bd044d6f7b1b272f612035f22
 /**
  * This function is called by mmt-engine when a FORWARD rule is satisfied
  *   and its if_satisfied="#update( xx.yy, ..)"
@@ -252,16 +244,15 @@ void mmt_set_attribute_number_value(uint32_t proto_id, uint32_t att_id, uint64_t
 	if( context == NULL )
 		return;
 	int ret = 0;
-<<<<<<< HEAD
+
 	switch(proto_id){
 	case(PROTO_NGAP):
-=======
->>>>>>> 1504e105ebffbd4bd044d6f7b1b272f612035f22
+
 	ret = update_ngap_data(context->packet_data, context->packet_size, context->ipacket, proto_id, att_id, new_val );
 	if( ! ret )
 		log_write( LOG_ERR, "Cannot set new value %"PRIu64" for att %d of proto %d for packet id %"PRIu64,
 			new_val, att_id, proto_id, context->ipacket->packet_id);
-<<<<<<< HEAD
+
 		
 	break;
 	case(PROTO_HTTP2):
@@ -281,8 +272,7 @@ void mmt_set_attribute_number_value(uint32_t proto_id, uint32_t att_id, uint64_t
 		log_write( LOG_ERR, "Cannot set new value %"PRIu64" for att %d of proto %d for packet id %"PRIu64,
 			new_val, att_id, proto_id, context->ipacket->packet_id);
 			}
-=======
->>>>>>> 1504e105ebffbd4bd044d6f7b1b272f612035f22
+
 }
 
 

@@ -72,11 +72,7 @@ typedef enum {
 }forward_action_t;
 
 typedef struct forward_packet_target_conf_struct{
-<<<<<<< HEAD
 	enum{ FORWARD_PACKET_PROTO_SCTP, FORWARD_PACKET_PROTO_UDP, FORWARD_PACKET_PROTO_TCP } protocol;
-=======
-	enum{ FORWARD_PACKET_PROTO_SCTP, FORWARD_PACKET_PROTO_UDP } protocol;
->>>>>>> 1504e105ebffbd4bd044d6f7b1b272f612035f22
 	char * host;
 	uint16_t port;
 }forward_packet_target_conf_t;
