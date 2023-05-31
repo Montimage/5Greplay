@@ -51,18 +51,18 @@ void http2_handshake(inject_tcp_context_t *context){
 		0x00,0x00,0x06,0x00,0x00,0x07,0xd0
 
 	    };
-	 for(int i =0;i<strlen(magic_settings);i++)
-		 printf(" %02x ",magic_settings[i]);		 
+	// for(int i =0;i<strlen(magic_settings);i++)
+		 //printf(" %02x ",magic_settings[i]);		 
 	ret =send(context->client_fd, magic_settings, sizeof(magic_settings), 0);
 	if( ret < 0) 
-		printf("Cannot send http2 SETTINGS FRAME to %s:%d using tcp\n", context->host, context->port );
+		log_write( LOG_ERR, "Cannot send http2 SETTINGS FRAME to %s:%d using tcp\n", context->host, context->port );
 	//printf("[TCP_connect] I send settings frame to server\n");
 	// Wait for the server's response
 	char response[4096];
   	memset(response, 0, sizeof(response));
 	    ret=read(context->client_fd, response, sizeof(response));
 	   if( ret <0)
-	   	printf("Cannot receive Http2 Answer from %s:%d using tcp\n", context->host, context->port );
+	   	log_write( LOG_ERR, "Cannot receive Http2 Answer from %s:%d using tcp\n", context->host, context->port );
 	    
 	    	//printf("I received this response %s with \n",response);
 	char settings_0[]={
@@ -72,7 +72,7 @@ void http2_handshake(inject_tcp_context_t *context){
 	};
 	ret =send(context->client_fd, settings_0, sizeof(settings_0), 0);
 	if( ret < 0)
-		printf("Cannot send Http2 SETTINGS_0 frame from %s:%d using tcp\n", context->host, context->port );
+		log_write( LOG_ERR, "Cannot send Http2 SETTINGS_0 frame from %s:%d using tcp\n", context->host, context->port );
 	//printf("I sent settings[0] frame   \n");
 }
 void _tcp_connect( inject_tcp_context_t *context ){
@@ -98,7 +98,7 @@ void _tcp_connect( inject_tcp_context_t *context ){
 
 	ret = connect(conn_fd, (struct sockaddr *) &servaddr, sizeof(servaddr));
 	if( ret >= 0)
-		printf("Cannot connect to %s:%d using tcp", context->host, context->port );
+		log_write( LOG_ERR, "Cannot connect to %s:%d using tcp", context->host, context->port );
 	context->client_fd = conn_fd;
 	
 }
@@ -143,7 +143,7 @@ int inject_http2_send_packet( inject_tcp_context_t *context, const uint8_t *pack
 
 		ret = send( context->client_fd, packet_data, packet_size, 0 );
 		    if (ret < 0) {
-		    	printf("Send error code %d\n",ret);
+		    	log_write( LOG_ERR, "Send error code %d\n",ret);
 		        perror("inject_http2_send_packet Failed to send message");
 
   		  }
