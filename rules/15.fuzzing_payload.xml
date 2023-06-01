@@ -11,7 +11,7 @@ void on_load(){
 }
 	
 	static void em_modif_then_forward(
-		onst rule_info_t *rule, int verdict, uint64_t timestamp, 
+		const rule_info_t *rule, int verdict, uint64_t timestamp, 
 		uint64_t counter, const mmt_array_t * const trace ){	
 		const char* trace_str = mmt_convert_execution_trace_to_json_string( trace, rule );
 		printf( "FUzzing Update %d\n%s\n", rule->id, trace_str );
