@@ -42,7 +42,7 @@ static void em_modif_then_forward(
 <property value="THEN" property_id="14" type_property="FORWARD" 
     description="Modify stream id" if_satisfied="em_modif_then_forward">
   <event value="COMPUTE" event_id="1" description="Forward "
-         		  boolean_expression="( http2.header_method == 130 &amp;&amp; (ip.src != ip.dst) )" />
+         		  boolean_expression="( (http2.header_method == 130) &amp;&amp; (ip.src != ip.dst) )" />
    <event value="COMPUTE" event_id="2" 
            description="Nothing"
            boolean_expression="( http2.header_method != 0)"/>  

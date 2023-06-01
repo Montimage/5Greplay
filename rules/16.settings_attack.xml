@@ -43,15 +43,11 @@ static void em_forward1(
      			j=(j+1)%51;
      			usleep(1000);
 		}
-     	canSendWinUpdate=true;
 	}
 
-
-
-
-	void on_unload(){
-		printf("Unloaded successfully rule 1\n");
-	}
+//void on_unload(){
+	//	printf("Unloaded successfully rule 1\n");
+	//}
 
 ]]></embedded_functions>
 <property   property_id="16" type_property="FORWARD" 
