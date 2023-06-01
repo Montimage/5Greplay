@@ -6,18 +6,18 @@
 
 
 static unsigned long int number_request =1000;
-	void on_load(){
-		
-
-		printf("Loaded successfully rule Fuzzing  \n" );
-		
-	}
+void on_load(){
+	number_request = get_parameter_nb_copies();
+	if( number_request == 0 )
+		number_request = 5000;
+	//log_write( LOG_INFO, "Rule 13: Number of copies of packets = %lu", number_request);
+}
 	
 	static void em_modif_then_forward(
-	   const rule_info_t *rule, int verdict, uint64_t timestamp, 
-	   uint64_t counter, const mmt_array_t * const trace ){	
-  	const char* trace_str = mmt_convert_execution_trace_to_json_string( trace, rule );
-   	printf( "FUzzing Update %d\n%s\n", rule->id, trace_str );
+		onst rule_info_t *rule, int verdict, uint64_t timestamp, 
+		uint64_t counter, const mmt_array_t * const trace ){	
+		const char* trace_str = mmt_convert_execution_trace_to_json_string( trace, rule );
+		printf( "FUzzing Update %d\n%s\n", rule->id, trace_str );
 
    	printf( "em_modif_then_forward \n");
 	for(int i=1;i<number_request;i+=2){
