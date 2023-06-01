@@ -1,7 +1,7 @@
 /*
  * inject_tcp.c
  *
- *  Created on: May 19, 2021
+ *  Created on: May 19, 2023
  *      Author: francesco
  *
  * This file implements the packet injection using tcp:
@@ -39,16 +39,18 @@ void http2_handshake(inject_tcp_context_t *context){
 	int ret;	
 	//ret = send( conn_fd, preface,  strlen(preface), 0 );
 	//ASSERT( ret >= 0, "Cannot send http2 preface to %s:%d using tcp", context->host, context->port );
-// Send the SETTINGS frame to the server
+	// Send the SETTINGS frame to the server
 	//printf(" %d",context->client_fd);
 	char magic_settings[] = {
 		0x50,0x52,0x49,0x20,0x2a,0x20,0x48,0x54,0x54,0x50,0x2f,0x32,0x2e,0x30,0x0d,0x0a,0x0d,0x0a,0x53,0x4d,0x0d,0x0a,0x0d,0x0a,//preface HTTP2
-		0x00,0x00,0x1e,
+		0x00,0x00,0x1e,//Settings length
 		0x04,//type 
 		0x00,0x00,0x00,0x00,0x00,
-		0x00,0x03,0x00,0x00,0x00,0x64,0x00,
-		0x04,0x00,0x00,0xff,0xff,0x00,0x01,0x00,0x00,0x10,0x00,0x00,0x02,0x00,0x00,0x00,
-		0x00,0x00,0x06,0x00,0x00,0x07,0xd0
+		0x00,0x03,0x00,0x00,0x00,0x64,//Max concurrent streams
+		0x00,0x04,0x00,0x00,0xff,0xff,//initial window size
+		0x00,0x01,0x00,0x00,0x10,0x00,//header table size
+		0x00,0x02,0x00,0x00,0x00,0x00,//Ebable push
+		0x00,0x06,0x00,0x00,0x07,0xd0//Max header list size
 
 	    };
 	// for(int i =0;i<strlen(magic_settings);i++)
@@ -137,16 +139,13 @@ int inject_http2_send_packet( inject_tcp_context_t *context, const uint8_t *pack
 	//	printf(" %02x",packet_data[i]);
 //	_reconnect_tcp_if_need( context );
 	//_clear_tcp_buffer_if_need( context );
-		
 	for( i=0; i<context->nb_copies; i++ ){
 		//returns the number of bytes written on success and -1 on failure.
-
 		ret = send( context->client_fd, packet_data, packet_size, 0 );
-		    if (ret < 0) {
+		if (ret < 0) {
 		    	log_write( LOG_ERR, "Send error code %d\n",ret);
 		        perror("inject_http2_send_packet Failed to send message");
-
-  		  }
+  		}
 		if( ret > 0 ){
 			nb_pkt_sent ++;
 			//printf("Http2 packet sent \n");
@@ -156,7 +155,6 @@ int inject_http2_send_packet( inject_tcp_context_t *context, const uint8_t *pack
 	   	//if( ret < 0)
 	   	//	printf( "Cannot receive Http2 Answer from %s:%d using tcp\n", context->host, context->port );
 	}
-		printf("\n");
 	//sleep(1);
 	return nb_pkt_sent;
 }

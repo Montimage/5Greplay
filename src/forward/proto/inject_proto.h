@@ -1,13 +1,8 @@
 /*
  * inject_proto.h
  *
-<<<<<<< HEAD
- *  Created on: March 7, 2023
- *      Author: francesco
-=======
  *  Created on: May 14, 2021
- *      Author: nhnghia
->>>>>>> 1504e105ebffbd4bd044d6f7b1b272f612035f22
+ *      Author: nhnghia,francesco
  *
  * This file implements injection packets using a special protocol (TCP, UDP, SCTP, etc) rather than injecting raw packet to the output NIC
  */

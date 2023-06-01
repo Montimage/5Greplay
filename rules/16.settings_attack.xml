@@ -6,7 +6,7 @@
 
 
 static unsigned long int number_request =100;
-volatile bool canSendWinUpdate= false;
+
 void on_load(){
 	const char *str = getenv("REQ_NUMBER");
 	if( str == NULL ){	
@@ -17,7 +17,7 @@ void on_load(){
 	number_request = strtoul( str, NULL, 0 );
 	}
 	//printf("Loaded successfully rule http2 Post  \n" );	
-	}
+}
 static void em_forward1(
 	const rule_info_t *rule, int verdict, uint64_t timestamp, 
 	uint64_t counter, const mmt_array_t * const trace ){	
@@ -31,14 +31,16 @@ static void em_forward1(
 	//set_numeric_value( PROTO_HTTP2, HTTP2_INJECT_WIN_UPDATE, 0 );
     	//forward_packet();
 	//set_numeric_value( PROTO_HTTP2, HTTP2_RESTORE_PACKET, 0 );
+	int j=0;
 	for(int i=1;i<number_request;i+=2){
      			set_numeric_value( PROTO_HTTP2, HTTP2_HEADER_STREAM_ID, i );
      			forward_packet();
-     			if(i==20){
+     			if(j==50){
      				set_numeric_value( PROTO_HTTP2, HTTP2_INJECT_WIN_UPDATE, 0 );
   		  		forward_packet();
 				set_numeric_value( PROTO_HTTP2, HTTP2_RESTORE_PACKET, 0 );
      			}
+     			j=(j+1)%51;
      			usleep(1000);
 		}
      	canSendWinUpdate=true;
@@ -55,7 +57,7 @@ static void em_forward1(
 <property   property_id="16" type_property="FORWARD" 
     description="Forward get" if_satisfied="em_forward1">
   <event  event_id="1" description="GET forward "
-         		  boolean_expression="( (http2.header_method == 130  ))" />
+         		  boolean_expression="( (http2.header_method == 130  ) &amp;&amp; (ip.src != ip.dst))" />
  
     </property>
 
