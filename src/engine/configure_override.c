@@ -192,6 +192,8 @@ static inline bool _override_element_by_ident( config_t *conf, const identity_t 
 					conf->forward->targets[i].protocol = FORWARD_PACKET_PROTO_SCTP;
 				else if( IS_EQUAL_STRINGS(str, "UDP") )
 					conf->forward->targets[i].protocol = FORWARD_PACKET_PROTO_UDP;
+				else if( IS_EQUAL_STRINGS(str, "TCP") )
+					conf->forward->targets[i].protocol = FORWARD_PACKET_PROTO_TCP;
 				else
 					ABORT("Does not support yet the protocol: %s", str);
 			}
