@@ -2,7 +2,7 @@ name: C/C++ CI
 
 on:
   push:
-    branches: [ main, dev ]
+    branches: [ main, "*" ]
     tags: ["v*"] # Push events to matching v*, i.e. v1.0, v20.15.10
   pull_request:
     branches: [ main ]
@@ -21,18 +21,28 @@ jobs:
         PACKAGE_VERSION=$(echo $GITHUB_REF | tr -d 'refs/tags/' )
         EOF
 
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: setup environment
       run: |
          sudo apt update && sudo apt-get install libxml2-dev liblzma-dev libicu-dev libpcap-dev libconfuse-dev libsctp-dev gcc make wget
          #wget https://github.com/Montimage/mmt-dpi/releases/download/v1.7.4/mmt-dpi_1.7.4_42d37eb_Linux_x86_64.deb
-         sudo dpkg -i lib/mmt-dpi*.deb && sudo ldconfig
+         #sudo dpkg -i lib/mmt-dpi*.deb && sudo ldconfig
+    - name: install mmt-dpi
+      run: |
+         git clone https://github.com/Montimage/mmt-dpi.git
+         cd mmt-dpi/sdk
+         make -j
+         sudo make install && sudo ldconfig
+
     - name: make
       run: make 
+
     - name: make static
       run: make STATIC_LINK=1 VERBOSE=1
+
     - name: compile sample rules
       run: make sample-rules
+
 
     #The following steps are executed only on new tag
     - name: Upload artifact
