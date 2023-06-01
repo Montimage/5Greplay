@@ -99,7 +99,7 @@ void _tcp_connect( inject_tcp_context_t *context ){
     	}
 
 	ret = connect(conn_fd, (struct sockaddr *) &servaddr, sizeof(servaddr));
-	if( ret >= 0)
+	if( ret < 0)
 		log_write( LOG_ERR, "Cannot connect to %s:%d using tcp", context->host, context->port );
 	context->client_fd = conn_fd;
 	
