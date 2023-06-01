@@ -29,8 +29,8 @@ jobs:
          #sudo dpkg -i lib/mmt-dpi*.deb && sudo ldconfig
     - name: install mmt-dpi
       run: |
-         git clone --depth 1 https://github.com/Montimage/mmt-dpi
-         cd mmt-dpi
+         git clone https://github.com/Montimage/mmt-dpi.git
+         cd mmt-dpi/sdk
          make -j
          sudo make install && sudo ldconfig
 
