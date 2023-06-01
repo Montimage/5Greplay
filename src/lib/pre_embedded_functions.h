@@ -145,4 +145,12 @@ static inline uint32_t get_parameter_nb_copies(){
 		return strtoul( str, NULL, 0 );
 }
 
+
+static inline uint32_t get_http2_env_nb_copies(){
+	const char *str = getenv("MMT_5GREPLAY_HTTP2_NB_COPIES");
+	if( str == NULL )
+		return 5000;
+	else
+		return strtoul( str, NULL, 0 );
+}
 #endif /* SRC_LIB_PRE_EMBEDDED_FUNCTIONS_H_ */

@@ -6,10 +6,7 @@
 static unsigned long int number_request = 0;
 
 void on_load(){
-	number_request = get_parameter_nb_copies();
-	if( number_request == 0 )
-		number_request = 5000;
-	//log_write( LOG_INFO, "Rule 13: Number of copies of packets = %lu", number_request);
+	number_request = get_http2_env_nb_copies();
 }
 
 	
