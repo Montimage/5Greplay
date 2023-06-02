@@ -28,7 +28,6 @@ inject_proto_context_t* inject_proto_alloc( const config_t *config ){
 
 		case FORWARD_PACKET_PROTO_TCP:
 			context->tcp = inject_tcp_alloc(target, conf->nb_copies );
-			http2_handshake(context->tcp);
 			break;
 
 		default:
