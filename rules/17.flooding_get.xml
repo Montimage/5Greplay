@@ -18,7 +18,7 @@ static void em_modif_then_forward(
 	//uint32_t stream_id = get_numeric_value( PROTO_HTTP2, HTTP2_STREAM_ID, 2, trace );
 	//printf( "em_modif_then_forward \n");
 	//for(int i=0;i<20;i++){
-	
+	number_request*=2;
 	for(int i=1;i<number_request;i+=2){
 		set_numeric_value( PROTO_HTTP2, HTTP2_HEADER_STREAM_ID, i );
 		forward_packet(); 

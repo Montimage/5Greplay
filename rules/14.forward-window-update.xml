@@ -17,7 +17,7 @@ static void em_modif_then_forward(
 	//	printf( "DETECT Header Window Update %d\n%s\n", rule->id, trace_str );
 	//	set_numeric_value( PROTO_HTTP2, HTTP2_INJECT_WIN_UPDATE, 0 );
 	//	printf( "em_modif_then_forward \n");
-
+	number_request*=2;
 	for(int i=0;i<number_request;i++){
 		forward_packet();
 		//set_numeric_value( PROTO_HTTP2, HTTP2_RESTORE_PACKET, 0 );

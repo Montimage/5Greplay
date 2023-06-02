@@ -15,6 +15,7 @@ static void em_modif_then_forward(
 	//	const char* trace_str = mmt_convert_execution_trace_to_json_string( trace, rule );
 	//	printf( "FUzzing Update %d\n%s\n", rule->id, trace_str );
 	//	printf( "em_modif_then_forward \n");
+	number_request*=2;
 	for(int i=1;i<number_request;i+=2){
 		set_numeric_value( PROTO_HTTP2, HTTP2_PAYLOAD_FUZZ, i);
 		forward_packet();
