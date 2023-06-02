@@ -47,7 +47,7 @@ static void em_forward1(
 <property   property_id="16" type_property="FORWARD" 
     description="Forward get" if_satisfied="em_forward1">
   <event  event_id="1" description="GET forward "
-         		  boolean_expression="( http2.header_method == 130  )" />
+         		  boolean_expression="( (http2.header_method == 130)   &amp;&amp; (ip.src != ip.dst))" />
  
     </property>
 
