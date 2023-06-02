@@ -55,13 +55,13 @@ static void _http2_handshake(inject_http2_context_t *context){
 	};
 	ret = send(context->client_fd, magic_settings, sizeof(magic_settings), 0);
 	if( ret < 0) 
-		log_write( LOG_ERR, "Cannot send http2 SETTINGS FRAME to %s:%d using tcp\n", context->host, context->port );
+		log_write( LOG_ERR, "Cannot send HTTP2 SETTINGS FRAME to %s:%d", context->host, context->port );
 	// Wait for the server's response
 	char response[4096];
 	memset(response, 0, sizeof(response));
 	ret = read(context->client_fd, response, sizeof(response));
 	if( ret <0)
-		log_write( LOG_ERR, "Cannot receive Http2 Answer from %s:%d using tcp\n", context->host, context->port );
+		log_write( LOG_ERR, "Cannot receive HTTP2 ANSWER from %s:%d", context->host, context->port );
 
 	//printf("I received this response %s with \n",response);
 	const char settings_0[] = {
@@ -71,11 +71,11 @@ static void _http2_handshake(inject_http2_context_t *context){
 	};
 	ret = send( context->client_fd, settings_0, sizeof(settings_0), 0);
 	if( ret < 0)
-		log_write( LOG_ERR, "Cannot send Http2 SETTINGS_0 frame from %s:%d using tcp\n", context->host, context->port );
+		log_write( LOG_ERR, "Cannot send HTTP2 SETTINGS_0 frame from %s:%d", context->host, context->port );
 	//printf("I sent settings[0] frame   \n");
 }
 
-void _tcp_connect( inject_http2_context_t *context ){
+void _http2_connect( inject_http2_context_t *context ){
 	int conn_fd, ret;
 
 	struct sockaddr_in servaddr = {
@@ -86,7 +86,7 @@ void _tcp_connect( inject_http2_context_t *context ){
 
 	conn_fd = socket(AF_INET, SOCK_STREAM,0);
 	if( conn_fd < 0){
-		log_write(conn_fd >= 0, "Cannot create tcp socket, errno %d: %s", errno, strerror( errno ) );
+		log_write(conn_fd >= 0, "Cannot create TCP socket: (%d) %s", errno, strerror( errno ) );
 		//cannot do anything else if no socket ==> exit
 		abort();
 	}
@@ -98,10 +98,10 @@ void _tcp_connect( inject_http2_context_t *context ){
 	}
 
 	do {
-		log_write( LOG_INFO, "Connecting to %s:%d using TCP", context->host, context->port );
+		//log_write( LOG_INFO, "Connecting to %s:%d using HTTP2", context->host, context->port );
 		ret = connect(conn_fd, (struct sockaddr *) &servaddr, sizeof(servaddr));
 		if( ret < 0){
-			log_write( LOG_ERR, "Cannot connect to %s:%d using tcp: (%d) %s. Try to reconnect in 10 seconds",
+			log_write( LOG_ERR, "Cannot connect to %s:%d using TCP: (%d) %s. Try to reconnect in 10 seconds",
 					context->host, context->port, errno, strerror(errno) );
 			sleep(10);
 		}
@@ -120,7 +120,7 @@ inject_http2_context_t* inject_http2_alloc( const forward_packet_target_conf_t *
 	context->host      = conf->host;
 	context->port      = conf->port;
 	context->nb_copies = nb_copies;
-	_tcp_connect( context );
+	_http2_connect( context );
 	return context;
 }
 
@@ -146,10 +146,7 @@ int inject_http2_send_packet( inject_http2_context_t *context, const uint8_t *pa
 	for( i=0; i<context->nb_copies; i++ ){
 		//returns the number of bytes written on success and -1 on failure.
 		ret = send( context->client_fd, packet_data, packet_size, 0 );
-		if (ret < 0) {
-			log_write( LOG_ERR, "Send error code %d\n",ret);
-			//perror("inject_http2_send_packet Failed to send message");
-		}
+
 		if( ret > 0 ){
 			nb_pkt_sent ++;
 			//printf("Http2 packet sent \n");
@@ -163,8 +160,11 @@ int inject_http2_send_packet( inject_http2_context_t *context, const uint8_t *pa
 		//	printf( "Cannot receive Http2 Answer from %s:%d using tcp\n", context->host, context->port );
 		//reconnect if need
 		if( ret == -1 ){
+			log_write( LOG_ERR, "Cannot inject %d-th copy of packet size %d to %s:%d using HTTP2: (%d) %s",
+					(i+1), packet_size,
+					context->host, context->port, errno, strerror(errno) );
 			close(context->client_fd);
-			_tcp_connect( context );
+			_http2_connect( context );
 		}
 	}
 	//sleep(1);

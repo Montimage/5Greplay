@@ -47,6 +47,7 @@ static mmt_sec_handler_t *sec_handler  = NULL;
 //handler of MMT-DPI
 static mmt_handler_t *mmt_dpi_handler = NULL;
 static config_t *config = NULL;
+static context_t context = {0};
 
 #define DEFAULT_CONFIG_FILE     "./mmt-5greplay.conf"
 void usage(const char * prg_name) {
@@ -571,6 +572,7 @@ static inline void termination(){
 	if( mmt_dpi_handler )
 		close_extraction();// close mmt_dpi
 	conf_release( config );
+	forward_packet_release(context.forward_context);
 }
 
 void signal_handler_seg(int signal_type) {
@@ -589,13 +591,16 @@ void signal_handler(int signal_type) {
 
 	if( signal_type == SIGINT ){
 		log_write( LOG_ERR,"Releasing resource ... (press Ctrl+c again to exit immediately)");
-		termination();
 		signal(SIGINT, signal_handler);
+		termination();
 	}
 	exit( signal_type );
 }
 
 
+//do nothing here
+// we handle the error in the packet injector (HTTP2 or SCTP, etc)
+void sigpipe_signal_handler( int signal_type ){}
 
 void register_signals(){
 #ifndef DEBUG_MODE
@@ -604,6 +609,10 @@ void register_signals(){
 	signal(SIGINT,  signal_handler);
 	signal(SIGTERM, signal_handler);
 	signal(SIGABRT, signal_handler);
+
+	//SIGPIPE is raised when we are trying to write into a closed socket
+	// => we need to capture this signal to avoid quiting 5Greplay
+	signal(SIGPIPE, sigpipe_signal_handler);
 }
 
 int replay(int argc, char** argv) {
@@ -616,7 +625,7 @@ int replay(int argc, char** argv) {
 	struct pkthdr header;
 	size_t i, j, size;
 	uint16_t *rules_id_filter = NULL;
-	context_t context;
+
 
 #define MAX_ENV_STRING_LEN 1024
 	char environment[MAX_ENV_STRING_LEN];
@@ -705,8 +714,6 @@ int replay(int argc, char** argv) {
 	}
 
 	termination();
-	forward_packet_release(forward_context);
-
 	return EXIT_SUCCESS;
 }
 

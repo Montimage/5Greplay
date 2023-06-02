@@ -82,7 +82,7 @@ static inline int _get_http2_data_offset( const ipacket_t *ipacket ){
 
 int inject_proto_send_packet( inject_proto_context_t *context, const ipacket_t *ipacket, const uint8_t *packet_data, uint16_t packet_size ){
 	int offset;
-	int ret =  0;
+	int ret =  0, i;
 	//when SCTP injector is enable
 	if( context->sctp ){
 		offset = _get_sctp_data_offset( ipacket );
@@ -103,6 +103,8 @@ int inject_proto_send_packet( inject_proto_context_t *context, const ipacket_t *
 		//printf("%"PRIu64" HTTP2_DATA offset: %d\n", ipacket->packet_id,offset);
 		if( offset >= 0 ){
 			//printf("%"PRIu64" HTTP2_DATA offset: %d", ipacket->packet_id, offset );
+			//HTTP2 is a specific protocol which will reject the duplicated data having the same stream id
+			// we need to increase stream id each time sending one packet
 			ret += inject_http2_send_packet(context->http2, packet_data + offset, packet_size-offset);
 		}
 	}
