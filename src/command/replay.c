@@ -569,8 +569,10 @@ static inline void termination(){
 		verdict_printer_free();
 
 	mmt_sec_close();   // close mmt_security
-	if( mmt_dpi_handler )
+	if( mmt_dpi_handler ){
 		close_extraction();// close mmt_dpi
+		mmt_dpi_handler = NULL;
+	}
 	conf_release( config );
 	forward_packet_release(context.forward_context);
 }

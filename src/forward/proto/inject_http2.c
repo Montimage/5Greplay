@@ -35,6 +35,7 @@ struct inject_tcp_context_struct{
 	const char* host;
 	uint16_t port;
 	size_t total_sent_pkt;
+	size_t total_pkt_to_send;
 };
 
 static void _http2_handshake(inject_http2_context_t *context){
@@ -148,6 +149,7 @@ int inject_http2_send_packet( inject_http2_context_t *context, const uint8_t *pa
 	int ret, i;
 
 	_clear_tcp_buffer_if_need( context );
+	context->total_pkt_to_send++;
 
 	for( i=0; i<context->nb_copies; i++ ){
 		//returns the number of bytes written on success and -1 on failure.
@@ -166,8 +168,8 @@ int inject_http2_send_packet( inject_http2_context_t *context, const uint8_t *pa
 		//	printf( "Cannot receive Http2 Answer from %s:%d using tcp\n", context->host, context->port );
 		//reconnect if need
 		if( ret == -1 ){
-			log_write( LOG_ERR, "Cannot inject %d-th copy of packet size %d to %s:%d using HTTP2: (%d) %s",
-					(i+1), packet_size,
+			log_write( LOG_ERR, "Cannot inject %d-th copy of %zu-th packet size %d to %s:%d using HTTP2: (%d) %s",
+					(i+1), context->total_pkt_to_send, packet_size,
 					context->host, context->port, errno, strerror(errno) );
 			close(context->client_fd);
 			_http2_connect( context );
