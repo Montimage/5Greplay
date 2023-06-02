@@ -33,7 +33,7 @@ static void em_modif_then_forward(
          		  boolean_expression="( http2.header_method == 131 )" />
    <event value="COMPUTE" event_id="2" 
            description="Nothing"
-           boolean_expression="( http2.header_method != 0) &amp;&amp; (ip.src != ip.dst))"/>  
+           boolean_expression="(( http2.header_method != 0) &amp;&amp; (ip.src != ip.dst))"/>  
 </property>
 </beginning>
 
