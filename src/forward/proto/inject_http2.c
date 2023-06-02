@@ -37,7 +37,7 @@ struct inject_tcp_context_struct{
 	size_t total_sent_pkt;
 };
 
-static void _http2_handshake(inject_tcp_context_t *context){
+static void _http2_handshake(inject_http2_context_t *context){
 	//Establish http2 connection
 	int ret;	
 	// Send the SETTINGS frame to the server
@@ -75,7 +75,7 @@ static void _http2_handshake(inject_tcp_context_t *context){
 	//printf("I sent settings[0] frame   \n");
 }
 
-void _tcp_connect( inject_tcp_context_t *context ){
+void _tcp_connect( inject_http2_context_t *context ){
 	int conn_fd, ret;
 
 	struct sockaddr_in servaddr = {
@@ -113,10 +113,10 @@ void _tcp_connect( inject_tcp_context_t *context ){
 	_http2_handshake( context );
 }
 
-inject_tcp_context_t* inject_tcp_alloc( const forward_packet_target_conf_t *conf, uint32_t nb_copies ){
+inject_http2_context_t* inject_http2_alloc( const forward_packet_target_conf_t *conf, uint32_t nb_copies ){
 
 
-	inject_tcp_context_t *context = mmt_mem_alloc_and_init_zero( sizeof( struct inject_tcp_context_struct ));
+	inject_http2_context_t *context = mmt_mem_alloc_and_init_zero( sizeof( struct inject_tcp_context_struct ));
 	context->host      = conf->host;
 	context->port      = conf->port;
 	context->nb_copies = nb_copies;
@@ -124,7 +124,7 @@ inject_tcp_context_t* inject_tcp_alloc( const forward_packet_target_conf_t *conf
 	return context;
 }
 
-static inline void _clear_tcp_buffer_if_need( inject_tcp_context_t *context ){
+static inline void _clear_tcp_buffer_if_need( inject_http2_context_t *context ){
 	char buffer[1024];
 	int ret;
 	do {
@@ -137,7 +137,7 @@ static inline void _clear_tcp_buffer_if_need( inject_tcp_context_t *context ){
 	} while( ret > 0);
 }
 
-int inject_http2_send_packet( inject_tcp_context_t *context, const uint8_t *packet_data, uint16_t packet_size ){
+int inject_http2_send_packet( inject_http2_context_t *context, const uint8_t *packet_data, uint16_t packet_size ){
 	uint16_t nb_pkt_sent = 0;
 	int ret, i;
 
@@ -171,7 +171,7 @@ int inject_http2_send_packet( inject_tcp_context_t *context, const uint8_t *pack
 	return nb_pkt_sent;
 }
 
-void inject_tcp_release( inject_tcp_context_t *context ){
+void inject_http2_release( inject_http2_context_t *context ){
 	if( !context )
 		return;
 	close(context->client_fd);

@@ -20,7 +20,7 @@
 typedef struct inject_proto_context_struct {
 	inject_sctp_context_t *sctp;
 	inject_udp_context_t  *udp;
-	inject_tcp_context_t  *tcp;
+	inject_http2_context_t  *http2;
 
 } inject_proto_context_t;
 

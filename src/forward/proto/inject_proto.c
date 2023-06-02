@@ -26,8 +26,8 @@ inject_proto_context_t* inject_proto_alloc( const config_t *config ){
 			context->udp = inject_udp_alloc(target, conf->nb_copies );
 			break;
 
-		case FORWARD_PACKET_PROTO_TCP:
-			context->tcp = inject_tcp_alloc(target, conf->nb_copies );
+		case FORWARD_PACKET_PROTO_HTTP2:
+			context->http2 = inject_http2_alloc(target, conf->nb_copies );
 			break;
 
 		default:
@@ -98,12 +98,12 @@ int inject_proto_send_packet( inject_proto_context_t *context, const ipacket_t *
 			ret += inject_udp_send_packet(context->udp, packet_data + offset, packet_size - offset);
 		}
 	}
-	if( context->tcp ){
+	if( context->http2 ){
 		offset = _get_http2_data_offset( ipacket );
 		//printf("%"PRIu64" HTTP2_DATA offset: %d\n", ipacket->packet_id,offset);
 		if( offset >= 0 ){
 			//printf("%"PRIu64" HTTP2_DATA offset: %d", ipacket->packet_id, offset );
-			ret += inject_http2_send_packet(context->tcp, packet_data + offset, packet_size-offset);
+			ret += inject_http2_send_packet(context->http2, packet_data + offset, packet_size-offset);
 		}
 	}
 
@@ -111,10 +111,12 @@ int inject_proto_send_packet( inject_proto_context_t *context, const ipacket_t *
 		return INJECT_PROTO_NO_AVAIL;
 	return ret;
 }
+
 void inject_proto_release( inject_proto_context_t *context ){
 	if( context == NULL )
 		return;
 	inject_sctp_release(context->sctp);
 	inject_udp_release(context->udp);
+	inject_http2_release(context->http2);
 	mmt_mem_free( context );
 }

@@ -282,8 +282,8 @@ static inline forward_packet_conf_t *_parse_forward_packet( cfg_t *cfg ){
 			else if( IS_EQUAL_STRINGS(str, "UDP") )
 				ret->targets[i].protocol = FORWARD_PACKET_PROTO_UDP;
 
-			else if( IS_EQUAL_STRINGS(str, "TCP") )
-				ret->targets[i].protocol = FORWARD_PACKET_PROTO_TCP;
+			else if( IS_EQUAL_STRINGS(str, "HTTP2") )
+				ret->targets[i].protocol = FORWARD_PACKET_PROTO_HTTP2;
 
 			else
 				ABORT("Does not support yet the protocol: %s", str);
