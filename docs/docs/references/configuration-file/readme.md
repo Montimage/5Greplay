@@ -163,7 +163,7 @@ The forward configuration block configures parameters related with the forwardin
 Either `FORWARD` to forward the packets or `DROP` to drop the packets.
 - `target-protocols`: List of transport protocols over which the forwarded packets' payload will be sent. 
 
-   Currently support either `SCTP`, if the forwarded packets work over SCTP, `UDP` if the forwarded packets work over UDP or both is both types of packets are present.
+   Currently support either `SCTP`, if the forwarded packets work over SCTP, `UDP` if the forwarded packets work over UDP or `HTTP2`if the forwardeds packets has HTTP2 payload, or all of them if these types of packets are present.
 - `target-hosts`: List of IP addresses to forward the packets. Each address matches with the transport protocol selected before.
 - `target-ports`: List of ports to forward the packets. Each address matches with the transport protocol selected before.
 
