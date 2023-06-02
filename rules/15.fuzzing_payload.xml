@@ -27,7 +27,7 @@ void on_load(){
 
 
 	void on_unload(){
-		printf("Unloaded successfully rule 1\n");
+		//printf("Unloaded successfully rule 1\n");
 	}
 
 ]]></embedded_functions>
