@@ -23,7 +23,7 @@ MMT_DPI_DIR := $(MMT_BASE)/dpi
 
 #get git version abbrev
 GIT_VERSION := $(shell git log --format="%h" -n 1)
-VERSION     := 0.0.6
+VERSION     := 0.0.7
 
 CACHE_LINESIZE := 64 #$(shell getconf LEVEL1_DCACHE_LINESIZE)
 
@@ -37,16 +37,17 @@ LIBS     += -ldl -lpthread
 ifdef STATIC_LINK
   CFLAGS += -DSTATIC_LINK
   LIBS   += -l:libxml2.a -l:libicuuc.a -l:libz.a -l:liblzma.a -l:libicudata.a #xml2 and its dependencies
-  LIBS   +=  -l:libmmt_core.a -l:libmmt_tcpip.so -l:libmmt_tmobile.a  -l:libsctp.a -l:libpcap.a
+  LIBS   +=  -l:libmmt_core.a -l:libmmt_tcpip.so -l:libmmt_tmobile.a  -l:libsctp.a -l:libpcap.a -l:libmmt_tcpip.a
 else
-  LIBS   += -l:libmmt_core.so -l:libmmt_tmobile.so -l:libxml2.so -l:libsctp.so -l:libpcap.so
+  LIBS   += -l:libmmt_core.so -l:libmmt_tmobile.so -l:libxml2.so -l:libsctp.so -l:libpcap.so -l:libmmt_tcpip.a
 endif
+
 
 CFLAGS   += -fPIC -Wall -DVERSION_NUMBER=\"$(VERSION)\" -DGIT_VERSION=\"$(GIT_VERSION)\" -DLEVEL1_DCACHE_LINESIZE=$(CACHE_LINESIZE) \
 				-Wno-unused-variable -Wno-unused-function -Wuninitialized\
-				-I/usr/include/libxml2/  -I$(MMT_DPI_DIR)/include
+				-I/usr/include/libxml2/  -I$(MMT_DPI_DIR)/include  -I$(MMT_DPI_DIR)/include/dpi/mobile 
 
-CLDFLAGS += -L$(MMT_DPI_DIR)/lib -L./plugins -L/usr/local/lib
+CLDFLAGS += -L$(MMT_DPI_DIR)/lib -L./plugins -L/usr/local/lib  -L/opt/mmt/plugins
 
 #a specific flag for each .o file
 CFLAGS += $(CFLAGS-$@)
@@ -144,3 +145,4 @@ dist: sample-rules
 
 docker-image:
 	docker build --tag ${OUTPUT}:${VERSION} . 
+

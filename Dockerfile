@@ -10,8 +10,13 @@ RUN apt-get update && apt-get install --yes \
 ADD .   ${INSTALL_DIR}/
 WORKDIR ${INSTALL_DIR}
 
-#ADD https://github.com/Montimage/mmt-dpi/releases/download/v1.7.4/mmt-dpi_1.7.4_c5a4a6b_Linux_x86_64.deb mmt-dpi.deb
-RUN dpkg -i lib/mmt-dpi*.deb && ldconfig
+# Install DPI from source
+RUN git clone --depth 1 https://github.com/Montimage/mmt-dpi.git \
+         && cd mmt-dpi/sdk                                       \
+         && make -j2                                             \
+         && make install && ldconfig                             \
+         && cd ../../ && rm -rf mmt-dpi
+
 RUN  make sample-rules
 
 

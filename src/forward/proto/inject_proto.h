@@ -2,7 +2,7 @@
  * inject_proto.h
  *
  *  Created on: May 14, 2021
- *      Author: nhnghia
+ *      Author: nhnghia,francesco
  *
  * This file implements injection packets using a special protocol (TCP, UDP, SCTP, etc) rather than injecting raw packet to the output NIC
  */
@@ -13,11 +13,15 @@
 #include "../../engine/configure.h"
 #include "inject_sctp.h"
 #include "inject_udp.h"
+#include "inject_http2.h"
 #include <mmt_core.h>
+
 
 typedef struct inject_proto_context_struct {
 	inject_sctp_context_t *sctp;
 	inject_udp_context_t  *udp;
+	inject_http2_context_t  *http2;
+
 } inject_proto_context_t;
 
 

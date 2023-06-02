@@ -174,7 +174,7 @@ static inline char * _cfg_get_dir( cfg_t *cfg, const char *header ){
 		return NULL;
 	size_t len = strlen( str );
 	//ensure that a directory path is always end by '/'
-	char *dir = mmt_mem_alloc( len + 1 + 1 ); //+1 for '\0'; +1 for eventually '/'
+	char *dir = mmt_mem_alloc_and_init_zero( len + 1 + 1 ); //+1 for '\0'; +1 for eventually '/'
 	memcpy( dir, str, len + 1 ); //+1 for '\0'
 
 	if( dir[ len - 1 ] != '/' ){
@@ -207,7 +207,7 @@ static inline input_source_conf_t * _parse_input_source( cfg_t *cfg ){
 	if( cfg == NULL )
 		return NULL;
 
-	input_source_conf_t *ret = mmt_mem_alloc( sizeof( input_source_conf_t ));
+	input_source_conf_t *ret = mmt_mem_alloc_and_init_zero( sizeof( input_source_conf_t ));
 
 	ret->input_mode   = cfg_getint(cfg, "mode");
 	ret->input_source = _cfg_get_str(cfg, "source");
@@ -231,7 +231,7 @@ static inline output_conf_t * _parse_output( cfg_t *cfg ){
 	if( cfg == NULL )
 		return NULL;
 
-	output_conf_t *ret = mmt_mem_alloc( sizeof( output_conf_t ));
+	output_conf_t *ret = mmt_mem_alloc_and_init_zero( sizeof( output_conf_t ));
 
 	ret->is_enable   = cfg_getbool(cfg, "enable");
 	ret->output_dir = _cfg_get_dir(cfg, "output-dir");
@@ -245,7 +245,7 @@ static inline dump_packet_conf_t * _parse_dump_packet( cfg_t *cfg ){
 	if( cfg == NULL )
 		return NULL;
 
-	dump_packet_conf_t *ret = mmt_mem_alloc( sizeof( dump_packet_conf_t ));
+	dump_packet_conf_t *ret = mmt_mem_alloc_and_init_zero( sizeof( dump_packet_conf_t ));
 
 	ret->is_enable   = cfg_getbool(cfg, "enable");
 	ret->output_file = _cfg_get_str(cfg, "output-file");
@@ -257,7 +257,7 @@ static inline forward_packet_conf_t *_parse_forward_packet( cfg_t *cfg ){
 	if( cfg == NULL )
 		return NULL;
 
-	forward_packet_conf_t *ret = mmt_mem_alloc( sizeof( forward_packet_conf_t ));
+	forward_packet_conf_t *ret = mmt_mem_alloc_and_init_zero( sizeof( forward_packet_conf_t ));
 
 	ret->is_enable  = cfg_getbool( cfg, "enable" );
 	ret->output_nic = _cfg_get_str(cfg, "output-nic");
@@ -271,7 +271,7 @@ static inline forward_packet_conf_t *_parse_forward_packet( cfg_t *cfg ){
 	ASSERT( ret->target_size == cfg_size( cfg, "target-ports"), "Number of elements in target-protocols and target-ports are different");
 
 	if( ret->target_size ){
-		ret->targets = mmt_mem_alloc( sizeof( forward_packet_target_conf_t ) * ret->target_size );
+		ret->targets = mmt_mem_alloc_and_init_zero( sizeof( forward_packet_target_conf_t ) * ret->target_size );
 		int i;
 		char *str;
 		for( i=0; i<ret->target_size; i++) {
@@ -281,6 +281,10 @@ static inline forward_packet_conf_t *_parse_forward_packet( cfg_t *cfg ){
 				ret->targets[i].protocol = FORWARD_PACKET_PROTO_SCTP;
 			else if( IS_EQUAL_STRINGS(str, "UDP") )
 				ret->targets[i].protocol = FORWARD_PACKET_PROTO_UDP;
+
+			else if( IS_EQUAL_STRINGS(str, "HTTP2") )
+				ret->targets[i].protocol = FORWARD_PACKET_PROTO_HTTP2;
+
 			else
 				ABORT("Does not support yet the protocol: %s", str);
 			//host
@@ -318,7 +322,7 @@ size_t conf_parse_list( const char *string, char ***proto_lst ){
 	else{
 		ret = cfg_size( cfg, "X");
 
-		lst = mmt_mem_alloc( sizeof( void* ) * ret );
+		lst = mmt_mem_alloc_and_init_zero( sizeof( void* ) * ret );
 
 		for( i=0; i<ret; i++) {
 			str = cfg_getnstr(cfg, "X", i);
@@ -334,7 +338,7 @@ static inline engine_conf_t *_parse_engine_block( cfg_t *cfg ){
 	if( (cfg = _get_first_cfg_block( cfg, "engine")) == NULL )
 		return NULL;
 
-	engine_conf_t *ret = mmt_mem_alloc( sizeof( engine_conf_t ));
+	engine_conf_t *ret = mmt_mem_alloc_and_init_zero( sizeof( engine_conf_t ));
 	ret->threads_size = _cfg_getint( cfg, "thread-nb", 0, 128, 0 );
 	ret->excluded_rules = _cfg_get_str(cfg, "exclude-rules" );
 	ret->rules_mask = _cfg_get_str(cfg, "rules-mask" );
@@ -348,7 +352,7 @@ static inline mempool_conf_t *_parse_mempool_block( cfg_t *cfg ){
 	if( (cfg = _get_first_cfg_block( cfg, "mempool")) == NULL )
 		return NULL;
 
-	mempool_conf_t *ret = mmt_mem_alloc( sizeof( mempool_conf_t ));
+	mempool_conf_t *ret = mmt_mem_alloc_and_init_zero( sizeof( mempool_conf_t ));
 	ret->max_bytes = _cfg_getint( cfg, "max-bytes", 0, UINT32_MAX, 2000000000 );
 	ret->max_elements = _cfg_getint( cfg, "max-elements", 0, UINT16_MAX, 1000 );
 	ret->max_message_size = _cfg_getint( cfg, "max-message-size", 0, UINT16_MAX, 3000 );
@@ -369,7 +373,7 @@ config_t* conf_load_from_file( const char* filename ){
 	if( cfg == NULL )
 		return NULL;
 
-	config_t *conf = mmt_mem_alloc( sizeof( config_t ) );
+	config_t *conf = mmt_mem_alloc_and_init_zero( sizeof( config_t ) );
 
 	conf->stack_type   = cfg_getint(cfg, "stack-type");
 	conf->dpdk_options  = _cfg_get_str(cfg, "dpdk-option" );

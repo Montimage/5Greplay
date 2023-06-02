@@ -230,6 +230,10 @@ void mmt_forward_packet(){
 //this function is implemented inside mmt-dpi to update NGAP protocol
 extern uint32_t update_ngap_data( u_char *data, uint32_t data_size, const ipacket_t *ipacket, uint32_t proto_id, uint32_t att_id, uint64_t new_val );
 
+
+//this function is implemented inside mmt-dpi to update HTTP2 protocol
+extern int update_http2_data( u_char *data, uint32_t data_size, const ipacket_t *ipacket, uint32_t proto_id, uint32_t att_id, uint64_t new_val );
+
 /**
  * This function is called by mmt-engine when a FORWARD rule is satisfied
  *   and its if_satisfied="#update( xx.yy, ..)"
@@ -240,10 +244,32 @@ void mmt_set_attribute_number_value(uint32_t proto_id, uint32_t att_id, uint64_t
 	if( context == NULL )
 		return;
 	int ret = 0;
-	ret = update_ngap_data(context->packet_data, context->packet_size, context->ipacket, proto_id, att_id, new_val );
-	if( ! ret )
+	int difference;
+
+	switch(proto_id){
+	case(PROTO_NGAP):
+		ret = update_ngap_data(context->packet_data, context->packet_size, context->ipacket, proto_id, att_id, new_val );
+		if( ! ret )
+			log_write( LOG_ERR, "Cannot set new value %"PRIu64" for att %d of proto %d for packet id %"PRIu64,
+				new_val, att_id, proto_id, context->ipacket->packet_id);
+		break;
+
+	case(PROTO_HTTP2):
+		difference = update_http2_data(context->packet_data, context->packet_size, context->ipacket, proto_id, att_id, new_val );
+
+		// why 400?
+		if( difference != 0 && difference < 400 && difference > -400 )//check that difference value is not too elevated or too small
+			if( context->packet_size + difference >= 0 )
+				context->packet_size = context->packet_size + difference;
+			//printf("mmt_set_attribute_number_value difference %d \n",difference);
+			//printf("mmt_set_attribute_number_value Packet size %d\n",context->packet_size);
+	break;
+	
+	default:
 		log_write( LOG_ERR, "Cannot set new value %"PRIu64" for att %d of proto %d for packet id %"PRIu64,
 			new_val, att_id, proto_id, context->ipacket->packet_id);
+			}
+
 }
 
 

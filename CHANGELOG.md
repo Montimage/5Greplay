@@ -1,3 +1,6 @@
+# Version 0.0.7
+- HTTP2 mutation and forwarding packets
+
 # Version 0.0.6
 - SCTP socket uses `SCTP_NODELAY` to generate UDP packets as fast as possible. It prevents SCTP to cumulate multiple chunks in a single UDP packet.
 - reconnect to SCTP server once it closed the connection

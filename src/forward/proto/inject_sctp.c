@@ -95,6 +95,8 @@ inject_sctp_context_t* inject_sctp_alloc( const forward_packet_target_conf_t *co
 }
 
 void inject_sctp_update_param( inject_sctp_context_t *context, uint32_t ppid, uint32_t flags, uint16_t stream_no, uint32_t timetolive, uint32_t ctx ){
+	if( !context )
+		return;
 	context->sctp_param.context = ctx;
 	context->sctp_param.flags   = flags;
 	context->sctp_param.ppid    = htonl( ppid );

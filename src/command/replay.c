@@ -40,13 +40,14 @@ static size_t total_received_packets   = 0;
 static size_t proto_atts_count        = 0;
 proto_attribute_t const *const*proto_atts  = NULL;
 
-static pcap_t *pcap;
+static pcap_t *pcap = NULL;
 
 //handler of MMT-SEC
 static mmt_sec_handler_t *sec_handler  = NULL;
 //handler of MMT-DPI
 static mmt_handler_t *mmt_dpi_handler = NULL;
 static config_t *config = NULL;
+static context_t context = {0};
 
 #define DEFAULT_CONFIG_FILE     "./mmt-5greplay.conf"
 void usage(const char * prg_name) {
@@ -255,7 +256,7 @@ static inline bool _register_proto_att_to_mmt_dpi( uint32_t proto_id, uint32_t a
 	if( is_registered_attribute( mmt_dpi_handler, proto_id, att_id ))
 		return 0;
 	if( register_extraction_attribute( mmt_dpi_handler, proto_id, att_id ) ){
-		DEBUG( "Registered attribute to extract: %"PRIu32".%"PRIu32, proto_id, att_id );
+		log_write(LOG_INFO, "Registered attribute to extract: %"PRIu32".%"PRIu32, proto_id, att_id );
 		return 1;
 	}
 	return 0;
@@ -531,7 +532,7 @@ void live_capture_callback( u_char *user, const struct pcap_pkthdr *p_pkthdr, co
 	header.caplen = p_pkthdr->caplen;
 	header.len    = p_pkthdr->len;
 	if (!packet_process( mmt, &header, data )) {
-		fprintf(stderr, "Packet data extraction failure.\n");
+		log_write(LOG_ERR, "Packet data extraction failure.\n");
 	}
 	//printf("."); fflush( stdout );
 }
@@ -541,16 +542,19 @@ static inline void termination(){
 	struct pcap_stat pcs; /* packet capture filter stats */
 	size_t alerts_count;
 
-	pcap_breakloop( pcap );
+	if( pcap )
+		pcap_breakloop( pcap );
 
 	alerts_count = mmt_sec_unregister( sec_handler );
 
-	if (pcap_stats(pcap, &pcs) < 0) {
+	memset( &pcs, 0, sizeof(pcs) );
+	if (pcap && pcap_stats(pcap, &pcs) < 0) {
 //		(void) fprintf(stderr, "pcap_stats: %s\n", pcap_geterr( pcap ));//Statistics aren't available from savefiles
 	}else{
 		(void) fprintf(stderr, "\n%12d packets received by filter\n", pcs.ps_recv);
 		(void) fprintf(stderr, "%12d packets dropped by interface\n", pcs.ps_ifdrop);
-		(void) fprintf(stderr, "%12d packets dropped by kernel (%3.2f%%)\n", pcs.ps_drop, pcs.ps_drop * 100.0 / pcs.ps_recv);
+		(void) fprintf(stderr, "%12d packets dropped by kernel (%3.2f%%)\n", pcs.ps_drop,
+				pcs.ps_recv==0? 0 : (pcs.ps_drop * 100.0 / pcs.ps_recv));
 		fflush(stderr);
 	}
 
@@ -558,14 +562,19 @@ static inline void termination(){
 	fprintf(stderr, "%12zu messages received\n", total_received_reports );
 	fprintf(stderr, "%12zu alerts generated\n", alerts_count );
 
-	pcap_close( pcap );
+	if( pcap )
+		pcap_close( pcap );
 
 	if( config->output->is_enable )
 		verdict_printer_free();
 
 	mmt_sec_close();   // close mmt_security
-	close_extraction();// close mmt_dpi
+	if( mmt_dpi_handler ){
+		close_extraction();// close mmt_dpi
+		mmt_dpi_handler = NULL;
+	}
 	conf_release( config );
+	forward_packet_release(context.forward_context);
 }
 
 void signal_handler_seg(int signal_type) {
@@ -584,13 +593,16 @@ void signal_handler(int signal_type) {
 
 	if( signal_type == SIGINT ){
 		log_write( LOG_ERR,"Releasing resource ... (press Ctrl+c again to exit immediately)");
-		termination();
 		signal(SIGINT, signal_handler);
+		termination();
 	}
 	exit( signal_type );
 }
 
 
+//do nothing here
+// we handle the error in the packet injector (HTTP2 or SCTP, etc)
+void sigpipe_signal_handler( int signal_type ){}
 
 void register_signals(){
 #ifndef DEBUG_MODE
@@ -599,6 +611,10 @@ void register_signals(){
 	signal(SIGINT,  signal_handler);
 	signal(SIGTERM, signal_handler);
 	signal(SIGABRT, signal_handler);
+
+	//SIGPIPE is raised when we are trying to write into a closed socket
+	// => we need to capture this signal to avoid quiting 5Greplay
+	signal(SIGPIPE, sigpipe_signal_handler);
 }
 
 int replay(int argc, char** argv) {
@@ -611,11 +627,20 @@ int replay(int argc, char** argv) {
 	struct pkthdr header;
 	size_t i, j, size;
 	uint16_t *rules_id_filter = NULL;
-	context_t context;
+
+
+#define MAX_ENV_STRING_LEN 1024
+	char environment[MAX_ENV_STRING_LEN];
 
 	register_signals();
 
 	config = _parse_options(argc, argv);
+
+	//export some environments variables to expose configuration parameters
+	// so that the embedded functions in the rules can access to these parameters
+	snprintf( environment, MAX_ENV_STRING_LEN, "MMT_5GREPLAY_NB_COPIES=%u", config->forward->nb_copies );
+	snprintf( environment, MAX_ENV_STRING_LEN, "MMT_5GREPLAY_HTTP2_NB_COPIES=%u", config->forward->nb_copies );
+	putenv( environment );
 
 	ret = mmt_sec_init( config->engine->excluded_rules );
 	if( ret != 0 ){
@@ -692,8 +717,6 @@ int replay(int argc, char** argv) {
 	}
 
 	termination();
-	forward_packet_release(forward_context);
-
 	return EXIT_SUCCESS;
 }
 

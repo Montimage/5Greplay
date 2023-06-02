@@ -15,11 +15,11 @@ static void em_forward(
 }
 
 void on_load(){
-	printf("Loaded successfully rule 1");
+	//printf("Loaded successfully rule 1");
 }
 
 void on_unload(){
-	printf("Unloaded successfully rule 1");
+	//printf("Unloaded successfully rule 1");
 }
 
 bool em_check(){

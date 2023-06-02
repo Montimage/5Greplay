@@ -137,4 +137,20 @@ static inline void forward_packet_if_satisfied( const rule_info_t *rule, int ver
 }
 
 
+static inline uint32_t get_parameter_nb_copies(){
+	const char *str = getenv("MMT_5GREPLAY_NB_COPIES");
+	if( str == NULL )
+		return 0;
+	else
+		return strtoul( str, NULL, 0 );
+}
+
+
+static inline uint32_t get_http2_env_nb_copies(){
+	const char *str = getenv("MMT_5GREPLAY_HTTP2_NB_COPIES");
+	if( str == NULL )
+		return 5000;
+	else
+		return strtoul( str, NULL, 0 );
+}
 #endif /* SRC_LIB_PRE_EMBEDDED_FUNCTIONS_H_ */

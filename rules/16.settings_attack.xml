@@ -1,0 +1,57 @@
+<beginning>
+<embedded_functions><![CDATA[
+#include <tcpip/http2.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+
+static unsigned long int number_request =100;
+
+void on_load(){
+	number_request = get_http2_env_nb_copies();
+}
+
+static void em_forward1(
+	const rule_info_t *rule, int verdict, uint64_t timestamp, 
+	uint64_t counter, const mmt_array_t * const trace ){	
+	//const char* trace_str = mmt_convert_execution_trace_to_json_string( trace, rule );
+	//printf( "WIndow Update %d\n%s\n", rule->id, trace_str );
+
+	//printf( "em_forward1 \n");
+	//uint32_t method= (uint32_t)get_numeric_value( PROTO_HTTP2, HTTP2_HEADER_STREAM_ID, 1, trace );
+	//uint32_t type=  (uint32_t)get_numeric_value( PROTO_HTTP2, HTTP2_WINDOW_UPDATE, 1, trace );
+	//printf("Ho ricevuto i valori method = %d e type= %d \n",(int)method,(int)type);
+	//set_numeric_value( PROTO_HTTP2, HTTP2_INJECT_WIN_UPDATE, 0 );
+	//forward_packet();
+	//set_numeric_value( PROTO_HTTP2, HTTP2_RESTORE_PACKET, 0 );
+	number_request*=2;
+	int j=0;
+	for(int i=0; i<number_request; i++){
+		//stream ID must be an odd number
+		set_numeric_value( PROTO_HTTP2, HTTP2_HEADER_STREAM_ID, (i*2+1) );
+		forward_packet();
+		if(j==50){
+			set_numeric_value( PROTO_HTTP2, HTTP2_INJECT_WIN_UPDATE, 0 );
+			forward_packet();
+			set_numeric_value( PROTO_HTTP2, HTTP2_RESTORE_PACKET, 0 );
+ 		}
+ 		j=(j+1)%51;
+ 		usleep(1000);
+	}
+}
+
+//void on_unload(){
+//	printf("Unloaded successfully rule 1\n");
+//}
+
+]]></embedded_functions>
+<property   property_id="16" type_property="FORWARD" 
+    description="Forward get" if_satisfied="em_forward1">
+  <event  event_id="1" description="GET forward "
+         		  boolean_expression="( (http2.header_method == 130)   &amp;&amp; (ip.src != ip.dst))" />
+ 
+    </property>
+
+
+</beginning>
+
