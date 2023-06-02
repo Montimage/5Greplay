@@ -119,7 +119,13 @@ inject_http2_context_t* inject_http2_alloc( const forward_packet_target_conf_t *
 	inject_http2_context_t *context = mmt_mem_alloc_and_init_zero( sizeof( struct inject_tcp_context_struct ));
 	context->host      = conf->host;
 	context->port      = conf->port;
-	context->nb_copies = nb_copies;
+
+	//TODO: currently HTTP2 injector supports injecting only one packet at the time
+	// more duplicated packet will be rejected by the server which raises GOAWAY message, then closes the socket.
+	// A work around is to modify STREAM ID to get different packets
+	//  This modification is done in the .xml rules concerning HTTP2 protocol, e.g., rules 13, 14, .., 17
+	// The nb_copies will be transfered to the rules via MMT_5GREPLAY_HTTP2_NB_COPIES environment variable
+	context->nb_copies = 1; //nb_copies;
 	_http2_connect( context );
 	return context;
 }

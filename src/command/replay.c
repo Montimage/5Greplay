@@ -637,6 +637,7 @@ int replay(int argc, char** argv) {
 	//export some environments variables to expose configuration parameters
 	// so that the embedded functions in the rules can access to these parameters
 	snprintf( environment, MAX_ENV_STRING_LEN, "MMT_5GREPLAY_NB_COPIES=%u", config->forward->nb_copies );
+	snprintf( environment, MAX_ENV_STRING_LEN, "MMT_5GREPLAY_HTTP2_NB_COPIES=%u", config->forward->nb_copies );
 	putenv( environment );
 
 	ret = mmt_sec_init( config->engine->excluded_rules );

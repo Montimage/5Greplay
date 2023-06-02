@@ -26,8 +26,9 @@ static void em_forward1(
 	//set_numeric_value( PROTO_HTTP2, HTTP2_RESTORE_PACKET, 0 );
 	
 	int j=0;
-	for(int i=1;i<number_request;i+=2){
-		set_numeric_value( PROTO_HTTP2, HTTP2_HEADER_STREAM_ID, i );
+	for(int i=0; i<number_request; i++){
+		//stream ID must be an odd number
+		set_numeric_value( PROTO_HTTP2, HTTP2_HEADER_STREAM_ID, (i*2+1) );
 		forward_packet();
 		if(j==50){
 			set_numeric_value( PROTO_HTTP2, HTTP2_INJECT_WIN_UPDATE, 0 );
