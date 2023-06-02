@@ -13,18 +13,18 @@ void on_load(){
 static void em_modif_then_forward(
 	const rule_info_t *rule, int verdict, uint64_t timestamp, 
 	uint64_t counter, const mmt_array_t * const trace ){	
-  	const char* trace_str = mmt_convert_execution_trace_to_json_string( trace, rule );
-   //	printf( "DETECT Header Window Update %d\n%s\n", rule->id, trace_str );
-     	set_numeric_value( PROTO_HTTP2, HTTP2_INJECT_WIN_UPDATE, 0 );
-   //	printf( "em_modif_then_forward \n");
-   
-	for(int i=0;i<10;i++){
-     		forward_packet();
-     		//set_numeric_value( PROTO_HTTP2, HTTP2_RESTORE_PACKET, 0 );
-     		//printf("Wait 10 ms\n");
- 		usleep(10000); // Sleep for 10 milliseconds
-		}
+	//	const char* trace_str = mmt_convert_execution_trace_to_json_string( trace, rule );
+	//	printf( "DETECT Header Window Update %d\n%s\n", rule->id, trace_str );
+	//	set_numeric_value( PROTO_HTTP2, HTTP2_INJECT_WIN_UPDATE, 0 );
+	//	printf( "em_modif_then_forward \n");
+
+	for(int i=0;i<number_request;i++){
+		forward_packet();
+		//set_numeric_value( PROTO_HTTP2, HTTP2_RESTORE_PACKET, 0 );
+		//printf("Wait 10 ms\n");
+		usleep(10000); // Sleep for 10 milliseconds
 	}
+}
 
 //void on_unload(){
 //	printf("Unloaded successfully rule 1\n");
@@ -34,7 +34,7 @@ static void em_modif_then_forward(
 <property value="THEN" property_id="14" type_property="FORWARD" 
     description="Modify stream id" if_satisfied="em_modif_then_forward">
   <event value="COMPUTE" event_id="1" description="Forward "
-         		  boolean_expression="( (http2.header_method == 130) &amp;&amp; (ip.src != ip.dst) )" />
+         		  boolean_expression="( http2.header_method == 130 )" />
    <event value="COMPUTE" event_id="2" 
            description="Nothing"
            boolean_expression="( http2.header_method != 0)"/>  
