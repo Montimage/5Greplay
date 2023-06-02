@@ -40,7 +40,7 @@ static size_t total_received_packets   = 0;
 static size_t proto_atts_count        = 0;
 proto_attribute_t const *const*proto_atts  = NULL;
 
-static pcap_t *pcap;
+static pcap_t *pcap = NULL;
 
 //handler of MMT-SEC
 static mmt_sec_handler_t *sec_handler  = NULL;
@@ -255,7 +255,7 @@ static inline bool _register_proto_att_to_mmt_dpi( uint32_t proto_id, uint32_t a
 	if( is_registered_attribute( mmt_dpi_handler, proto_id, att_id ))
 		return 0;
 	if( register_extraction_attribute( mmt_dpi_handler, proto_id, att_id ) ){
-		DEBUG( "Registered attribute to extract: %"PRIu32".%"PRIu32, proto_id, att_id );
+		log_write(LOG_INFO, "Registered attribute to extract: %"PRIu32".%"PRIu32, proto_id, att_id );
 		return 1;
 	}
 	return 0;
@@ -531,7 +531,7 @@ void live_capture_callback( u_char *user, const struct pcap_pkthdr *p_pkthdr, co
 	header.caplen = p_pkthdr->caplen;
 	header.len    = p_pkthdr->len;
 	if (!packet_process( mmt, &header, data )) {
-		fprintf(stderr, "Packet data extraction failure.\n");
+		log_write(LOG_ERR, "Packet data extraction failure.\n");
 	}
 	//printf("."); fflush( stdout );
 }
@@ -541,16 +541,19 @@ static inline void termination(){
 	struct pcap_stat pcs; /* packet capture filter stats */
 	size_t alerts_count;
 
-	pcap_breakloop( pcap );
+	if( pcap )
+		pcap_breakloop( pcap );
 
 	alerts_count = mmt_sec_unregister( sec_handler );
 
-	if (pcap_stats(pcap, &pcs) < 0) {
+	memset( &pcs, 0, sizeof(pcs) );
+	if (pcap && pcap_stats(pcap, &pcs) < 0) {
 //		(void) fprintf(stderr, "pcap_stats: %s\n", pcap_geterr( pcap ));//Statistics aren't available from savefiles
 	}else{
 		(void) fprintf(stderr, "\n%12d packets received by filter\n", pcs.ps_recv);
 		(void) fprintf(stderr, "%12d packets dropped by interface\n", pcs.ps_ifdrop);
-		(void) fprintf(stderr, "%12d packets dropped by kernel (%3.2f%%)\n", pcs.ps_drop, pcs.ps_drop * 100.0 / pcs.ps_recv);
+		(void) fprintf(stderr, "%12d packets dropped by kernel (%3.2f%%)\n", pcs.ps_drop,
+				pcs.ps_recv==0? 0 : (pcs.ps_drop * 100.0 / pcs.ps_recv));
 		fflush(stderr);
 	}
 
@@ -558,13 +561,15 @@ static inline void termination(){
 	fprintf(stderr, "%12zu messages received\n", total_received_reports );
 	fprintf(stderr, "%12zu alerts generated\n", alerts_count );
 
-	pcap_close( pcap );
+	if( pcap )
+		pcap_close( pcap );
 
 	if( config->output->is_enable )
 		verdict_printer_free();
 
 	mmt_sec_close();   // close mmt_security
-	close_extraction();// close mmt_dpi
+	if( mmt_dpi_handler )
+		close_extraction();// close mmt_dpi
 	conf_release( config );
 }
 
