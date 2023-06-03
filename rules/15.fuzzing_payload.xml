@@ -17,7 +17,8 @@ static void em_modif_then_forward(
 	//	printf( "em_modif_then_forward \n");
 	for(int i=0; i<number_request; i++){
 		//stream ID must be an odd number
-		set_numeric_value( PROTO_HTTP2, HTTP2_HEADER_STREAM_ID, (i*2+1) );
+		//set_numeric_value( PROTO_HTTP2, HTTP2_HEADER_STREAM_ID, (i*2+1) );
+		set_numeric_value( PROTO_HTTP2, HTTP2_PAYLOAD_FUZZ, (i*2+1) );
 		forward_packet();
 	}
 }
@@ -30,7 +31,7 @@ void on_unload(){
 <property value="THEN" property_id="15" type_property="FORWARD" 
     description="Modify stream id" if_satisfied="em_modif_then_forward">
   <event value="COMPUTE" event_id="1" description="Fuzz payload "
-         		  boolean_expression="( (http2.header_method == 131)  &amp;&amp; (ip.src != ip.dst))" />
+         		  boolean_expression="( (http2.header_method == 131))" />
    <event value="COMPUTE" event_id="2" 
            description="Nothing"
            boolean_expression="( http2.header_method != 0)"/>  
