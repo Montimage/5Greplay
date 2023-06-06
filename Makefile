@@ -45,9 +45,9 @@ endif
 
 CFLAGS   += -fPIC -Wall -DVERSION_NUMBER=\"$(VERSION)\" -DGIT_VERSION=\"$(GIT_VERSION)\" -DLEVEL1_DCACHE_LINESIZE=$(CACHE_LINESIZE) \
 				-Wno-unused-variable -Wno-unused-function -Wuninitialized\
-				-I/usr/include/libxml2/  -I$(MMT_DPI_DIR)/include  -I$(MMT_DPI_DIR)/include/dpi/mobile 
+				-I/usr/include/libxml2/  -I$(MMT_DPI_DIR)/include  -I$(MMT_DPI_DIR)/include/dpi/mobile  -I/usr/include/nghttp2
 
-CLDFLAGS += -L$(MMT_DPI_DIR)/lib -L./plugins -L/usr/local/lib  -L/opt/mmt/plugins
+CLDFLAGS += -L$(MMT_DPI_DIR)/lib -L./plugins -L/usr/local/lib  -L/opt/mmt/plugins 
 
 #a specific flag for each .o file
 CFLAGS += $(CFLAGS-$@)
@@ -107,9 +107,9 @@ main:  $(MMT_DPI_DIR) $(LIB_OBJS)
 	@echo "[COMPILE] $@"
 # When compiling using static link, we need to use g++ as DPI uses stdc++
 ifdef STATIC_LINK
-	$(QUIET) $(CXX) -std=c++11 -Wl,--export-dynamic -o $(OUTPUT) $(CLDFLAGS) $(LIB_OBJS) $(LIBS)
+	$(QUIET) $(CXX) -std=c++11 -Wl,--export-dynamic -o $(OUTPUT) $(CLDFLAGS) $(LIB_OBJS) $(LIBS)  -lnghttp2
 else
-	$(QUIET) $(CC) -Wl,--export-dynamic -o $(OUTPUT) $(CLDFLAGS) $(LIB_OBJS) $(LIBS)
+	$(QUIET) $(CC) -Wl,--export-dynamic -o $(OUTPUT) $(CLDFLAGS) $(LIB_OBJS) $(LIBS)  -lnghttp2
 endif
 	
 

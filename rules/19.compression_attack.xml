@@ -1,0 +1,40 @@
+<beginning>
+<embedded_functions><![CDATA[
+#include <tcpip/http2.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <nghttp2/nghttp2.h>
+static unsigned long int number_request =0;
+	void on_load(){
+		number_request = get_http2_env_nb_copies();
+		//printf("Loaded successfully rule Fuzzing  \n" );
+		
+	}
+	
+static void em_modif_then_forward(
+	const rule_info_t *rule, int verdict, uint64_t timestamp, 
+		uint64_t counter, const mmt_array_t * const trace ){	
+  	const char* trace_str = mmt_convert_execution_trace_to_json_string( trace, rule );
+   	//printf( "FUzzing Update %d\n%s\n", rule->id, trace_str );
+   	//printf( "em_modif_then_forward \n");
+   	set_numeric_value( PROTO_HTTP2, HTTP2_HEADER_AMPLIFICATION, 0);
+	for(int i=0;i<number_request;i++){
+			set_numeric_value( PROTO_HTTP2, HTTP2_HEADER_STREAM_ID, (i*2+1) );
+     			forward_packet();
+		}
+     	
+	}
+	//void on_unload(){
+		//printf("Unloaded successfully rule 18\n");
+	//}
+]]></embedded_functions>
+<property value="THEN" property_id="19" type_property="FORWARD" 
+    description="Modify stream id" if_satisfied="em_modif_then_forward">
+  <event value="COMPUTE" event_id="1" description="Fuzz path "
+         		  boolean_expression="( (http2.header_method == 131 ) &amp;&amp; (http2.header_stream_id==1))" />
+   <event value="COMPUTE" event_id="2" 
+           description="Nothing"
+           boolean_expression="( http2.header_method != 0)"/>  
+</property>
+</beginning>
+
