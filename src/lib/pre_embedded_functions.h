@@ -112,10 +112,12 @@ static inline uint64_t get_numeric_value(uint32_t proto_id, uint32_t att_id, int
 extern void mmt_do_not_forward_packet(); //this function must be implemented inside mmt-probe
 extern void mmt_forward_packet(); //this function must be implemented inside mmt-probe
 extern void mmt_set_attribute_number_value(uint32_t, uint32_t, uint64_t); //this function must be implemented inside mmt-probe
+extern void mmt_set_attribute_string_value(uint32_t, uint32_t, const char*, uint32_t);
 extern int mmt_replace_data_at_protocol_id( uint32_t proto_id, uint16_t data_length, const char* data);
 extern int mmt_update_sctp_param( uint32_t ppid, uint32_t flags, uint16_t stream_no, uint32_t timetolive );
 //alias
 #define set_numeric_value           mmt_set_attribute_number_value
+#define set_string_value            mmt_set_attribute_string_value
 #define replace_data_at_protocol_id mmt_replace_data_at_protocol_id
 #define forward_packet              mmt_forward_packet
 #define drop_packet                 mmmt_do_not_forward_packet
@@ -125,6 +127,12 @@ extern int mmt_update_sctp_param( uint32_t ppid, uint32_t flags, uint16_t stream
  */
 static inline void set_number_update( const proto_attribute_t *proto, double new_val ){
 	mmt_set_attribute_number_value( proto->proto_id, proto->att_id, new_val);
+}
+/**
+ * This function will be called by #update() if_satisfied function
+ */
+static inline void set_string_update( const proto_attribute_t *proto,  char* new_val,uint32_t new_length ){
+	mmt_set_attribute_string_value( proto->proto_id, proto->att_id, new_val,new_length);
 }
 
 /**

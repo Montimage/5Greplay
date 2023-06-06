@@ -234,6 +234,8 @@ extern uint32_t update_ngap_data( u_char *data, uint32_t data_size, const ipacke
 //this function is implemented inside mmt-dpi to update HTTP2 protocol
 extern int update_http2_data( u_char *data, uint32_t data_size, const ipacket_t *ipacket, uint32_t proto_id, uint32_t att_id, uint64_t new_val );
 
+
+extern int update_http2_payload( u_char*data_out, uint32_t data_size, const ipacket_t *ipacket, uint32_t proto_id, uint32_t att_id, char* new_data, uint32_t new_data_size);
 /**
  * This function is called by mmt-engine when a FORWARD rule is satisfied
  *   and its if_satisfied="#update( xx.yy, ..)"
@@ -271,7 +273,35 @@ void mmt_set_attribute_number_value(uint32_t proto_id, uint32_t att_id, uint64_t
 			}
 
 }
+/**
+ * This function is called by mmt-engine when a FORWARD rule is satisfied
+ *   and its if_satisfied="#update( xx.yy, ..)"
+ *   or explicitly call set_numeric_value in an embedded function
+ */
+void mmt_set_attribute_string_value (uint32_t proto_id, uint32_t att_id, char* new_val, uint32_t new_length){
+	forward_packet_context_t *context = _get_current_context();
+	if( context == NULL )
+		return;
+	int ret = 0;
+	int difference=0;
+	
+	switch(proto_id){
+	
+	case(PROTO_HTTP2):
+		difference = update_http2_payload(context->packet_data, context->packet_size, context->ipacket, proto_id, att_id, new_val, new_length );
 
+		// why 400?
+		if( difference != 0 && difference < 600 && difference > -600 )//check that difference value is not too elevated or too small
+			if( context->packet_size + difference >= 0 )
+				context->packet_size = context->packet_size + difference;
+	break;
+	
+	default:
+		log_write( LOG_ERR, "Cannot set new value %s for att %d of proto %d for packet id %"PRIu64,
+			new_val, att_id, proto_id, context->ipacket->packet_id);
+			}
+
+}
 
 /**
  * This is an embedded function that can be called in rules by user

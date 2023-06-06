@@ -3,24 +3,47 @@
 #include <tcpip/http2.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <time.h>
+
+#define MAX_PAYLOAD_SIZE 1500
 
 static unsigned long int number_request =1000;
 void on_load(){
 	number_request = get_http2_env_nb_copies();
 }
-	
-static void em_modif_then_forward(
-		const rule_info_t *rule, int verdict, uint64_t timestamp, 
-		uint64_t counter, const mmt_array_t * const trace ){	
+
+void same_size_fuzz_data( const char*payload, char* new_payload , uint32_t payload_len){
+//Ensure that payload_length and new_payload_length are the same
+	int r=0;
+	 srand(time(NULL)); // initialization of seed value
+	if(payload_len < MAX_PAYLOAD_SIZE)
+		memcpy(new_payload, payload, payload_len);
+	const char characters[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;\'///:,.<>/?\\";
+	//change the second half of the payload
+	for(int i = payload_len ; i < (int)( payload_len/2) ; i++){
+		r = rand() % (sizeof(characters)-1);
+		new_payload[i] = characters[r]; 
+	}
+
+}
+
+static bool em_fuzz_then_forward(
+	uint32_t payload_length,const char* payload ,double packet_id
+		 ){	
 	//	const char* trace_str = mmt_convert_execution_trace_to_json_string( trace, rule );
 	//	printf( "FUzzing Update %d\n%s\n", rule->id, trace_str );
 	//	printf( "em_modif_then_forward \n");
+	const char *payload_data=NULL;
+	payload_data = payload;
+	char new_payload[]="{23uejjdfq\'|///-###%%}";//User can modify the payload as he wants.
+	uint32_t new_length = (uint32_t) strlen(new_payload);
+	set_string_value(PROTO_HTTP2, HTTP2_PAYLOAD_DATA, new_payload, new_length);
 	for(int i=0; i<number_request; i++){
 		//stream ID must be an odd number
-		//set_numeric_value( PROTO_HTTP2, HTTP2_HEADER_STREAM_ID, (i*2+1) );
-		set_numeric_value( PROTO_HTTP2, HTTP2_PAYLOAD_FUZZ, (i*2+1) );
+		set_numeric_value( PROTO_HTTP2, HTTP2_HEADER_STREAM_ID, (i*2+1) );
 		forward_packet();
 	}
+	return true;
 }
 
 void on_unload(){
@@ -29,9 +52,9 @@ void on_unload(){
 
 ]]></embedded_functions>
 <property value="THEN" property_id="15" type_property="FORWARD" 
-    description="Modify stream id" if_satisfied="em_modif_then_forward">
+    description="Modify stream id" >
   <event value="COMPUTE" event_id="1" description="Fuzz payload "
-         		  boolean_expression="( (http2.header_method == 131))" />
+         		  boolean_expression="( (http2.header_method == 131) &amp;&amp; #em_fuzz_then_forward(http2.payload_length , http2.p_payload,meta.packet_index) )" />
    <event value="COMPUTE" event_id="2" 
            description="Nothing"
            boolean_expression="( http2.header_method != 0)"/>  
