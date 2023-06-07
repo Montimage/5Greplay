@@ -15,9 +15,9 @@ static void em_modif_then_forward(
 	const rule_info_t *rule, int verdict, uint64_t timestamp, 
 		uint64_t counter, const mmt_array_t * const trace ){	
   	const char* trace_str = mmt_convert_execution_trace_to_json_string( trace, rule );
-   	printf( "FUzzing Update %d\n%s\n", rule->id, trace_str );
-   	printf( "em_modif_then_forward \n");
-	for(int i=1;i<number_request;i++){
+   	//printf( "FUzzing Update %d\n%s\n", rule->id, trace_str );
+   	//printf( "em_modif_then_forward \n");
+	for(int i = 0; i < number_request ; i ++){
 			set_numeric_value( PROTO_HTTP2, HTTP2_PATH_FUZZ, (i*2+1));
      			forward_packet();
 		}
