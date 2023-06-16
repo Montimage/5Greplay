@@ -24,13 +24,15 @@ jobs:
     - uses: actions/checkout@v3
     - name: setup environment
       run: |
-         sudo apt update && sudo apt-get install libxml2-dev liblzma-dev libicu-dev libpcap-dev libconfuse-dev libsctp-dev gcc make wget
+         sudo apt update && sudo apt-get install -y libxml2-dev liblzma-dev libicu-dev libpcap-dev libconfuse-dev libsctp-dev gcc make wget libnghttp2-dev
          #wget https://github.com/Montimage/mmt-dpi/releases/download/v1.7.4/mmt-dpi_1.7.4_42d37eb_Linux_x86_64.deb
          #sudo dpkg -i lib/mmt-dpi*.deb && sudo ldconfig
     - name: install mmt-dpi
       run: |
          git clone https://github.com/Montimage/mmt-dpi.git
-         cd mmt-dpi/sdk
+         cd mmt-dpi
+         git checkout project-sancus
+         cd sdk
          make -j
          sudo make install && sudo ldconfig
 
