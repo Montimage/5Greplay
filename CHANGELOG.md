@@ -1,3 +1,7 @@
+# Version 0.0.7-sancus
+- use nghttp2 library to decompress HTTP2 headers
+- this is a specific release for Sancus research project
+
 # Version 0.0.7
 - HTTP2 mutation and forwarding packets
 
