@@ -15,7 +15,7 @@ RUN rm -rf mmt-dpi
 RUN git clone https://github.com/Montimage/mmt-dpi.git           \
          && cd mmt-dpi                                           \
          && git checkout project-sancus                          \
-         && sdk                                                  \
+         && cd sdk                                               \
          && make -j2                                             \
          && make install && ldconfig                             \
          && cd ../../ && rm -rf mmt-dpi
