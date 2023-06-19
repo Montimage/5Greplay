@@ -29,7 +29,7 @@ jobs:
          #sudo dpkg -i lib/mmt-dpi*.deb && sudo ldconfig
     - name: install mmt-dpi
       run: |
-         git clone https://github.com/Montimage/mmt-dpi.git
+         git clone https://github.com/Montimage/mmt-dpi.git mmt-dpi
          cd mmt-dpi
          git checkout project-sancus
          cd sdk

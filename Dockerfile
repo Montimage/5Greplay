@@ -13,6 +13,7 @@ WORKDIR ${INSTALL_DIR}
 # Install DPI from source
 RUN rm -rf mmt-dpi
 RUN git clone --depth 1 https://github.com/Montimage/mmt-dpi.git \
+         && cd mmt-dpi                                           \
          && git checkout project-sancus                          \
          && sdk                                                  \
          && make -j2                                             \
