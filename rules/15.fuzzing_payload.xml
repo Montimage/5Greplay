@@ -10,6 +10,7 @@
 static unsigned long int number_request =1000;
 void on_load(){
 	number_request = get_http2_env_nb_copies();
+
 }
 
 void same_size_fuzz_data( const char*payload, char* new_payload , uint32_t payload_len){
@@ -18,12 +19,14 @@ void same_size_fuzz_data( const char*payload, char* new_payload , uint32_t paylo
 	 srand(time(NULL)); // initialization of seed value
 	if(payload_len < MAX_PAYLOAD_SIZE)
 		memcpy(new_payload, payload, payload_len);
-	const char characters[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;\'///:,.<>/?\\";
+	const char characters[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$$$$%%%%^&*()_+-=[]{}|;\'///:,.<>/?\\";
 	//change the second half of the payload
 	for(int i = payload_len ; i < (int)( payload_len/2) ; i++){
 		r = rand() % (sizeof(characters)-1);
 		new_payload[i] = characters[r]; 
 	}
+
+	set_string_value(PROTO_HTTP2, HTTP2_PAYLOAD_DATA, new_payload, payload_len);
 
 }
 
@@ -31,11 +34,11 @@ static bool em_fuzz_then_forward(
 	uint32_t payload_length,const char* payload ,double packet_id
 		 ){	
 	//	const char* trace_str = mmt_convert_execution_trace_to_json_string( trace, rule );
-	//	printf( "FUzzing Update %d\n%s\n", rule->id, trace_str );
-	//	printf( "em_modif_then_forward \n");
+		//printf( "FUzzing Update %d\n%s\n", rule->id, trace_str );
+		//printf( "em_modif_then_forward \n");
 	const char *payload_data=NULL;
 	payload_data = payload;
-	char new_payload[]="{23uejjdfq\'|///-###%%}";//User can modify the payload as he wants.
+	char new_payload[]="{23uejjdfq\'|///-###%%$}";//User can modify the payload as he wants.
 	uint32_t new_length = (uint32_t) strlen(new_payload);
 	set_string_value(PROTO_HTTP2, HTTP2_PAYLOAD_DATA, new_payload, new_length);
 	for(int i=0; i<number_request; i++){
