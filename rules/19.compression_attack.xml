@@ -7,7 +7,7 @@
 static unsigned long int number_request =0;
 	void on_load(){
 		number_request = get_http2_env_nb_copies();
-		//printf("Loaded successfully rule Fuzzing  \n" );
+		//printf("Loaded successfully rule Compression  \n" );
 		
 	}
 	
