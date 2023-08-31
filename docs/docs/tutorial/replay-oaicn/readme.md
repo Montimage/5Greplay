@@ -40,7 +40,7 @@ make
 make sample-rules
 
 #Start 5Greplay
-sudo ./5greplay replay -t pcap/sa.pcap -Xforward.target-ports=38412 -Xforward.target-host=192.168.70.132 -Xforward.nb-copies=1 -Xforward.default=FORWARD
+sudo ./5greplay replay -t pcap/sa.pcap -Xforward.target-ports=38412 -Xforward.target-hosts=192.168.70.132 -Xforward.nb-copies=1 -Xforward.default=FORWARD
 ```
 
 # Screencast
