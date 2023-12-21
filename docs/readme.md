@@ -32,7 +32,7 @@ permalink: /docs.html
   - Caccavale, Francesco G., Huu-Nghia Nguyen, Ana Cavalli, Edgardo Montes De Oca, and Wissam Mallouli. "HTTP/2 Attacks Generation using 5Greplay." In Proceedings of the 18th International Conference on Availability, Reliability and Security, pp. 1-7. 2023. [doi](https://doi.org/10.1145/3600160.3605062)
   - Salazar, Z., Fatiha Zaidi, Wissam Mallouli, Ana Rosa Cavalli, Huu Nghia Nguyen, and Edgardo Montes de Oca. "A formal approach for complex attacks generation based on mutation of 5g network traffic." In International Conference on Software and Data Technologies, vol. 1, pp. P-234. 2022. [pdf](https://hal.science/hal-04007862/document)
   - O. -M. Dumitru-Guzu and C. Vlădeanu:
-    "Analysis of Potential Threats in NextGen 5G Core", ISETC 2022, pp. 1-4, doi: [10.1109/ISETC56213.2022.10010163](https://ieeexplore.ieee.org/document/10010163)
+    "Analysis of Potential Threats in NextGen 5G Core", ISETC 2022, pp. 1-4, doi: [10.1109/ISETC56213.2022.10010163](https://ieeexplore.ieee.org/document/10010163), [pdf](https://ieeexplore.ieee.org/iel7/10009907/10009039/10010163.pdf)
   - Zujany Salazar, Huu Nghia Nguyen, Wissam Mallouli, Ana R. Cavalli, Edgardo Montes de Oca:
     "5Greplay: a 5G Network Traffic Fuzzer - Application to Attack Injection". ARES 2021, pp. 106:1-106:8
     [pdf](docs/publications/ares2021-paper.pdf) [slide](docs/publications/ares2021-slide.pdf)
