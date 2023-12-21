@@ -32,5 +32,6 @@ permalink: /docs.html
     [pdf](docs/publications/ares2021-paper.pdf) [slide](docs/publications/ares2021-slide.pdf)
   - O. -M. Dumitru-Guzu and C. Vlădeanu:
     "Analysis of Potential Threats in NextGen 5G Core", ISETC 2022, pp. 1-4, doi: [10.1109/ISETC56213.2022.10010163](https://ieeexplore.ieee.org/document/10010163).
+  - Dolente, Filippo, Rosario Giuseppe Garroppo, and Michele Pagano. 2024. "A Vulnerability Assessment of Open-Source Implementations of Fifth-Generation Core Network Functions" Future Internet 16, no. 1: 1. https://doi.org/10.3390/fi16010001
   - 
   - *(to add your publication, please email us at contact@montimage.com)*
