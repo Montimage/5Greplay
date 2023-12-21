@@ -35,6 +35,6 @@ permalink: /docs.html
     "Analysis of Potential Threats in NextGen 5G Core", ISETC 2022, pp. 1-4, doi: [10.1109/ISETC56213.2022.10010163](https://ieeexplore.ieee.org/document/10010163), [pdf](https://ieeexplore.ieee.org/iel7/10009907/10009039/10010163.pdf)
   - Zujany Salazar, Huu Nghia Nguyen, Wissam Mallouli, Ana R. Cavalli, Edgardo Montes de Oca:
     "5Greplay: a 5G Network Traffic Fuzzer - Application to Attack Injection". ARES 2021, pp. 106:1-106:8
-    [pdf](docs/publications/ares2021-paper.pdf) [slide](docs/publications/ares2021-slide.pdf)
+    [pdf]([docs/publications/ares2021-paper.pdf](https://dl.acm.org/doi/pdf/10.1145/3465481.3470079) [slide](docs/publications/ares2021-slide.pdf)
   - 
   - *(to add your publication, please email us at contact@montimage.com)*
