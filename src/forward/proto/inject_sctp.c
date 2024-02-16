@@ -42,6 +42,9 @@ struct inject_sctp_context_struct{
 	const char* host;
 	uint16_t port;
 
+	const char *bind_host;
+	uint16_t bind_port;
+
 	// the parameters to pass to sctp_sendmsg function to send sctp packets
 	// see more: https://linux.die.net/man/3/sctp_sendmsg
 	sctp_param_t sctp_param;
@@ -57,8 +60,28 @@ void _sctp_connect( inject_sctp_context_t *context ){
 			.sin_addr.s_addr = inet_addr( context->host ),
 	};
 
+	struct sockaddr_in bind_addr = {
+			.sin_family = AF_INET
+	};
+
 	conn_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_SCTP);
 	ASSERT( conn_fd >= 0, "Cannot create SCTP socket" );
+
+	//bind to a specific NIC
+	if( context->bind_host ){
+		bind_addr.sin_port = htons( context->bind_port );
+		bind_addr.sin_addr.s_addr = inet_addr( context->bind_host );
+		ret = sctp_bindx( conn_fd, (struct sockaddr *) &bind_addr,
+				1, //number of addresses
+				SCTP_BINDX_ADD_ADDR //to associate additional addresses
+				);
+		if( ret )
+			log_write( LOG_WARNING, "Cannot bind socket to %s:%d using SCTP: %s. Ignore it.",
+								context->bind_host, context->bind_port, strerror(errno) );
+		else
+			log_write( LOG_INFO, "Binded successfully socket to %s:%d using SCTP.",
+								context->bind_host, context->bind_port );
+	}
 
 	opt = 1;
 	ret = setsockopt(conn_fd, IPPROTO_SCTP, SCTP_NODELAY, &opt, sizeof(opt));
@@ -77,7 +100,7 @@ void _sctp_connect( inject_sctp_context_t *context ){
 	context->shown_error = false;
 }
 
-inject_sctp_context_t* inject_sctp_alloc( const forward_packet_target_conf_t *conf, uint32_t nb_copies ){
+inject_sctp_context_t* inject_sctp_alloc( const forward_packet_target_conf_t *conf, uint32_t nb_copies, const char *bind_host ){
 
 
 	inject_sctp_context_t *context = mmt_mem_alloc_and_init_zero( sizeof( struct inject_sctp_context_struct ));
@@ -85,6 +108,9 @@ inject_sctp_context_t* inject_sctp_alloc( const forward_packet_target_conf_t *co
 	context->port      = conf->port;
 	context->nb_copies = nb_copies;
 	context->total_sent_pkt = 0;
+	context->bind_host = bind_host;
+	context->bind_port = 0; //auto
+
 	//sctp parameters to send packets
 	inject_sctp_update_param( context,
 			60, //payload protocol id of NGAP protcol

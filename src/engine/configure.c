@@ -85,6 +85,7 @@ static inline cfg_t *_load_cfg_from_file(const char *filename) {
 			CFG_INT("snap-len",                 0, CFGF_NONE),
 			CFG_INT("nb-copies",                1, CFGF_NONE),
 			CFG_INT("promisc",                  0, CFGF_NONE),
+			CFG_STR("bind-ip",        "127.0.0.1", CFGF_NONE),
 			CFG_INT_CB("default",               ACTION_DROP, CFGF_NONE, _conf_parse_forward_default_action),
 			CFG_STR_LIST("target-protocols", "{}", CFGF_NONE),
 			CFG_STR_LIST("target-hosts",     "{}", CFGF_NONE),
@@ -265,6 +266,7 @@ static inline forward_packet_conf_t *_parse_forward_packet( cfg_t *cfg ){
 	ret->nb_copies = _cfg_getint( cfg, "nb-copies", 1, UINT32_MAX, 1 );
 	ret->promisc = _cfg_getint( cfg, "promisc", 0, 1, 1 );
 	ret->default_action = cfg_getint( cfg, "default" );
+	ret->bind_ip = _cfg_get_str(cfg, "bind-ip");
 
 	ret->target_size = cfg_size( cfg, "target-protocols");
 	ASSERT( ret->target_size == cfg_size( cfg, "target-hosts"), "Number of elements in target-protocols and target-hosts are different");

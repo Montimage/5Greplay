@@ -84,6 +84,7 @@ typedef struct forward_packet_conf_struct{
 	uint16_t promisc;
 	uint32_t nb_copies;
 	forward_action_t default_action;
+	char *bind_ip;
 
 	forward_packet_target_conf_t *targets;
 	uint16_t target_size;

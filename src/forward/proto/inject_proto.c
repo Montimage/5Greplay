@@ -20,7 +20,7 @@ inject_proto_context_t* inject_proto_alloc( const config_t *config ){
 		target = & conf->targets[i];
 		switch( target->protocol ){
 		case FORWARD_PACKET_PROTO_SCTP:
-			context->sctp = inject_sctp_alloc(target, conf->nb_copies );
+			context->sctp = inject_sctp_alloc(target, conf->nb_copies, config->forward->bind_ip );
 			break;
 		case FORWARD_PACKET_PROTO_UDP:
 			context->udp = inject_udp_alloc(target, conf->nb_copies );
