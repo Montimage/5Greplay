@@ -1,4 +1,7 @@
 # Version 0.0.7
+- Bind SCTP socket in a specific IP. Fixed #43, fixed #45
+
+# Version 0.0.7
 - HTTP2 mutation and forwarding packets
 
 # Version 0.0.6
