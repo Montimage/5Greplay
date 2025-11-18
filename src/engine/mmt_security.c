@@ -117,11 +117,13 @@ void _filter_rules( const char *rule_mask ){
 				return;
 
 			for( k=rules_count-1; k>=0; k-- )
+				//rules[k] to be excluded
 				if( rule_id == rules[k]->id ){
-					//ignore this rule: rules_array[rules_count--]
+					//ignore this rule, we need to move shift rules after k forward
 					rules_count --;
+					for( i=k; i<rules_count; i++)
+						rules[i] = rules[ i+1 ];
 
-					rules[k] = rules[ rules_count ];;
 					break;
 				}
 		}
