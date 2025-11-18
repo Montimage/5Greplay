@@ -33,6 +33,8 @@ static inline void _set_proto(){
 	const char *val = get_input("mac-proto");
 	if( val )
 		ethernet.type = htons(atoi(val));
+	else
+		ethernet.type = htons(0x0800); //IP
 }
 
 void on_load(){
@@ -43,14 +45,11 @@ void on_load(){
 	_set_proto();
 }
 
-
-
 static void em_replace_ethernet(
 		const rule_info_t *rule, int verdict, uint64_t timestamp, 
 		uint64_t counter, const mmt_array_t * const trace ){
 
 	replace_data_at_protocol_id( PROTO_ETHERNET, sizeof(ethernet), (const char *) &ethernet );
-	forward_packet();
 }
 ]]></embedded_functions>
 

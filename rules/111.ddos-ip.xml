@@ -1,0 +1,137 @@
+<beginning>
+
+<!-- 
+This rule emulates an DDoS attack at IP protocol. It generates randomly IP src.
+Number of IP src is fixed via user input "rand-ip-src" parameter.
+For example, "-U rand-ip-src=100" will random IP src from 0 to 100.
+
+User input parameters:
+- rand-ip-src
+- rand-ip-dst
+
+For example:
+sudo ./5greplay replay -t pcap/oai.pcap -Xengine.exclude-rules=1-110,112-999 -U rand-ip-dst=100 -Urand-ip-src=1
+ -->
+
+<embedded_functions><![CDATA[
+
+#pragma pack(push, 1)  // Ensure no padding between fields
+typedef struct {
+	uint8_t  version_ihl;    // Version (4 bits) + IHL (4 bits)
+	uint8_t  tos;            // Type of Service
+	uint16_t total_length;   // Total length
+	uint16_t identification; // Identification
+	uint16_t flags_fragment; // Flags (3 bits) + Fragment offset (13 bits)
+	uint8_t  ttl;            // Time to Live
+	uint8_t  protocol;       // Protocol
+	uint16_t checksum;       // Header checksum
+	uint32_t  src;           // Source address
+	uint32_t  dst;           // Destination address
+	// Options may follow for IHL > 5
+} ipv4_t;
+#pragma pack(pop)
+
+
+// Calculate IPv4 header checksum
+static inline uint16_t _checksum(const void *data, size_t length) {
+	const uint16_t *ptr = (const uint16_t *)data;
+	uint32_t sum = 0;
+	
+	// Sum all 16-bit words
+	while (length > 1) {
+		sum += *ptr++;
+		length -= 2;
+	}
+	
+	// Add left-over byte, if any
+	if (length > 0)
+		sum += *(const uint8_t *)ptr;
+	
+	// Fold 32-bit sum to 16 bits
+	while (sum >> 16)
+		sum = (sum & 0xFFFF) + (sum >> 16);
+	
+	return (uint16_t)~sum;
+}
+
+static inline size_t _get_number( const char *name ){
+	const char *val = get_input( name );
+	if( !val )
+		return 0;
+	return atol( val );
+}
+
+static inline uint32_t _random(size_t max){
+	return (rand() % max) + 1;
+}
+
+static size_t nb_ip_src = 0, nb_ip_dst = 0;
+
+static ipv4_t ipv4;
+
+void on_load(){
+	memset(&ipv4, 0, sizeof(ipv4));
+	ipv4.version_ihl = (4 << 4) | 5;   // IPv4, 5 words header
+	ipv4.ttl = 64;
+	
+	nb_ip_src = _get_number("rand-ip-src");
+	nb_ip_dst = _get_number("rand-ip-dst");
+	
+	srand(time(NULL)); //init random
+}
+
+// reuse numeric value from the packet
+static inline bool fwd_num( int id, double val ){
+	//printf("set length: %d\n", (int)val);
+	switch( id ){
+		case 1:
+			ipv4.protocol = val;
+			break;
+		case 2:
+			ipv4.total_length = htons((int)val);
+			break;
+	}
+	return true;
+}
+
+static inline bool fwd_char( int id, const char* val ){
+	switch( id ){
+		case 1:
+			ipv4.src = *(uint32_t *) val;
+			break;
+		case 2:
+			ipv4.dst = *(uint32_t *) val;
+			break;
+	}
+	return true;
+}
+static void em_replace_ip(
+		const rule_info_t *rule, int verdict, uint64_t timestamp, 
+		uint64_t counter, const mmt_array_t * const trace ){
+
+	if( nb_ip_src )
+		ipv4.src = _random( nb_ip_src );
+		
+	if( nb_ip_dst )
+		ipv4.dst = _random( nb_ip_dst );
+
+	ipv4.checksum = 0;
+	ipv4.checksum = _checksum(&ipv4, sizeof(ipv4));
+
+	replace_data_at_protocol_id( PROTO_IP, sizeof(ipv4), (const char *) &ipv4 );
+}
+]]></embedded_functions>
+
+<property value="THEN" property_id="111" type_property="FORWARD" 
+    description="Set new IP"
+    if_satisfied="em_replace_ip">
+    <event description="Got an IP packet on top of Ethernet"
+           boolean_expression="(ethernet.proto == 2048)"/>
+    <event description="Forward values"
+           boolean_expression="( #fwd_num(1, ip.proto_id) 
+                     &amp;&amp; (#fwd_num(2, ip.tot_len) 
+                     &amp;&amp; (#fwd_char(1, ip.src) 
+                     &amp;&amp;  #fwd_char(2, ip.dst))) )"/>
+</property>
+
+</beginning>
