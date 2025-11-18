@@ -37,8 +37,9 @@ jobs:
     - name: make
       run: make 
 
-    - name: make static
-      run: make STATIC_LINK=1 VERBOSE=1
+    # 18 Nov 2025: static link requires lib DBus, ignore for now
+    #- name: make static
+    #  run: make STATIC_LINK=1 VERBOSE=1
 
     - name: compile sample rules
       run: make sample-rules
