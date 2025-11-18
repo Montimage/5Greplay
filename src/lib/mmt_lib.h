@@ -23,5 +23,6 @@
 #include "lock_free_spsc_ring.h"
 #include "version.h"
 #include "mmt_set_uint64.h"
+#include "user_input.h"
 
 #endif /* SRC_LIB_MMT_LIB_H_ */

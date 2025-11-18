@@ -27,6 +27,7 @@
 #include "../engine/verdict_printer.h"
 #include "../engine/rule.h"
 #include "../forward/forward_packet.h"
+#include "../lib/user_input.h"
 
 typedef struct context_struct{
 	mmt_sec_handler_t *sec_handler;
@@ -60,8 +61,11 @@ void usage(const char * prg_name) {
 	printf("\t-i <interface>   : Gives the interface name for live traffic analysis.\n");
 	printf("\t-X attr=value    : Override configuration attributes.\n");
 	printf("\t                    For example \"-X output.enable=true -Xoutput.output-dir=/tmp/\" will enable output to file and change output directory to /tmp.\n");
-	printf("\t                    This parameter can appear several times.\n");
+	printf("\t                    This parameter -X can appear several times.\n");
 	printf("\t-x               : Prints list of configuration attributes being able to be used with -X, then exits.\n");
+	printf("\t-V param=value   : Configure a parameter used in a rule.\n");
+	printf("\t                    For example \"-V eth-dst=82:82:7c:7e:08:46 -Vreplay-pps=100\" will enable 2 user inputs \"eth-dst\" and \"replay-pps\".\n");
+	printf("\t                    This parameter -V can appear several times.\n");
 	printf("\t-h               : Prints this help, then exits.\n");
 }
 
@@ -78,7 +82,7 @@ static inline config_t *_parse_options(int argc, char ** argv ) {
 	int opt;
 	const char *config_file = DEFAULT_CONFIG_FILE;
 	config_t *conf = NULL;
-	const char *options = "t:i:c:X:xh";
+	const char *options = "t:i:c:X:U:xh";
 
 	//to get config
 	extern char *optarg;
@@ -100,6 +104,7 @@ static inline config_t *_parse_options(int argc, char ** argv ) {
 		case 'X':
 		case 't':
 		case 'i':
+		case 'U':
 			break;
 		case 'h':
 		default:
@@ -154,16 +159,44 @@ static inline config_t *_parse_options(int argc, char ** argv ) {
 			}
 			//not found = character
 			if( *string_val == '\0' )
-				log_write( LOG_WARNING, "Input parameter '%s' is not well-formatted (must be in format parameter=value). Ignored it.", string_att );
+				ABORT( "Input parameter '%s' is not well-formatted (must be in format parameter=value).", string_att );
 
 			switch( conf_override_element(conf, string_att, string_val) ){
 			case 0:
 				//log_write( LOG_INFO, "Overridden value of configuration parameter '%s' by '%s'", string_att, string_val );
 				break;
 			case -1:
-				log_write_dual(LOG_ERR, "Unknown parameter identity %s\n", string_att );
-				exit( EXIT_FAILURE );
+				ABORT("Unknown parameter identity %s\n", string_att );
 			}
+			break;
+
+		case 'U':
+			//example: -V replay-pps=100
+			//we will separate the phrase "replay-pps=100" into 2
+			// to expect:
+			//   string_att = "replay-pps"
+			//   string_val = "100"
+			string_att = optarg;
+			string_val = optarg;
+			while( *string_val != '\0' ){
+				//separated by = character
+				if( *string_val == '=' ){
+					*string_val = '\0'; //NULL ended for attribute
+					//jump to the part after = character
+					string_val ++;
+					break;
+				}
+				string_val ++;
+			}
+			//not found = character
+			if( *string_val == '\0' )
+				ABORT( "Input parameter '-V %s' is not well-formatted (must be in format parameter=value).", optarg );
+
+			//we use environment variable to transfer this parameter to rules
+			if( user_input_set(string_att, string_val) )
+				ABORT( "Cannot set input parameter '-V %s': %s.", optarg, strerror(errno) );
+			log_write(LOG_INFO, "Set user input: %s=%s", string_att, string_val);
+			break;
 
 		}
 	}

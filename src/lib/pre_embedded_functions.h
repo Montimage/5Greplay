@@ -153,4 +153,9 @@ static inline uint32_t get_http2_env_nb_copies(){
 	else
 		return strtoul( str, NULL, 0 );
 }
+
+static inline const char* get_input(const char *name){
+	return user_input_get(name);
+}
+
 #endif /* SRC_LIB_PRE_EMBEDDED_FUNCTIONS_H_ */
