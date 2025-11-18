@@ -118,7 +118,7 @@ extern int mmt_update_sctp_param( uint32_t ppid, uint32_t flags, uint16_t stream
 #define set_numeric_value           mmt_set_attribute_number_value
 #define replace_data_at_protocol_id mmt_replace_data_at_protocol_id
 #define forward_packet              mmt_forward_packet
-#define drop_packet                 mmmt_do_not_forward_packet
+#define drop_packet                 mmt_do_not_forward_packet
 #define update_sctp_param           mmt_update_sctp_param
 /**
  * This function will be called by #update() if_satisfied function

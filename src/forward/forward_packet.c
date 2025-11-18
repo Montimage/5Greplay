@@ -32,6 +32,7 @@ struct forward_packet_context_struct{
 	uint16_t packet_size;
 	uint16_t packet_delta; //used to shift packet data when forwarding
 	bool has_a_satisfied_rule; //whether there exists a rule that satisfied
+	bool drop_this_packet;
 	const ipacket_t *ipacket;
 
 	inject_packet_context_t *injector;    //injector by default
@@ -178,6 +179,7 @@ void forward_packet_on_receiving_packet_before_rule_processing(const ipacket_t *
 	context->ipacket = ipacket;
 	context->packet_size = ipacket->p_hdr->caplen;
 	context->has_a_satisfied_rule = false;
+	context->drop_this_packet = false;
 	//copy packet data, then modify packet's content
 	memcpy(context->packet_data, ipacket->data, context->packet_size );
 }
@@ -189,16 +191,23 @@ void forward_packet_on_receiving_packet_before_rule_processing(const ipacket_t *
 void forward_packet_on_receiving_packet_after_rule_processing( const ipacket_t * ipacket, forward_packet_context_t *context ){
 	if( context == NULL )
 		return;
-	//whether the current packet is handled by a engine rule ?
-	// if yes, we do nothing
-	if( context->has_a_satisfied_rule )
-		return;
-	if( context->config->default_action  == ACTION_DROP ){
+	//the packet is marked explicitly as being dropped
+	if( context->drop_this_packet ){
 		context->nb_dropped_packets ++;
-	} else {
-		if( ! _send_packet_to_nic(context) )
-			context->nb_dropped_packets ++;
+		return;
 	}
+	//whether the current packet is handled by a engine rule ?
+	// and the rule type is FORWARD
+	if( context->has_a_satisfied_rule ){
+		//goto _send_pkt;
+	} else if( context->config->default_action  == ACTION_DROP ){
+		context->nb_dropped_packets ++;
+		return;
+	}
+
+	// _send_pkt
+	if( ! _send_packet_to_nic(context) )
+		context->nb_dropped_packets ++;
 }
 
 
@@ -211,7 +220,7 @@ void mmt_do_not_forward_packet(){
 	forward_packet_context_t *context = _get_current_context();
 	if( context == NULL )
 		return;
-	context->nb_dropped_packets ++;
+	context->drop_this_packet = true;
 }
 
 /**
