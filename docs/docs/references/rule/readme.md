@@ -82,6 +82,9 @@ In boolean expressions of rules, one can use one or many embedded functions
 
 5. We can use any standard C functions as embedded function, e.g., `(#strstr( http.user_agent, 'robot') != 0)` to check if `http.user_agent` contains a sub-string `"robot"`.
 
+6. `const char* get_input(const char* name)` get user's input which was provided when starting 5Greplay within `-U` parameter. 
+For example, if 5Greplay is started with `-Umac-src=aa:bb:c:d:e:f`, then `get_input("mac-src")` returns `"aa:bb:c:d:e:f"`
+
    Please note that, before using a C function the library containing that embedded functions need to be included.
    The following libraries have been pre-included:
 

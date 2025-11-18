@@ -63,9 +63,9 @@ void usage(const char * prg_name) {
 	printf("\t                    For example \"-X output.enable=true -Xoutput.output-dir=/tmp/\" will enable output to file and change output directory to /tmp.\n");
 	printf("\t                    This parameter -X can appear several times.\n");
 	printf("\t-x               : Prints list of configuration attributes being able to be used with -X, then exits.\n");
-	printf("\t-V param=value   : Configure a parameter used in a rule.\n");
-	printf("\t                    For example \"-V eth-dst=82:82:7c:7e:08:46 -Vreplay-pps=100\" will enable 2 user inputs \"eth-dst\" and \"replay-pps\".\n");
-	printf("\t                    This parameter -V can appear several times.\n");
+	printf("\t-U param=value   : Configure a parameter used in a rule.\n");
+	printf("\t                    For example \"-U eth-dst=82:82:7c:7e:08:46 -Ureplay-pps=100\" will enable 2 user inputs \"eth-dst\" and \"replay-pps\".\n");
+	printf("\t                    This parameter -U can appear several times.\n");
 	printf("\t-h               : Prints this help, then exits.\n");
 }
 

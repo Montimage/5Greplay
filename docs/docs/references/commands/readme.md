@@ -79,17 +79,20 @@ This command can replay
 
 ```bash
 #Get list of parameters
-./5greplay replay -h
-./5greplay replay [<options>]
+mmt-5greplay: 5Greplay v0.0.8-86f2074 using DPI v1.7.10 (6dc7907) is running on pid 17043
+replay [<Option>]
 Option:
 	-v               : Print version information, then exits.
-	-c <config file> : Gives the path to the configuration file (default: ./5greplay.conf).
+	-c <config file> : Gives the path to the configuration file (default: ./mmt-5greplay.conf).
 	-t <trace file>  : Gives the trace file for offline analyse.
 	-i <interface>   : Gives the interface name for live traffic analysis.
 	-X attr=value    : Override configuration attributes.
 	                    For example "-X output.enable=true -Xoutput.output-dir=/tmp/" will enable output to file and change output directory to /tmp.
-	                    This parameter can appear several times.
+	                    This parameter -X can appear several times.
 	-x               : Prints list of configuration attributes being able to be used with -X, then exits.
+	-U param=value   : Configure a parameter used in a rule.
+	                    For example "-U eth-dst=82:82:7c:7e:08:46 -Ureplay-pps=100" will enable 2 user inputs "eth-dst" and "replay-pps".
+	                    This parameter -U can appear several times.
 	-h               : Prints this help, then exits.
 
 #Note: you may want to change parameters inside mmt-5greplay.conf
