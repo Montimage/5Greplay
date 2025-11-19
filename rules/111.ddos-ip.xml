@@ -8,9 +8,13 @@ For example, "-U rand-ip-src=100" will random IP src from 0 to 100.
 User input parameters:
 - rand-ip-src
 - rand-ip-dst
+- ip-src
+- ip-dst
+
+The two first params have higher priority.
 
 For example:
-sudo ./5greplay replay -t pcap/oai.pcap -Xengine.exclude-rules=1-110,112-999 -U rand-ip-dst=100 -Urand-ip-src=1
+sudo ./5greplay replay -t pcap/oai.pcap -Xengine.exclude-rules=1-110,112-999 -U rand-ip-dst=100 -Uip-src=1.1.1.1
  -->
 
 <embedded_functions><![CDATA[
@@ -31,6 +35,18 @@ typedef struct {
 } ipv4_t;
 #pragma pack(pop)
 
+static inline bool _get_ip(uint8_t* ip, const char* name){
+	const char *val;
+	val = get_input( name );
+	if( !val )
+		return false;
+	
+	int m[4];
+	sscanf(val, "%d.%d.%d.%d", m+0, m+1, m+2, m+3);
+	for(int i=0; i<4; i++)
+		ip[i] = m[i];
+	return true;
+}
 
 // Calculate IPv4 header checksum
 static inline uint16_t _checksum(const void *data, size_t length) {
@@ -65,14 +81,16 @@ static inline uint32_t _random(size_t max){
 	return (rand() % max) + 1;
 }
 
-static size_t nb_ip_src = 0, nb_ip_dst = 0;
-
+static size_t nb_ip_src, nb_ip_dst;
+static bool is_fixed_ip_src, is_fixed_ip_dst;
 static ipv4_t ipv4;
 
 void on_load(){
 	memset(&ipv4, 0, sizeof(ipv4));
 	ipv4.version_ihl = (4 << 4) | 5;   // IPv4, 5 words header
 	ipv4.ttl = 64;
+	is_fixed_ip_src = _get_ip( (uint8_t*) &ipv4.src, "ip-src");
+	is_fixed_ip_dst = _get_ip( (uint8_t*) &ipv4.dst, "ip-dst");
 	
 	nb_ip_src = _get_number("rand-ip-src");
 	nb_ip_dst = _get_number("rand-ip-dst");
@@ -97,10 +115,13 @@ static inline bool fwd_num( int id, double val ){
 static inline bool fwd_char( int id, const char* val ){
 	switch( id ){
 		case 1:
-			ipv4.src = *(uint32_t *) val;
+			// forward ip src only if it is not fixed by user via "ip-src" param
+			if( !is_fixed_ip_src )
+				ipv4.src = *(uint32_t *) val;
 			break;
 		case 2:
-			ipv4.dst = *(uint32_t *) val;
+			if( !is_fixed_ip_dst )
+				ipv4.dst = *(uint32_t *) val;
 			break;
 	}
 	return true;
