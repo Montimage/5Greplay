@@ -419,6 +419,7 @@ void conf_release( config_t *conf){
 
 	if( conf->forward ){
 		mmt_mem_free( conf->forward->output_nic );
+		mmt_mem_free( conf->forward->bind_ip );
 		for( i=0; i<conf->forward->target_size; i++ ){
 			mmt_mem_free( conf->forward->targets[i].host );
 		}

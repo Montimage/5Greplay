@@ -195,7 +195,7 @@ static inline config_t *_parse_options(int argc, char ** argv ) {
 			//we use environment variable to transfer this parameter to rules
 			if( user_input_set(string_att, string_val) )
 				ABORT( "Cannot set input parameter '-V %s': %s.", optarg, strerror(errno) );
-			log_write(LOG_INFO, "Set user input: %s=%s", string_att, string_val);
+			log_write(LOG_INFO, "Set user input: %s = %s", string_att, string_val);
 			break;
 
 		}
