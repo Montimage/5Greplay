@@ -98,34 +98,20 @@ void on_load(){
 	srand(time(NULL)); //init random
 }
 
-// reuse numeric value from the packet
-static inline bool fwd_num( int id, double val ){
-	//printf("set length: %d\n", (int)val);
-	switch( id ){
-		case 1:
-			ipv4.protocol = val;
-			break;
-		case 2:
-			ipv4.total_length = htons((int)val);
-			break;
-	}
+// reuse different values from the packet
+static inline bool forward( const char *ip_src, const char* ip_dst, double proto_id, double tot_len ){
+	// forward ip src only if it is not fixed by user via "ip-src" param
+	if( !is_fixed_ip_src )
+		ipv4.src = *(uint32_t *) ip_src;
+	if( !is_fixed_ip_dst )
+		ipv4.dst = *(uint32_t *) ip_dst;
+
+	ipv4.protocol = proto_id;
+	ipv4.total_length = htons((int) tot_len);
+
 	return true;
 }
 
-static inline bool fwd_char( int id, const char* val ){
-	switch( id ){
-		case 1:
-			// forward ip src only if it is not fixed by user via "ip-src" param
-			if( !is_fixed_ip_src )
-				ipv4.src = *(uint32_t *) val;
-			break;
-		case 2:
-			if( !is_fixed_ip_dst )
-				ipv4.dst = *(uint32_t *) val;
-			break;
-	}
-	return true;
-}
 static void em_replace_ip(
 		const rule_info_t *rule, int verdict, uint64_t timestamp, 
 		uint64_t counter, const mmt_array_t * const trace ){
@@ -149,10 +135,7 @@ static void em_replace_ip(
     <event description="Got an IP packet on top of Ethernet"
            boolean_expression="(ethernet.proto == 2048)"/>
     <event description="Forward values"
-           boolean_expression="( #fwd_num(1, ip.proto_id) 
-                     &amp;&amp; (#fwd_num(2, ip.tot_len) 
-                     &amp;&amp; (#fwd_char(1, ip.src) 
-                     &amp;&amp;  #fwd_char(2, ip.dst))) )"/>
+           boolean_expression="( #forward(ip.src, ip.dst, ip.proto_id, ip.tot_len ) )"/>
 </property>
 
 </beginning>
