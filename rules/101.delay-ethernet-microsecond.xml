@@ -1,0 +1,35 @@
+<beginning>
+
+<!-- 
+This rule simplify delay Ethernet packet before forwarding by X microsecond.
+
+User input
+- delay-us
+ -->
+
+<embedded_functions><![CDATA[
+#include <unistd.h>
+static size_t delay_us = 0;
+
+void on_load(){
+	const char *val = get_input( "delay-us" );
+	if( val )
+		delay_us = atol( val );
+}
+
+static bool delay(double proto){
+
+	if( delay_us )
+		usleep( delay_us );
+
+	return false;
+}
+]]></embedded_functions>
+
+<property property_id="90" type_property="FORWARD" 
+    description="Delay a packet" >
+    <event description="Delay by X microseconds"
+           boolean_expression="( #delay(ethernet.proto) )"/>
+</property>
+
+</beginning>
