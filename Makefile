@@ -37,8 +37,7 @@ LIBS     += -ldl -lpthread
 ifdef STATIC_LINK
   CFLAGS += -DSTATIC_LINK
   LIBS   += -l:libxml2.a -l:libicuuc.a -l:libz.a -l:liblzma.a -l:libicudata.a #xml2 and its dependencies
-  LIBS   +=  -l:libmmt_core.a -l:libmmt_tcpip.so -l:libmmt_tmobile.a  -l:libsctp.a -l:libpcap.a -l:libmmt_tcpip.a
-  LIBS   +=  -l:libdbus-1.so #20 Nov 2025: Libpcap inside Ubuntu 24.04 uses dbus for Bluetooth capture
+  LIBS   +=  -l:libmmt_core.a -l:libmmt_tcpip.so -l:libmmt_tmobile.a  -l:libsctp.a -l:libpcap.so -l:libmmt_tcpip.a
 else
   LIBS   += -l:libmmt_core.so -l:libmmt_tmobile.so -l:libxml2.so -l:libsctp.so -l:libpcap.so -l:libmmt_tcpip.a
 endif
