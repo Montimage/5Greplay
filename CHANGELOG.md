@@ -1,3 +1,13 @@
+# Version 1.0.0
+- Add running parameter,`-U`, allowing to forward user input to rules
+- Add more rules: 
+    - Rules to modify Ethernet and IP via user input parameters:
+    - Rule to emulate DDoS attack by randomizing a huge number of IP source or destination
+    - Rule to delay Ethernet packet by a given microseconds
+- Fixed bugs:
+    - Rule order has been changed after exluding some rules
+    - No forward packet if user does explicity call `forward_packet` embdded function, even rule's type is `FORWARD`
+
 # Version 0.0.7
 - Bind SCTP socket in a specific IP. Fixed #43, fixed #45
 
