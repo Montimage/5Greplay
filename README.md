@@ -4,7 +4,7 @@
 
 # Replay, mutate, and inject 5G traffic against live network functions
 
-5GReplay captures or reads 5G pcap traffic, applies XML-defined mutation rules at the packet level, and forwards the modified packets to a target NF (AMF, SMF, UPF) or RAN (gNodeB) over SCTP/UDP — online or offline, control plane or data plane.
+5GReplay captures or reads 5G pcap traffic, applies XML-defined mutation rules at the packet level, and forwards the modified packets to a target 5G core NF (AMF, SMF, UPF) over SCTP, UDP, or HTTP/2 — online or offline, control plane or data plane.
 
 [**Get Started →**](#quick-start) · [**Full docs →**](https://5greplay.org)
 
@@ -18,7 +18,7 @@ graph LR
     B --> C{Rule Engine\nXML rules compiled\nto .so plugins}
     C -->|match| D[Mutate / Fuzz\nmodify fields]
     C -->|no match| E[Forward as-is]
-    D --> F[Target NF / RAN\nAMF · SMF · gNodeB]
+    D --> F[5G Core NF\nAMF · SMF · UPF\nvia SCTP · UDP · HTTP2]
     E --> F
     F -.->|optional| G[pcap dump]
 ```
@@ -121,7 +121,7 @@ sudo ./5greplay replay -i eth0 -c mmt-5greplay.conf
 
 ```bash
 ./5greplay compile rules/fuzz-ngap.so rules/fuzz-ngap.xml
-sudo ./5greplay replay -i n2-interface -c mmt-5greplay.conf
+sudo ./5greplay replay -i eth0 -c mmt-5greplay.conf
 ```
 
 **Parameterize a rule at runtime (e.g., set target MAC):**
