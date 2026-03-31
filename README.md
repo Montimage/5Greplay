@@ -64,8 +64,8 @@ docker run --rm -it ghcr.io/montimage/5greplay \
 **Option B — Pre-built binary (Ubuntu):**
 
 ```bash
-wget https://github.com/Montimage/5GReplay/releases/download/v1.0.0/5greplay-1.0.0_Linux_x86_64.tar.gz
-tar -xzf 5greplay-1.0.0_Linux_x86_64.tar.gz
+wget https://github.com/Montimage/5GReplay/releases/download/v1.0.0/5greplay-1.0.0_Linux_x86_64_Ubuntu_24.04.tar.gz
+tar -xzf 5greplay-1.0.0_Linux_x86_64_Ubuntu_24.04.tar.gz
 cd 5greplay-1.0.0
 ./5greplay -h
 ```
@@ -113,7 +113,7 @@ sudo ./5greplay replay -i eth0 -c mmt-5greplay.conf
 ```xml
 <property property_id="7" type_property="FORWARD"
     description="Fuzz NGAP procedure code and UE IDs"
-    if_satisfied="#fuzz(ngap.ran_ue_id, ngap.amf_ue_id, ngap.procedure_code)">
+    if_satisfied="#fuzz(ngap.ran_ue_id, ngap.amf_ue_id, ngap.procedure_code, ngap.pdu_present)">
   <event description="Any NGAP packet"
          boolean_expression="(ngap.procedure_code != 0)"/>
 </property>
@@ -183,7 +183,7 @@ Override any key inline: `-X engine.thread-nb=4 -X forward.nb-copies=500`
 A rule file contains one or more `<property>` elements:
 
 ```xml
-<property property_id="N" type_property="FORWARD|ATTACK"
+<property property_id="N" type_property="FORWARD"
     description="..."
     if_satisfied="em_my_callback">
 
@@ -194,8 +194,10 @@ A rule file contains one or more `<property>` elements:
 </property>
 ```
 
+Valid `type_property` values: `FORWARD`, `ATTACK`, `SECURITY`, `EVASION`, `TEST`
+
 - `type_property="FORWARD"` — packets matching the rule are forwarded (possibly mutated)
-- `type_property="ATTACK"` — rule match triggers an alert
+- `type_property="ATTACK"` — rule match triggers an alert; packet handling follows `forward.default`
 - `if_satisfied` — name of a C callback defined in `<embedded_functions>`
 - `#fuzz(attr1, attr2)` — built-in: randomizes listed numeric attributes before forwarding
 - `get_input("key")` — reads a `-U key=value` parameter passed at startup
